@@ -1,10 +1,9 @@
-import './App.css';
+import Sidebar from './components/Sidebar';
 
 function App() {
   return (
     <>
-      <h1>Vite + React</h1>
-      <h1>test</h1>
+      <Sidebar />
     </>
   );
 }
