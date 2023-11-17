@@ -2,9 +2,14 @@ import { create } from 'zustand';
 import {
   auth,
   createUserWithEmailAndPassword,
+  db,
   signInWithCustomToken,
   signOut,
   signInWithEmailAndPassword,
+  collection,
+  addDoc,
+  setDoc,
+  doc,
 } from '../utils/firebase';
 
 interface AccountType {
@@ -31,6 +36,9 @@ export const useStore = create<StoreState>((set) => ({
   // setToken: (token: string) => set(() => ({ token: token })),
   signup: (account: AccountType) => {
     const { email, password } = account;
+    async function setFiresStoreDoc(uid: any, profile: object) {
+      await setDoc(doc(db, 'users', uid), profile);
+    }
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential: { user: any }) => {
         const { user } = userCredential;
@@ -38,6 +46,19 @@ export const useStore = create<StoreState>((set) => ({
         set(() => ({ isLogin: true }));
         set(() => ({ token: user.accessToken }));
         localStorage.setItem('jwtToken', user.accessToken);
+        return user;
+      })
+      .then((user) => {
+        console.log(user);
+        const initialProfile = {
+          photoURL: '',
+          email: user.email,
+          kids: [],
+          displayName: user.displayName,
+          phoneNumber: '',
+          registrationDate: user.metadata.creationTime,
+        };
+        setFiresStoreDoc(user.uid, initialProfile);
       })
       .catch((error: { code: number; message: string }) => {
         const errorCode = error.code;
@@ -78,11 +99,11 @@ export const useStore = create<StoreState>((set) => ({
     const { email, password } = account;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential: { user: any }) => {
-        // Signed in
         const { user } = userCredential;
         set(() => ({ isLogin: true }));
         set(() => ({ token: user.accessToken }));
         localStorage.setItem('jwtToken', user.accessToken);
+        return user;
       })
       .catch((error) => {
         const errorCode = error.code;
