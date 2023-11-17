@@ -1,6 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/sol-logo.png';
-import { GoogleLogin } from '@react-oauth/google';
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
 
@@ -12,7 +11,7 @@ const emptyAccount = {
 
 function Signup() {
   const navigate = useNavigate();
-  const { signup, isLogin } = useStore();
+  const { nativeSignup, googleLogin, isLogin } = useStore();
 
   const [account, setAccount] = useState(emptyAccount);
 
@@ -24,16 +23,6 @@ function Signup() {
   useEffect(() => {
     if (isLogin) navigate('/');
   }, [isLogin]);
-
-  //===============
-  //  google login
-  //===============
-  const responseMessage: (response: unknown) => void = (response) => {
-    console.log(response);
-  };
-  // const errorMessage: (error: undefined) => void = (error) => {
-  //   console.log(error);
-  // };
 
   return (
     <div className='custom-main-container'>
@@ -70,7 +59,7 @@ function Signup() {
           <button
             type='submit'
             className='text-white bg-[#1876D1] text-center shadow-md px-4 py-2 rounded-sm'
-            onClick={() => signup(account)}>
+            onClick={() => nativeSignup(account)}>
             SIGN UP
           </button>
         </div>
@@ -78,7 +67,7 @@ function Signup() {
           Already have an account? Sign in
         </Link>
         <div>or</div>
-        <GoogleLogin onSuccess={responseMessage} />
+        <button onClick={googleLogin}>使用 Google 帳戶註冊</button>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/sol-logo.png';
-import { GoogleLogin } from '@react-oauth/google';
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
 
@@ -11,7 +10,7 @@ const emptyAccount = {
 
 function Login() {
   const navigate = useNavigate();
-  const { nativeLogin, isLogin } = useStore();
+  const { nativeLogin, googleLogin, isLogin } = useStore();
 
   const [account, setAccount] = useState(emptyAccount);
 
@@ -23,16 +22,6 @@ function Login() {
   useEffect(() => {
     if (isLogin) navigate('/');
   }, [isLogin]);
-
-  //===============
-  //  google login
-  //===============
-  const responseMessage: (response: unknown) => void = (response) => {
-    console.log(response);
-  };
-  // const errorMessage: (error: undefined) => void = (error) => {
-  //   console.log(error);
-  // };
 
   return (
     <div className='custom-main-container'>
@@ -71,7 +60,7 @@ function Login() {
           Don't have an account? Sign Up
         </Link>
         <div>or</div>
-        <GoogleLogin onSuccess={responseMessage} />
+        <button onClick={googleLogin}>使用 Google 帳戶登入</button>
       </div>
     </div>
   );

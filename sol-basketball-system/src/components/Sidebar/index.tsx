@@ -13,6 +13,7 @@ function Sidebar() {
         <Link to='/'>Schedules</Link>
         <Link to='/games'>Games</Link>
         <Link to='/member'>Member</Link>
+        {isLogin && <Link to='/profile'>Profile</Link>}
         {isLogin ? <button onClick={setLogOut}>Log out</button> : <Link to='/login'>Log In</Link>}
         <Link to='/purchase'>Purchase</Link>
       </div>
