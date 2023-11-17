@@ -5,14 +5,13 @@ import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
 
 const emptyAccount = {
-  name: '',
-  email: '',
-  password: '',
+  email: 'm1598088703i10@mail.com',
+  password: '123456',
 };
 
-function Signup() {
+function Login() {
   const navigate = useNavigate();
-  const { signup, isLogin } = useStore();
+  const { nativeLogin, isLogin } = useStore();
 
   const [account, setAccount] = useState(emptyAccount);
 
@@ -40,23 +39,16 @@ function Signup() {
       <div className='mt-36 mx-auto w-96 flex items-center flex-col'>
         <div>
           <img src={logoUrl} alt='sign-up-icon' className='w-24' />
-          <div className=' text-center'>Sign up</div>
+          <div className=' text-center'>Sign in</div>
         </div>
         <div className='flex flex-col gap-2 w-full'>
-          <input
-            type='text'
-            name='name'
-            id='name'
-            placeholder='Name *'
-            className='custom-signin-input'
-            onChange={handleInputChange}
-          />
           <input
             type='email'
             name='email'
             id='email'
             placeholder='Email Address *'
             className='custom-signin-input'
+            value={account.email}
             onChange={handleInputChange}
           />
           <input
@@ -65,17 +57,18 @@ function Signup() {
             id='password'
             placeholder='Password *'
             className='custom-signin-input'
+            value={account.password}
             onChange={handleInputChange}
           />
           <button
             type='submit'
             className='text-white bg-[#1876D1] text-center shadow-md px-4 py-2 rounded-sm'
-            onClick={() => signup(account)}>
-            SIGN UP
+            onClick={() => nativeLogin(account)}>
+            SIGN IN
           </button>
         </div>
-        <Link to='/login' className='self-end text-blue-500 underline'>
-          Already have an account? Sign in
+        <Link to='/signup' className='self-end text-blue-500 underline'>
+          Don't have an account? Sign Up
         </Link>
         <div>or</div>
         <GoogleLogin onSuccess={responseMessage} />
@@ -84,4 +77,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default Login;

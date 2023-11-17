@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import logoUrl from '../../assets/sol-logo.png';
+import { useStore } from '../../store/store';
 
 function Sidebar() {
+  const { isLogin, setLogOut } = useStore();
   return (
     <div className='w-60 h-full fixed bg-customDeepBlue top-0'>
       <Link to='/'>
@@ -11,7 +13,7 @@ function Sidebar() {
         <Link to='/'>Schedules</Link>
         <Link to='/games'>Games</Link>
         <Link to='/member'>Member</Link>
-        <Link to='/signup'>Sign up</Link>
+        {isLogin ? <button onClick={setLogOut}>Log out</button> : <Link to='/login'>Log In</Link>}
         <Link to='/purchase'>Purchase</Link>
       </div>
     </div>
