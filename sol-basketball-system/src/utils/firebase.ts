@@ -1,11 +1,13 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithCustomToken,
+  signOut,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import { getFirestore, collection, addDoc, setDoc, doc } from 'firebase/firestore';
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyBw9iJkTFrgb3C3dVGcAUDRnzs8Afa7Ydc',
   authDomain: 'sol-basketball.firebaseapp.com',
@@ -16,6 +18,19 @@ const firebaseConfig = {
   measurementId: 'G-5270LP7KDH',
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+export {
+  auth,
+  createUserWithEmailAndPassword,
+  db,
+  signInWithCustomToken,
+  signOut,
+  signInWithEmailAndPassword,
+  collection,
+  addDoc,
+  setDoc,
+  doc,
+};
