@@ -11,7 +11,7 @@ const emptyAccount = {
 
 function Signup() {
   const navigate = useNavigate();
-  const { nativeSignup, googleLogin, isLogin } = useStore();
+  const { nativeSignup, googleSignup, isLogin } = useStore();
 
   const [account, setAccount] = useState(emptyAccount);
 
@@ -67,7 +67,7 @@ function Signup() {
           Already have an account? Sign in
         </Link>
         <div>or</div>
-        <button onClick={googleLogin}>使用 Google 帳戶註冊</button>
+        <button onClick={googleSignup}>使用 Google 帳戶註冊</button>
       </div>
     </div>
   );

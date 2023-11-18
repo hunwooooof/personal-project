@@ -1,16 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStore } from '../../store/store';
 import { useNavigate } from 'react-router-dom';
-
-const user = {
-  name: '王小美',
-  email: 'a@mail.com',
-  photoURL:
-    'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAxL3JtNjA5LXNvbGlkaWNvbi13LTAwMi1wLnBuZw.png',
-};
+import { updateDoc, getDoc, setDoc, db, doc } from '../../utils/firebase';
 
 const kids = [
   {
+    id: 'A112233456',
     name: 'alex',
     birthday: '2013-07-10',
     school: '台北美國學校',
@@ -18,6 +13,7 @@ const kids = [
       'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAxL3JtNjA5LXNvbGlkaWNvbi13LTAwMi1wLnBuZw.png',
   },
   {
+    id: 'A998877654',
     name: 'leo',
     birthday: '2015-10-09',
     school: '台北美國學校',
@@ -28,11 +24,60 @@ const kids = [
 
 function Profile() {
   const navigate = useNavigate();
-  const { isLogin } = useStore();
+  const [isLoading, setLoading] = useState(false);
+  const { user, userRef, setUserProfile, isLogin } = useStore();
+  const [isEditProfile, setEditProfile] = useState(false);
+  const [isEditKid, setEditKid] = useState(false);
+  const [isAddingKid, setAddingKid] = useState(false);
+  const inputFileRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (!isLogin) navigate('/');
-  // }, [isLogin]);
+  async function getProfile() {
+    const profileSnap = await getDoc(userRef);
+    if (profileSnap) {
+      const profile = profileSnap.data();
+      setUserProfile(profile);
+      setLoading(false);
+      setNewProfile({
+        displayName: user.displayName,
+        phoneNumber: user.phoneNumber,
+        photoURL: user.photoURL,
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (!isLogin) navigate('/');
+    setLoading(true);
+    getProfile();
+  }, []);
+
+  const [newProfile, setNewProfile] = useState({});
+  const handleChangeProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const id = e.target.id;
+    setNewProfile({ ...newProfile, [id]: e.target.value });
+  };
+
+  const handleSaveProfile = () => {
+    updateDoc(userRef, { ...newProfile });
+    getProfile();
+  };
+
+  const [newKid, setNewKid] = useState({
+    firstName: '',
+    lastName: '',
+    chineseName: '',
+    birthday: '',
+    id: '',
+    school: '',
+  });
+  const handleChangeNewKidProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const id = e.target.id;
+    setNewKid({ ...newKid, [id]: e.target.value });
+  };
+
+  const handleAddNewKid = () => {
+    setDoc(doc(db, 'students', newKid.id), newKid);
+  };
 
   const renderEditIcon = () => {
     return (
@@ -82,7 +127,11 @@ function Profile() {
 
   const renderPlusCircle = () => {
     return (
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' className='w-16 h-16'>
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        viewBox='0 0 20 20'
+        fill='currentColor'
+        className='w-16 h-16 cursor-pointer'>
         <path
           fillRule='evenodd'
           d='M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z'
@@ -94,18 +143,46 @@ function Profile() {
 
   return (
     <div className='custom-main-container mt-28'>
-      <div className='w-8/12 mx-auto flex flex-col items-center'>
-        <img src={user.photoURL} className='w-24 rounded-full' />
-        <div>{user.name}</div>
-        <div>
-          <span>{user.email}</span>
-          {renderEditIcon()}
+      {isLoading && <>Loading!</>}
+      {!isEditProfile && (
+        <div className='w-8/12 mx-auto flex flex-col items-center'>
+          <img src={user.photoURL} className='w-24 rounded-full' />
+          <div>{user.displayName}</div>
+          <div>
+            <span>{user.email}</span>
+            <span onClick={() => setEditProfile(true)}>{renderEditIcon()}</span>
+          </div>
         </div>
-      </div>
+      )}
+      {isEditProfile && (
+        <div className='w-8/12 mx-auto flex items-center justify-between'>
+          <div>
+            <img src={user.photoURL} className='w-24 rounded-full' />
+            <input type='file' accept='image/*' ref={inputFileRef}></input>
+          </div>
+          <div className='flex flex-col justify-between bg-gray-300 w-80 h-32'>
+            <div className='flex justify-between'>
+              <label>Name</label>
+              <input type='text' value={newProfile.displayName} id='displayName' onChange={handleChangeProfile} />
+            </div>
+            <div className='flex justify-between'>
+              <label>Phone</label>
+              <input type='text' value={newProfile.phoneNumber} id='phoneNumber' onChange={handleChangeProfile} />
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              setEditProfile(false);
+              handleSaveProfile();
+            }}>
+            Save
+          </button>
+        </div>
+      )}
       <div className='w-8/12 mx-auto mt-28 flex gap-12 items-center'>
         {kids.map((kid) => {
           return (
-            <div className='flex flex-col items-center w-56 h-80 bg-slate-300'>
+            <div className='flex flex-col items-center w-56 h-80 bg-slate-300' key={kid.id}>
               {renderEditIcon()}
               <img src={kid.photoURL} className='w-24 rounded-full' />
               <div>{kid.name}</div>
@@ -120,7 +197,35 @@ function Profile() {
             </div>
           );
         })}
-        {renderPlusCircle()}
+        {!isAddingKid && <span onClick={() => setAddingKid(true)}>{renderPlusCircle()}</span>}
+        {isAddingKid && (
+          <div className='flex flex-col items-center w-56 h-80 bg-slate-300'>
+            <img
+              src='https://lh3.googleusercontent.com/a/ACg8ocKErSqd_KSCdY6q-sIvO27ozEsmowPd89ynr2VsdEiF=s96-c'
+              className='w-16 rounded-full'
+            />
+            <input
+              type='text'
+              name='firstName'
+              id='firstName'
+              placeholder='First Name *'
+              onChange={handleChangeNewKidProfile}
+            />
+            <input type='text' name='lastName' id='lastName' placeholder='Last Name *' />
+            <input type='text' name='chineseName' id='chineseName' placeholder='Chinese Name *' />
+            <label htmlFor='birthday'>Birthday</label>
+            <input type='date' name='birthday' id='birthday' />
+            <input type='text' name='id' id='id' placeholder='ID *' onChange={handleChangeNewKidProfile} />
+            <input type='text' name='school' id='school' placeholder='School *' onChange={handleChangeNewKidProfile} />
+            <button
+              onClick={() => {
+                setAddingKid(false);
+                handleAddNewKid();
+              }}>
+              Save
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

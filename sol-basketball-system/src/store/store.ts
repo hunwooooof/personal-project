@@ -14,6 +14,17 @@ import {
   setDoc,
   doc,
 } from '../utils/firebase';
+import { DocumentData, DocumentReference } from 'firebase/firestore';
+
+interface UserType {
+  photoURL?: string;
+  email?: string;
+  kids?: [];
+  displayName?: string;
+  phoneNumber?: string;
+  registrationDate?: string;
+  role?: string;
+}
 
 interface AccountType {
   name?: string;
@@ -22,12 +33,15 @@ interface AccountType {
 }
 
 interface StoreState {
-  user: object;
+  user: UserType;
+  userRef: any;
+  setUserProfile: (data: object) => void;
   token: string | null;
   isLogin: boolean;
   // setToken: (token: string) => void;
   nativeSignup: (account: AccountType) => void;
   nativeLogin: (account: AccountType) => void;
+  googleSignup: () => void;
   googleLogin: () => void;
   // setLogIn: () => void;
   setLogOut: () => void;
@@ -36,6 +50,8 @@ interface StoreState {
 
 export const useStore = create<StoreState>((set) => ({
   user: {},
+  userRef: DocumentReference<DocumentData, DocumentData>,
+  setUserProfile: (data: object) => set(() => ({ user: data })),
   token: '',
   // setToken: (token: string) => set(() => ({ token: token })),
   nativeSignup: (account: AccountType) => {
@@ -64,6 +80,7 @@ export const useStore = create<StoreState>((set) => ({
           role: 'user',
         };
         setFiresStoreDoc(user.uid, initialProfile);
+        set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })
       .catch((error: { code: number; message: string }) => {
         const errorCode = error.code;
@@ -78,6 +95,7 @@ export const useStore = create<StoreState>((set) => ({
         const { user } = userCredential;
         set(() => ({ isLogin: true }));
         set(() => ({ token: user.accessToken }));
+        set(() => ({ userRef: doc(db, 'users', user.uid) }));
         localStorage.setItem('jwtToken', user.accessToken);
         return user;
       })
@@ -87,10 +105,7 @@ export const useStore = create<StoreState>((set) => ({
         console.error(errorCode, errorMessage);
       });
   },
-  googleLogin: () => {
-    async function setFiresStoreDoc(uid: any, profile: object) {
-      await setDoc(doc(db, 'users', uid), profile);
-    }
+  googleSignup: () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
@@ -111,8 +126,9 @@ export const useStore = create<StoreState>((set) => ({
           registrationDate: user.metadata.creationTime,
           role: 'user',
         };
-        setFiresStoreDoc(user.uid, initialProfile);
+        setDoc(doc(db, 'users', user.uid), initialProfile);
         set(() => ({ token: user.accessToken }));
+        set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -122,6 +138,28 @@ export const useStore = create<StoreState>((set) => ({
         // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error);
         // ...
+      });
+  },
+  googleLogin: () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential?.accessToken;
+        set(() => ({ isLogin: true }));
+        const { user } = result;
+        return user;
+      })
+      .then((user) => {
+        set(() => ({ token: user.accessToken }));
+        set(() => ({ userRef: doc(db, 'users', user.uid) }));
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
       });
   },
   isLogin: false,
