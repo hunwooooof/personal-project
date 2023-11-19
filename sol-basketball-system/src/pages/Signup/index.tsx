@@ -11,7 +11,7 @@ const emptyAccount = {
 
 function Signup() {
   const navigate = useNavigate();
-  const { nativeSignup, googleSignup, isLogin } = useStore();
+  const { nativeSignup, googleSignup, isLogin, userRef, getUserProfile } = useStore();
 
   const [account, setAccount] = useState(emptyAccount);
 
@@ -21,7 +21,10 @@ function Signup() {
   };
 
   useEffect(() => {
-    if (isLogin) navigate('/');
+    if (isLogin) {
+      getUserProfile(userRef);
+      navigate('/');
+    }
   }, [isLogin]);
 
   return (

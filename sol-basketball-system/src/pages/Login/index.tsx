@@ -10,7 +10,7 @@ const emptyAccount = {
 
 function Login() {
   const navigate = useNavigate();
-  const { nativeLogin, googleLogin, isLogin } = useStore();
+  const { nativeLogin, googleLogin, isLogin, userRef, getUserProfile } = useStore();
 
   const [account, setAccount] = useState(emptyAccount);
 
@@ -20,7 +20,10 @@ function Login() {
   };
 
   useEffect(() => {
-    if (isLogin) navigate('/');
+    if (isLogin) {
+      getUserProfile(userRef);
+      navigate('/');
+    }
   }, [isLogin]);
 
   return (

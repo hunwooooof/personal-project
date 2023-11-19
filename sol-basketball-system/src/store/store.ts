@@ -12,7 +12,9 @@ import {
   collection,
   addDoc,
   setDoc,
+  getDoc,
   doc,
+  updateProfile,
 } from '../utils/firebase';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
 
@@ -26,6 +28,16 @@ interface UserType {
   role?: string;
 }
 
+interface KidType {
+  birthday: string;
+  chineseName: string;
+  firstName: string;
+  id: string;
+  lastName: string;
+  school: string;
+  photoURL?: string;
+}
+
 interface AccountType {
   name?: string;
   email: string;
@@ -34,8 +46,10 @@ interface AccountType {
 
 interface StoreState {
   user: UserType;
-  userRef: any;
-  setUserProfile: (data: object) => void;
+  setUser: (data: object) => void;
+  userRef: undefined | DocumentReference<DocumentData, DocumentData>;
+  kids: KidType[] | [];
+  kidsRef: undefined | DocumentReference<DocumentData, DocumentData>[];
   token: string | null;
   isLogin: boolean;
   // setToken: (token: string) => void;
@@ -46,30 +60,43 @@ interface StoreState {
   // setLogIn: () => void;
   setLogOut: () => void;
   checkLoginStatus: (token: string) => void;
+  getUserProfile: (userRef: undefined | DocumentReference<DocumentData, DocumentData>) => object;
+  getKidsProfile: (kidsRef: DocumentReference<DocumentData, DocumentData>[]) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
   user: {},
-  userRef: DocumentReference<DocumentData, DocumentData>,
-  setUserProfile: (data: object) => set(() => ({ user: data })),
+  setUser: (data: object) => set(() => ({ user: data })),
+  userRef: undefined,
+  kids: [],
+  kidsRef: undefined,
   token: '',
   // setToken: (token: string) => set(() => ({ token: token })),
   nativeSignup: (account: AccountType) => {
-    const { email, password } = account;
-    async function setFiresStoreDoc(uid: any, profile: object) {
-      await setDoc(doc(db, 'users', uid), profile);
-    }
+    const { name, email, password } = account;
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential: { user: any }) => {
         const { user } = userCredential;
         console.log(user);
         set(() => ({ isLogin: true }));
-        set(() => ({ token: user.accessToken }));
+        updateProfile(auth.currentUser, {
+          displayName: name,
+          photoURL:
+            'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496',
+        })
+          .then(() => {
+            console.log('Profile updated!');
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        // set(() => ({ token: user.accessToken }));
         localStorage.setItem('jwtToken', user.accessToken);
         return user;
       })
       .then((user) => {
         console.log(user);
+        set(() => ({ user: user }));
         const initialProfile = {
           photoURL: user.photoURL,
           email: user.email,
@@ -79,7 +106,7 @@ export const useStore = create<StoreState>((set) => ({
           registrationDate: user.metadata.creationTime,
           role: 'user',
         };
-        setFiresStoreDoc(user.uid, initialProfile);
+        setDoc(doc(db, 'users', user.uid), initialProfile);
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })
       .catch((error: { code: number; message: string }) => {
@@ -93,8 +120,9 @@ export const useStore = create<StoreState>((set) => ({
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential: { user: any }) => {
         const { user } = userCredential;
+        set(() => ({ user: user }));
         set(() => ({ isLogin: true }));
-        set(() => ({ token: user.accessToken }));
+        // set(() => ({ token: user.accessToken }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
         localStorage.setItem('jwtToken', user.accessToken);
         return user;
@@ -117,6 +145,7 @@ export const useStore = create<StoreState>((set) => ({
       })
       .then((user) => {
         console.log(user);
+        set(() => ({ user: user }));
         const initialProfile = {
           photoURL: user.photoURL,
           email: user.email,
@@ -127,7 +156,7 @@ export const useStore = create<StoreState>((set) => ({
           role: 'user',
         };
         setDoc(doc(db, 'users', user.uid), initialProfile);
-        set(() => ({ token: user.accessToken }));
+        // set(() => ({ token: user.accessToken }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })
       .catch((error) => {
@@ -150,7 +179,8 @@ export const useStore = create<StoreState>((set) => ({
         return user;
       })
       .then((user) => {
-        set(() => ({ token: user.accessToken }));
+        set(() => ({ user: user }));
+        // set(() => ({ token: user.accessToken }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })
       .catch((error) => {
@@ -190,5 +220,36 @@ export const useStore = create<StoreState>((set) => ({
         console.error(errorCode, errorMessage);
         localStorage.removeItem('jwtToken');
       });
+  },
+  getUserProfile: async (userRef) => {
+    if (userRef) {
+      const profileSnap = await getDoc(userRef);
+      if (profileSnap) {
+        const profile = profileSnap.data();
+        set(() => ({ user: profile }));
+        const kids = [];
+        for (const kidRef of profile.kids) {
+          const kidSnap = await getDoc(kidRef);
+          if (kidSnap.exists()) {
+            const kid = kidSnap.data();
+            kids.push(kid);
+          }
+        }
+        set(() => ({ kids: kids }));
+        // set(() => ({ kidsRef: profile.kids }));
+        return profile;
+      }
+    }
+  },
+  getKidsProfile: async (kidsRef) => {
+    const kids = [];
+    for (const kidRef of kidsRef) {
+      const kidSnap = await getDoc(kidRef);
+      if (kidSnap.exists()) {
+        const kid = kidSnap.data();
+        kids.push(kid);
+      }
+    }
+    set(() => ({ kids: kids }));
   },
 }));
