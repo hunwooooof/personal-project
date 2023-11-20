@@ -50,9 +50,7 @@ interface StoreState {
   userRef: undefined | DocumentReference<DocumentData, DocumentData>;
   kids: KidType[] | [];
   kidsRef: undefined | DocumentReference<DocumentData, DocumentData>[];
-  token: string | null;
   isLogin: boolean;
-  // setToken: (token: string) => void;
   nativeSignup: (account: AccountType) => void;
   nativeLogin: (account: AccountType) => void;
   googleSignup: () => void;
@@ -70,8 +68,6 @@ export const useStore = create<StoreState>((set) => ({
   userRef: undefined,
   kids: [],
   kidsRef: undefined,
-  token: '',
-  // setToken: (token: string) => set(() => ({ token: token })),
   nativeSignup: (account: AccountType) => {
     const { name, email, password } = account;
     createUserWithEmailAndPassword(auth, email, password)
@@ -90,7 +86,6 @@ export const useStore = create<StoreState>((set) => ({
           .catch((error) => {
             console.error(error);
           });
-        // set(() => ({ token: user.accessToken }));
         localStorage.setItem('jwtToken', user.accessToken);
         return user;
       })
@@ -122,7 +117,6 @@ export const useStore = create<StoreState>((set) => ({
         const { user } = userCredential;
         set(() => ({ user: user }));
         set(() => ({ isLogin: true }));
-        // set(() => ({ token: user.accessToken }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
         localStorage.setItem('jwtToken', user.accessToken);
         return user;

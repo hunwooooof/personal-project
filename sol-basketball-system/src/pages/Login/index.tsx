@@ -22,7 +22,7 @@ function Login() {
   useEffect(() => {
     if (isLogin) {
       getUserProfile(userRef);
-      navigate('/');
+      navigate('/profile');
     }
   }, [isLogin]);
 

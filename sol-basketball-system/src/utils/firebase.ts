@@ -9,7 +9,18 @@ import {
   GoogleAuthProvider,
   updateProfile,
 } from 'firebase/auth';
-import { getFirestore, collection, addDoc, setDoc, doc, updateDoc, getDoc, arrayUnion } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  setDoc,
+  doc,
+  updateDoc,
+  getDoc,
+  arrayUnion,
+  deleteDoc,
+  arrayRemove,
+} from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -51,4 +62,6 @@ export {
   uploadBytes,
   getDownloadURL,
   deleteObject,
+  deleteDoc,
+  arrayRemove,
 };

@@ -20,7 +20,6 @@ function Profile() {
   // const [isLoading, setLoading] = useState(false);
   const { user, userRef, setUser, isLogin, getUserProfile } = useStore();
   const [isEditProfile, setEditProfile] = useState(false);
-  const [newProfileImg, setNewProfileImg] = useState(null);
   const inputFileRef = useRef(null);
 
   const [newProfile, setNewProfile] = useState({});
@@ -30,6 +29,7 @@ function Profile() {
     // getKidsProfile(user.kids);
   }, [isLogin]);
 
+  const [newProfileImg, setNewProfileImg] = useState(null);
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const image = e.target.files[0];
     const unitTime = Date.now();
@@ -40,7 +40,6 @@ function Profile() {
       });
     });
     setNewProfileImg(image);
-    // console.log(image);
   };
 
   const handleChangeProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,9 +50,9 @@ function Profile() {
   const handleSaveProfile = () => {
     const unitTime = Date.now();
     if (newProfileImg && userRef) {
-      deleteObject(ref(storage, `temporary-folder/`)).catch((error) => {
-        console.error(error);
-      });
+      // deleteObject(ref(storage, `temporary-folder/`)).catch((error) => {
+      //   console.error(error);
+      // });
       const storageRef = ref(storage, `users-photo/${unitTime}${newProfileImg.name}`);
       uploadBytes(storageRef, newProfileImg).then(() => {
         getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`)).then((url) => {
@@ -116,12 +115,7 @@ function Profile() {
                 src={newProfile.photoURL}
                 className='w-24 h-24 object-cover rounded-full border border-slate-200 bg-white'
               />
-              <input
-                type='file'
-                accept='image/*'
-                ref={inputFileRef}
-                onChange={handleImageChange}
-                className=' w-60'></input>
+              <input type='file' accept='image/*' ref={inputFileRef} onChange={handleImageChange} className=' w-60' />
             </div>
             <div className='flex flex-col justify-center gap-4 w-80 h-32'>
               <div className='flex justify-between'>
