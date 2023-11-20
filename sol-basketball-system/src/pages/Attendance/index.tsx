@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { collection, db, doc, getDoc, getDocs } from '../../utils/firebase';
+import { arrayRemove, arrayUnion, collection, db, doc, getDoc, getDocs, updateDoc } from '../../utils/firebase';
 
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
@@ -31,7 +31,7 @@ function Attendance() {
       if (scheduleSnap) {
         const schedule = scheduleSnap.data();
         if (schedule) {
-          setDates(schedule.all);
+          setDates(schedule.all.sort());
         } else setDates([]);
       }
     }
@@ -39,15 +39,15 @@ function Attendance() {
   }, [quarter, year]);
 
   const [attendances, setAttendances] = useState([{}]);
+  async function getAttendances() {
+    const attendanceSnapshot = await getDocs(collection(db, 'attendance'));
+    const attendanceArray: object[] = [];
+    attendanceSnapshot.forEach((doc) => {
+      attendanceArray.push(doc.data());
+    });
+    setAttendances(attendanceArray);
+  }
   useEffect(() => {
-    async function getAttendances() {
-      const attendanceSnapshot = await getDocs(collection(db, 'attendance'));
-      const attendanceArray: object[] = [];
-      attendanceSnapshot.forEach((doc) => {
-        attendanceArray.push(doc.data());
-      });
-      setAttendances(attendanceArray);
-    }
     getAttendances();
   }, [quarter, year]);
 
@@ -66,7 +66,7 @@ function Attendance() {
     }
   };
 
-  const arrowClass = 'w-6 h-6 p-1 bg-amber-200 ml-2 rounded-md cursor-pointer shadow-md hover:bg-amber-300';
+  const arrowClass = 'w-6 h-6 p-1 bg-amber-200 ml-2 rounded-md cursor-pointer shadow-md hover:bg-amber-300 select-none';
   const renderArrowLeft = () => {
     return (
       <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className={arrowClass}>
@@ -104,15 +104,21 @@ function Attendance() {
     );
   };
 
-  const renderUncheck = () => {
+  const renderUncheck = (date: string, docId: string) => {
     return (
       <svg
+        id={date}
+        onClick={(e) => {
+          updateDoc(doc(db, 'attendance', docId), {
+            showUpDate: arrayUnion(e.currentTarget.id),
+          }).then(() => getAttendances());
+        }}
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
         viewBox='0 0 24 24'
         strokeWidth={1.5}
         stroke='currentColor'
-        className='w-6 h-6'>
+        className='h-6 px-4 rounded-md cursor-pointer hover:bg-gray-100'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -122,13 +128,19 @@ function Attendance() {
     );
   };
 
-  const renderChecked = () => {
+  const renderChecked = (date: string, docId: string) => {
     return (
       <svg
+        id={date}
+        onClick={(e) => {
+          updateDoc(doc(db, 'attendance', docId), {
+            showUpDate: arrayRemove(e.currentTarget.id),
+          }).then(() => getAttendances());
+        }}
         xmlns='http://www.w3.org/2000/svg'
         viewBox='0 0 24 24'
         fill='currentColor'
-        className='w-6 h-6 text-green-500'>
+        className='h-6 px-4 text-green-500 rounded-md cursor-pointer hover:bg-gray-100'>
         <path
           fillRule='evenodd'
           d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z'
@@ -141,8 +153,8 @@ function Attendance() {
   return (
     <div className='custom-main-container mt-28'>
       <div className='w-10/12 mx-auto'>
-        <div className='mt-6  px-3 py-2 text-xl border-b border-gray-200 mb-5'>Attendance</div>
-        <div className='flex justify-end gap-5'>
+        <div className='mt-6  px-3 py-2 text-xl border-b border-gray-200 mb-8'>Attendance</div>
+        <div className='flex justify-end gap-5 mb-8 pr-16'>
           <div className='flex bg-gray-100 px-3 py-2 rounded-lg shadow-inner'>
             <div className='mr-2 text-gray-800 font-medium select-none'>{months()}</div>
             <span
@@ -186,6 +198,7 @@ function Attendance() {
             </div>
             {Object.keys(attendances[0]).length > 0 &&
               attendances.map((attendance) => {
+                const { docId } = attendance;
                 return (
                   <div className='flex items-center' key={attendance.name}>
                     <div className='w-40 bg-gray-50 font-bold tracking-wider border-2 border-white rounded-md py-1 px-2'>
@@ -196,8 +209,11 @@ function Attendance() {
                         return (
                           <div
                             key={date}
-                            className='shrink-0 w-16 text-sm tracking-wider mx-auto border-2 border-white rounded-md py-1 flex justify-center cursor-pointer hover:bg-gray-100'>
-                            {attendance.showUpDate.includes(date) ? renderChecked() : renderUncheck()}
+                            id={date}
+                            className='shrink-0 w-16 text-sm tracking-wider mx-auto border-2 border-white py-1 flex justify-center'>
+                            {attendance.showUpDate.includes(date)
+                              ? renderChecked(date, docId)
+                              : renderUncheck(date, docId)}
                           </div>
                         );
                       })}

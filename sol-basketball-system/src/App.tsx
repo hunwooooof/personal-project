@@ -4,9 +4,10 @@ import { useEffect } from 'react';
 import { useStore } from './store/store';
 
 function App() {
-  const { isLogin, userRef, getUserProfile } = useStore();
+  const { isLogin, userRef, checkLogIn, getUserProfile } = useStore();
 
   useEffect(() => {
+    checkLogIn();
     if (isLogin) {
       getUserProfile(userRef);
     }

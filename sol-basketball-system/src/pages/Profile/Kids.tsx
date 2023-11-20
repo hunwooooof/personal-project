@@ -74,6 +74,7 @@ function Kids() {
       setDoc(doc(db, 'attendance', docId), {
         name: `${newKidWithDocId.firstName}-${newKidWithDocId.lastName}`,
         showUpDate: [],
+        docId,
       });
       updateDoc(userRef, {
         kids: arrayUnion(doc(db, 'students', docId)),

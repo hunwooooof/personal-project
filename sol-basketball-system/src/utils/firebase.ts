@@ -8,6 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   updateProfile,
+  onAuthStateChanged,
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -66,4 +67,5 @@ export {
   deleteObject,
   deleteDoc,
   arrayRemove,
+  onAuthStateChanged,
 };
