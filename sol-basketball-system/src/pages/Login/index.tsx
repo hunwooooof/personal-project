@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
 
 const emptyAccount = {
-  email: 'm1598088703i10@mail.com',
+  email: 'admin@gmail.com',
   password: '123456',
 };
 
@@ -22,7 +22,7 @@ function Login() {
   useEffect(() => {
     if (isLogin) {
       getUserProfile(userRef);
-      navigate('/profile');
+      navigate('/schedule');
     }
   }, [isLogin]);
 

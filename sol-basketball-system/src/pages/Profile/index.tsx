@@ -26,7 +26,6 @@ function Profile() {
 
   useEffect(() => {
     if (!isLogin) navigate('/');
-    // getKidsProfile(user.kids);
   }, [isLogin]);
 
   const [newProfileImg, setNewProfileImg] = useState(null);
