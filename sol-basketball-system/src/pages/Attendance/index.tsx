@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { arrayRemove, arrayUnion, collection, db, doc, getDoc, getDocs, updateDoc } from '../../utils/firebase';
-
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
 
@@ -183,8 +182,8 @@ function Attendance() {
           <div className='text-3xl text-center mt-40 text-gray-400'>No data available for this section.</div>
         )}
         {dates.length > 0 && (
-          <>
-            <div className='mt-5 pr-16 pl-40 flex overflow-x-auto pb-4'>
+          <div className='mt-5 overflow-x-auto pr-16 pb-4'>
+            <div className='pl-40 flex'>
               {dates.map((date) => {
                 const formateDate = date.substring(5).replace('-', '/');
                 return (
@@ -200,17 +199,17 @@ function Attendance() {
               attendances.map((attendance) => {
                 const { docId } = attendance;
                 return (
-                  <div className='flex items-center' key={attendance.name}>
-                    <div className='w-40 bg-gray-50 font-bold tracking-wider border-2 border-white rounded-md py-1 px-2'>
+                  <div className='flex items-center mt-3' key={attendance.name}>
+                    <div className='shrink-0 w-40 bg-gray-50 font-bold tracking-wider border-2 border-white rounded-md py-1 px-2'>
                       {attendance.name.replace('-', ' ')}
                     </div>
-                    <div className='flex'>
+                    <div className='flex shrink-0'>
                       {dates.map((date) => {
                         return (
                           <div
                             key={date}
                             id={date}
-                            className='shrink-0 w-16 text-sm tracking-wider mx-auto border-2 border-white py-1 flex justify-center'>
+                            className='shrink-0 w-16 text-sm mx-auto border-2 border-white py-1 flex justify-center'>
                             {attendance.showUpDate.includes(date)
                               ? renderChecked(date, docId)
                               : renderUncheck(date, docId)}
@@ -221,7 +220,7 @@ function Attendance() {
                   </div>
                 );
               })}
-          </>
+          </div>
         )}
       </div>
     </div>
