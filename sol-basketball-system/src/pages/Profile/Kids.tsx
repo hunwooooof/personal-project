@@ -60,6 +60,10 @@ function Kids() {
         getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`)).then((url) => {
           const newKidWithDocId = { ...newKid, docId, photoURL: url };
           setDoc(doc(db, 'students', docId), newKidWithDocId);
+          setDoc(doc(db, 'attendance', docId), {
+            name: `${newKidWithDocId.firstName}-${newKidWithDocId.lastName}`,
+            showUpDate: [],
+          });
           updateDoc(userRef, { kids: arrayUnion(doc(db, 'students', docId)) }).then(() => getUserProfile(userRef));
         });
       });
@@ -67,6 +71,10 @@ function Kids() {
     } else if (userRef) {
       const newKidWithDocId = { ...newKid, docId };
       setDoc(doc(db, 'students', docId), newKidWithDocId);
+      setDoc(doc(db, 'attendance', docId), {
+        name: `${newKidWithDocId.firstName}-${newKidWithDocId.lastName}`,
+        showUpDate: [],
+      });
       updateDoc(userRef, {
         kids: arrayUnion(doc(db, 'students', docId)),
       }).then(() => getUserProfile(userRef));
