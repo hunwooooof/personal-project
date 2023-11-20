@@ -15,6 +15,7 @@ import {
   getDoc,
   doc,
   updateProfile,
+  onAuthStateChanged,
 } from '../utils/firebase';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
 
@@ -56,9 +57,8 @@ interface StoreState {
   nativeLogin: (account: AccountType) => void;
   googleSignup: () => void;
   googleLogin: () => void;
-  // setLogIn: () => void;
+  checkLogIn: () => void;
   setLogOut: () => void;
-  checkLoginStatus: (token: string) => void;
   getUserProfile: (userRef: undefined | DocumentReference<DocumentData, DocumentData>) => object;
   getKidsProfile: (kidsRef: DocumentReference<DocumentData, DocumentData>[]) => void;
 }
@@ -118,7 +118,6 @@ export const useStore = create<StoreState>((set) => ({
         set(() => ({ user: user }));
         set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
-        localStorage.setItem('jwtToken', user.accessToken);
         return user;
       })
       .catch((error) => {
@@ -186,7 +185,16 @@ export const useStore = create<StoreState>((set) => ({
       });
   },
   isLogin: false,
-  // setLogIn: () => set(() => ({ isLogin: true })),
+  checkLogIn: () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        set(() => ({ isLogin: true }));
+        set(() => ({ userRef: doc(db, 'users', user.uid) }));
+      } else {
+        // User is signed out
+      }
+    });
+  },
   setLogOut: () => {
     signOut(auth)
       .then(() => {
@@ -196,22 +204,6 @@ export const useStore = create<StoreState>((set) => ({
       })
       .catch((error) => {
         console.log(error);
-      });
-  },
-  checkLoginStatus: (token) => {
-    signInWithCustomToken(auth, token)
-      .then((userCredential: { user: any }) => {
-        const { user } = userCredential;
-        console.log(user);
-        set(() => ({ isLogin: true }));
-        set(() => ({ token: user.accessToken }));
-        localStorage.setItem('jwtToken', user.accessToken);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(errorCode, errorMessage);
-        localStorage.removeItem('jwtToken');
       });
   },
   getUserProfile: async (userRef) => {
