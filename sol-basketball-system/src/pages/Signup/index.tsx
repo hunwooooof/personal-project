@@ -23,7 +23,7 @@ function Signup() {
   useEffect(() => {
     if (isLogin) {
       getUserProfile(userRef);
-      navigate('/profile');
+      navigate('/schedule');
     }
   }, [isLogin]);
 

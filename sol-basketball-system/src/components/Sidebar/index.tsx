@@ -3,7 +3,8 @@ import logoUrl from '../../assets/sol-logo.png';
 import { useStore } from '../../store/store';
 
 function Sidebar() {
-  const { isLogin, setLogOut } = useStore();
+  const { isLogin, user, kids, setLogOut, getUserProfile } = useStore();
+
   return (
     <div className='w-60 h-full fixed bg-customDeepBlue top-0 pl-3'>
       <Link to='/' className='block my-3'>
@@ -12,25 +13,33 @@ function Sidebar() {
       <div className='flex text-white flex-col text-2xl gap-2 pl-2'>
         <Link to='/'>Schedules</Link>
         <Link to='/games'>Games</Link>
-        <Link to='/profile'>Member</Link>
-        {isLogin && (
-          <Link to='/profile' className='pl-3 text-lg'>
-            Profile
-          </Link>
+        {isLogin && user.role === 'user' && (
+          <>
+            <div>Member</div>
+            <Link to='/profile' className='pl-3 text-lg'>
+              Profile
+            </Link>
+            {kids.length > 0 && (
+              <Link to='/session' className='pl-3 text-lg'>
+                Session
+              </Link>
+            )}
+            <Link to='/purchase'>Purchase</Link>
+          </>
+        )}
+        {isLogin && user.role === 'admin' && (
+          <>
+            <Link to='/attendance'>Attendance</Link>
+            <Link to='/order'>Order</Link>
+            <Link to='/admin/profile'>Admin Profile</Link>
+          </>
         )}
         {isLogin && (
-          <Link to='/session' className='pl-3 text-lg'>
-            Session
-          </Link>
-        )}
-        {isLogin ? (
-          <button onClick={setLogOut} className='pl-3 text-lg text-start'>
+          <button onClick={setLogOut} className='text-pink-200 text-start'>
             Log out
           </button>
-        ) : (
-          <Link to='/login'>Log In</Link>
         )}
-        <Link to='/purchase'>Purchase</Link>
+        {!isLogin && <Link to='/login'>Log In</Link>}
       </div>
     </div>
   );

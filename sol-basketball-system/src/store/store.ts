@@ -29,6 +29,7 @@ interface UserType {
 }
 
 interface KidType {
+  docId: string;
   birthday: string;
   chineseName: string;
   firstName: string;
@@ -69,6 +70,8 @@ export const useStore = create<StoreState>((set) => ({
   kids: [],
   kidsRef: undefined,
   nativeSignup: (account: AccountType) => {
+    const photo =
+      'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496';
     const { name, email, password } = account;
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential: { user: any }) => {
@@ -77,8 +80,7 @@ export const useStore = create<StoreState>((set) => ({
         set(() => ({ isLogin: true }));
         updateProfile(auth.currentUser, {
           displayName: name,
-          photoURL:
-            'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496',
+          photoURL: photo,
         })
           .then(() => {
             console.log('Profile updated!');
@@ -90,13 +92,11 @@ export const useStore = create<StoreState>((set) => ({
         return user;
       })
       .then((user) => {
-        console.log(user);
-        set(() => ({ user: user }));
         const initialProfile = {
-          photoURL: user.photoURL,
+          photoURL: photo,
           email: user.email,
           kids: [],
-          displayName: user.displayName,
+          displayName: name,
           phoneNumber: user.phoneNumber,
           registrationDate: user.metadata.creationTime,
           role: 'user',
@@ -167,13 +167,12 @@ export const useStore = create<StoreState>((set) => ({
     signInWithPopup(auth, provider)
       .then((result) => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
         set(() => ({ isLogin: true }));
         const { user } = result;
         return user;
       })
       .then((user) => {
-        set(() => ({ user: user }));
+        // set(() => ({ user: user }));
         // set(() => ({ token: user.accessToken }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })

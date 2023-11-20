@@ -4,12 +4,13 @@ import { useEffect } from 'react';
 import { useStore } from './store/store';
 
 function App() {
-  const { checkLoginStatus } = useStore();
-  const localJwtToken = localStorage.getItem('jwtToken') || null;
+  const { isLogin, userRef, getUserProfile } = useStore();
 
   useEffect(() => {
-    if (localJwtToken) checkLoginStatus(localJwtToken);
-  }, []);
+    if (isLogin) {
+      getUserProfile(userRef);
+    }
+  }, [isLogin]);
 
   return (
     <>
