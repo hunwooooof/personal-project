@@ -5,8 +5,23 @@ import {
   signInWithCustomToken,
   signOut,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  updateProfile,
 } from 'firebase/auth';
-import { getFirestore, collection, addDoc, setDoc, doc } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  setDoc,
+  doc,
+  updateDoc,
+  getDoc,
+  arrayUnion,
+  deleteDoc,
+  arrayRemove,
+} from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBw9iJkTFrgb3C3dVGcAUDRnzs8Afa7Ydc',
@@ -21,6 +36,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+const storage = getStorage(app);
 
 export {
   auth,
@@ -29,8 +46,22 @@ export {
   signInWithCustomToken,
   signOut,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  updateProfile,
+  provider,
   collection,
   addDoc,
   setDoc,
   doc,
+  updateDoc,
+  getDoc,
+  arrayUnion,
+  storage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+  deleteDoc,
+  arrayRemove,
 };
