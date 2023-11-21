@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
 import { useNavigate } from 'react-router-dom';
+import Credits from './Credits';
+import Attendance from './Attendance';
 
 function Session() {
   const navigate = useNavigate();
-  const { user, userRef, kidsRef, kids, setUser, isLogin, getUserProfile, getKidsProfile } = useStore();
+  const { kids, isLogin } = useStore();
   const [currentKidIndex, setCurrentKidIndex] = useState(0);
 
   useEffect(() => {
@@ -35,29 +37,33 @@ function Session() {
             );
           })}
         </div>
-        <div className='mt-6 flex gap-16 items-center pl-16 py-3'>
-          <img src={kids[currentKidIndex].photoURL} className='w-20 h-20 object-cover bg-white rounded-full' />
-          <div className='w-36'>
-            <div className='text-gray-400 font-bold mb-2'>Name</div>
-            <div className='text-lg'>
-              {kids[currentKidIndex].firstName} {kids[currentKidIndex].lastName}
+        {kids[currentKidIndex] && (
+          <>
+            <div className='mt-6 flex gap-16 items-center pl-16 py-3'>
+              <img src={kids[currentKidIndex]?.photoURL} className='w-20 h-20 object-cover bg-white rounded-full' />
+              <div className='w-36'>
+                <div className='text-gray-400 font-bold mb-2'>Name</div>
+                <div className='text-lg'>
+                  {kids[currentKidIndex].firstName} {kids[currentKidIndex].lastName}
+                </div>
+              </div>
+              <div className='w-16'>
+                <div className='text-gray-400 font-bold mb-2'>Age</div>
+                <div className='text-lg'>{calculate_age(kids[currentKidIndex].birthday)}</div>
+              </div>
+              <div className='w-28'>
+                <div className='text-gray-400 font-bold mb-2'>School</div>
+                <div className='text-lg'>{kids[currentKidIndex].school}</div>
+              </div>
+              <div className='w-28'>
+                <div className='text-gray-400 font-bold mb-2'>ID</div>
+                <div className='text-lg'>{kids[currentKidIndex].id}</div>
+              </div>
             </div>
-          </div>
-          <div className='w-16'>
-            <div className='text-gray-400 font-bold mb-2'>Age</div>
-            <div className='text-lg'>{calculate_age(kids[currentKidIndex].birthday)}</div>
-          </div>
-          <div className='w-28'>
-            <div className='text-gray-400 font-bold mb-2'>School</div>
-            <div className='text-lg'>{kids[currentKidIndex].school}</div>
-          </div>
-          <div className='w-28'>
-            <div className='text-gray-400 font-bold mb-2'>ID</div>
-            <div className='text-lg'>{kids[currentKidIndex].id}</div>
-          </div>
-        </div>
-        <div className='mt-6  px-3 py-2 text-xl border-b border-gray-200'>Credits</div>
-        <div className='mt-6  px-3 py-2 text-xl border-b border-gray-200'>Attendance</div>
+            <Credits currentKid={kids[currentKidIndex].docId} />
+            <Attendance currentKid={kids[currentKidIndex].docId} />
+          </>
+        )}
       </div>
     </div>
   );
