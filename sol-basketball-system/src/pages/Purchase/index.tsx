@@ -1,23 +1,116 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useStore } from '../../store/store';
+import { arrayUnion, db, doc, serverTimestamp, setDoc, updateDoc } from '../../utils/firebase';
+
 function Purchase() {
+  const navigate = useNavigate();
+  const { user, userRef, kids, setUser, isLogin, getUserProfile, getKidsProfile } = useStore();
+  const [selectPlanId, setSelectPlanId] = useState('01');
   const plans = [
-    { id: '12s', title: '12 Sessions', price: '$ 9,000' },
-    { id: '10s', title: '10 Sessions', price: '$ 8,250' },
-    { id: '8s', title: '8 Sessions', price: '$ 7,200' },
-    { id: '1s', title: 'Single Session', price: '$ 1,000' },
+    { id: '01', title: 'Single Session', price: 1000, priceText: '$ 1,000' },
+    { id: '08', title: '8 Sessions', price: 7200, priceText: '$ 7,200' },
+    { id: '10', title: '10 Sessions', price: 8250, priceText: '$ 8,250' },
+    { id: '12', title: '12 Sessions', price: 9000, priceText: '$ 9,000' },
   ];
+  const initialOrder = {
+    userRef,
+    kid: {
+      docId: '',
+      firstName: '',
+      lastName: '',
+    },
+    plan: '01',
+    method: 'cash',
+    status: 'IN_PROCESS',
+    timestamp: '',
+    price: 1000,
+  };
+  const [order, setOrder] = useState(initialOrder);
+
+  useEffect(() => {
+    if (kids.length > 0) {
+      setOrder({
+        ...order,
+        userRef: userRef,
+        kid: {
+          docId: kids[0].docId,
+          firstName: kids[0].firstName,
+          lastName: kids[0].lastName,
+        },
+      });
+    }
+  }, [kids]);
+
+  const handleSubmitOrder = () => {
+    const userConfirmed = confirm('Confirm Order?');
+    if (userRef && userConfirmed) {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = today.getMonth() + 1;
+      const dd = today.getDate();
+      const hour = today.getHours();
+      const ms = today.getMilliseconds();
+      const orderId = `${yyyy}${mm}${dd}${hour}${ms}${order.method}${order.plan}`;
+      setDoc(doc(db, 'orders', orderId), { ...order, timestamp: serverTimestamp() });
+      updateDoc(userRef, {
+        ordersRef: arrayUnion(doc(db, 'orders', orderId)),
+      }).then(() => {
+        setOrder(initialOrder);
+        navigate('/order');
+      });
+    }
+  };
+
+  const renderPlusCircle = () => {
+    return (
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        viewBox='0 0 20 20'
+        fill='currentColor'
+        className='w-6 h-6 cursor-pointer text-gray-600 ml-3'
+        onClick={() => navigate('/profile')}>
+        <path
+          fillRule='evenodd'
+          d='M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z'
+          clipRule='evenodd'
+        />
+      </svg>
+    );
+  };
+
   return (
     <div className='custom-main-container mt-28'>
       <div className='w-10/12 mx-auto'>
         <h3 className='mt-6 px-3 py-2 text-xl border-b border-gray-200 mb-8'>Purchase</h3>
         <div className='flex mb-8 items-center'>
           <h4 className='px-8'>Kid</h4>
-          <select name='kid' id='kid' className='ml-2 w-40 px-2 py-1 bg-gray-100 shadow-inner rounded-md'>
-            <option value='' disabled>
-              Select a kid
-            </option>
-            <option value=''>Jolina</option>
-            <option value=''>Grace</option>
-          </select>
+          {kids.length > 0 && (
+            <select name='kid' id='kid' className='ml-2 w-40 px-2 py-1 bg-gray-100 shadow-inner rounded-md'>
+              <option value='' disabled>
+                Select a kid
+              </option>
+              {kids.map((kid) => (
+                <option
+                  value={kid.docId}
+                  key={kid.docId}
+                  onClick={() =>
+                    setOrder({
+                      ...order,
+                      kid: {
+                        docId: kid.docId,
+                        firstName: kids[0].firstName,
+                        lastName: kids[0].lastName,
+                      },
+                    })
+                  }>
+                  {kid.firstName}
+                </option>
+              ))}
+            </select>
+          )}
+          {kids.length === 0 && <div className='text-gray-600 mx-2'>Add a kid</div>}
+          {renderPlusCircle()}
         </div>
         <div className='flex mb-16'>
           <h4 className='px-8'>Plan</h4>
@@ -25,10 +118,16 @@ function Purchase() {
             {plans.map((plan) => {
               return (
                 <div
-                  className='w-40 border rounded-md cursor-pointer bg-gray-200 hover:border-teal-500 hover:bg-teal-500'
+                  onClick={() => {
+                    setSelectPlanId(plan.id);
+                    setOrder({ ...order, price: plan.price, plan: plan.id });
+                  }}
+                  className={`w-40 border-2 rounded-md cursor-pointer bg-gray-200 hover:border-teal-500 hover:bg-teal-500 ${
+                    selectPlanId === plan.id ? 'bg-teal-500 border-teal-500' : ''
+                  }`}
                   key={plan.id}>
                   <div className='text-center py-3'>{plan.title}</div>
-                  <div className='text-center py-5 rounded-b-md bg-white text-3xl'>{plan.price}</div>
+                  <div className='text-center py-5 rounded-b-md bg-white text-3xl'>{plan.priceText}</div>
                 </div>
               );
             })}
@@ -38,18 +137,29 @@ function Purchase() {
         <div></div>
         <div id='payment-selection' className='pl-8 flex flex-col gap-3'>
           <div className='flex items-center'>
-            <input type='radio' name='payment' id='cash' className='mr-3' />
+            <input
+              type='radio'
+              name='payment'
+              className='mr-3'
+              onClick={() => setOrder({ ...order, method: 'cash' })}
+            />
             By Cash
           </div>
           <div className='flex items-center'>
-            <input type='radio' name='payment' id='transfer' className='mr-3' />
+            <input
+              type='radio'
+              name='payment'
+              className='mr-3'
+              onClick={() => setOrder({ ...order, method: 'transfer' })}
+            />
             Online Banking Transfer
             <span>Account: (808) 0624-979-171404</span>
           </div>
         </div>
         <button
           type='submit'
-          className='ml-8 mt-8 bg-gray-100 rounded-lg w-28 text-center py-1 shadow-md hover:shadow-inner hover:bg-gray-200'>
+          className='ml-8 mt-8 bg-gray-100 rounded-lg w-28 text-center py-1 shadow-md hover:shadow-inner hover:bg-gray-200'
+          onClick={handleSubmitOrder}>
           Confirm
         </button>
       </div>

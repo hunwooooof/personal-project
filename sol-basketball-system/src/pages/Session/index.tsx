@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useStore } from '../../store/store';
 import { useNavigate } from 'react-router-dom';
-import Credits from './Credits';
+import { useStore } from '../../store/store';
 import Attendance from './Attendance';
+import Credits from './Credits';
 
 function Session() {
   const navigate = useNavigate();

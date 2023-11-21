@@ -10,6 +10,7 @@ import Session from './pages/Session/index.tsx';
 import Attendance from './pages/Attendance/index.tsx';
 import Schedule from './pages/Schedule/index.tsx';
 import Purchase from './pages/Purchase/index.tsx';
+import Order from './pages/Order/index.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <GoogleOAuthProvider clientId='401302748123-6csqfdahphv7pnrk3kt0a0rie81lg72a.apps.googleusercontent.com'>
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path='login' element={<Login />} />
           <Route path='profile' element={<Profile />} />
           <Route path='session' element={<Session />} />
+          <Route path='order' element={<Order />} />
           <Route path='purchase' element={<Purchase />} />
           <Route path='attendance' element={<Attendance />} />
           <Route path='*' element={<Navigate to='/' replace />} />

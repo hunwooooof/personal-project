@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
-import { arrayRemove, arrayUnion, collection, db, doc, getDoc, getDocs, updateDoc } from '../../utils/firebase';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
+import { arrayRemove, arrayUnion, collection, db, doc, getDoc, getDocs, updateDoc } from '../../utils/firebase';
 
 function Attendance() {
   const { user, isLogin } = useStore();

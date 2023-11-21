@@ -1,16 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useStore } from '../../store/store';
 import {
-  updateDoc,
-  setDoc,
+  arrayUnion,
   db,
   doc,
-  arrayUnion,
-  ref,
-  storage,
-  uploadBytes,
   getDownloadURL,
-  deleteObject,
+  ref,
+  setDoc,
+  storage,
+  updateDoc,
+  uploadBytes,
 } from '../../utils/firebase';
 import Card from './Card';
 
@@ -63,6 +62,7 @@ function Kids() {
           setDoc(doc(db, 'attendance', docId), {
             name: `${newKidWithDocId.firstName}-${newKidWithDocId.lastName}`,
             showUpDate: [],
+            docId,
           });
           updateDoc(userRef, { kids: arrayUnion(doc(db, 'students', docId)) }).then(() => getUserProfile(userRef));
         });

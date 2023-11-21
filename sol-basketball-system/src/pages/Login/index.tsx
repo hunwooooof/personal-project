@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/sol-logo.png';
-import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
 
 const emptyAccount = {
