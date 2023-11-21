@@ -29,7 +29,7 @@ function Session() {
               <div
                 key={kid.docId}
                 onClick={() => setCurrentKidIndex(index)}
-                className={`rounded-md px-3 py-2 cursor-pointer hover:bg-[#CCFBF1] ${
+                className={`rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-200 ${
                   index === currentKidIndex ? 'border-b-4 border-[#14B8A6] rounded-b-none' : ''
                 }`}>
                 {kid.firstName}
@@ -60,8 +60,8 @@ function Session() {
                 <div className='text-lg'>{kids[currentKidIndex].id}</div>
               </div>
             </div>
-            <Credits currentKid={kids[currentKidIndex].docId} />
-            <Attendance currentKid={kids[currentKidIndex].docId} />
+            <Credits currentKidId={kids[currentKidIndex].docId} />
+            <Attendance currentKidId={kids[currentKidIndex].docId} />
           </>
         )}
       </div>
