@@ -12,13 +12,24 @@ import {
   uploadBytes,
 } from '../../utils/firebase';
 
-function Card({ kid }) {
+interface PropsType {
+  kid: {
+    docId: string;
+    firstName: string;
+    lastName: string;
+    chineseName: string;
+    birthday: string;
+    id: string;
+    school: string;
+    photoURL: string;
+  };
+}
+
+function Card({ kid }: PropsType) {
   const { userRef, getUserProfile } = useStore();
   const [isEdit, setEdit] = useState(false);
   const inputFileRef = useRef(null);
   const inputFieldClass = 'rounded-md px-2 w-full';
-
-  ///////////
 
   const defaultKid = {
     firstName: kid.firstName,
@@ -29,21 +40,24 @@ function Card({ kid }) {
     school: kid.school,
     photoURL: kid.photoURL,
   };
-  const [newKid, setNewKid] = useState(defaultKid);
 
-  const [newProfileImg, setNewProfileImg] = useState(null);
+  const [newKid, setNewKid] = useState(defaultKid);
+  const [newProfileImg, setNewProfileImg] = useState<File>();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const image = e.target.files[0];
-    console.log(image);
-    const unitTime = Date.now();
-    const storageRef = ref(storage, `temporary-folder/${unitTime}${image.name}`);
-    uploadBytes(storageRef, image).then(() => {
-      getDownloadURL(ref(storage, `temporary-folder/${unitTime}${image.name}`)).then((url) => {
-        setNewKid({ ...newKid, photoURL: url });
+    if (e.target.files) {
+      const image = e.target.files[0];
+      const unitTime = Date.now();
+      const storageRef = ref(storage, `temporary-folder/${unitTime}${image.name}`);
+      uploadBytes(storageRef, image).then(() => {
+        getDownloadURL(ref(storage, `temporary-folder/${unitTime}${image.name}`)).then((url) => {
+          setNewKid({ ...newKid, photoURL: url });
+        });
       });
-    });
-    setNewProfileImg(image);
+      setNewProfileImg(image);
+    } else {
+      setNewKid({ ...newKid, photoURL: kid.photoURL });
+    }
   };
 
   const handleChangeKidProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,15 +79,12 @@ function Card({ kid }) {
         })
         .then(() => {
           getUserProfile(userRef);
-          // setNewKid(defaultKid);
         });
-      setNewProfileImg(null);
+      setNewProfileImg(undefined);
     } else if (userRef) {
       updateDoc(doc(db, 'students', docId), newKid).then(() => getUserProfile(userRef));
     }
   };
-
-  ///////
 
   const renderTrashIcon = () => {
     return (
@@ -83,7 +94,7 @@ function Card({ kid }) {
         fill='currentColor'
         onClick={() => {
           const userConfirmed = confirm('Are you sure you want to delete?');
-          if (userConfirmed) {
+          if (userConfirmed && userRef) {
             deleteDoc(doc(db, 'students', kid.docId));
             updateDoc(userRef, {
               kids: arrayRemove(doc(db, 'students', kid.docId)),

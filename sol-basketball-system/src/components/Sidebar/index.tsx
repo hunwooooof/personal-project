@@ -3,7 +3,7 @@ import logoUrl from '../../assets/sol-logo.png';
 import { useStore } from '../../store/store';
 
 function Sidebar() {
-  const { isLogin, user, kids, setLogOut, getUserProfile } = useStore();
+  const { isLogin, user, kids, setLogOut } = useStore();
 
   return (
     <div className='w-60 h-full fixed bg-customDeepBlue top-0 pl-3'>
