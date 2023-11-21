@@ -5,6 +5,7 @@ import { useStore } from '../../store/store';
 import { getDoc } from '../../utils/firebase';
 
 interface OrderType {
+  id?: string;
   userRef?: DocumentReference<DocumentData, DocumentData>;
   kid: {
     docId?: string;
@@ -22,7 +23,7 @@ interface OrderType {
 
 function Order() {
   const navigate = useNavigate();
-  const { user, userRef, kids, setUser, isLogin, getUserProfile, getKidsProfile } = useStore();
+  const { user, isLogin } = useStore();
   const [tag, setTag] = useState('all');
   const [orders, setOrders] = useState<OrderType[]>([]);
 
@@ -33,13 +34,6 @@ function Order() {
       if (orderSnap.exists()) {
         const order = orderSnap.data();
         orders.push(order);
-        // if (tag === 'all') {
-        //   const order = orderSnap.data();
-        //   orders.push(order);
-        // } else if (tag === 'inProcess') {
-        //   const order = orderSnap.data();
-        //   if (order.status === 'IN_PROCESS') orders.push(order);
-        // }
       }
     }
     setOrders(orders);
@@ -51,7 +45,7 @@ function Order() {
     } else if (!isLogin) {
       navigate('/login');
     }
-  }, [isLogin]);
+  }, [isLogin, user]);
 
   return (
     <div className='custom-main-container mt-28'>

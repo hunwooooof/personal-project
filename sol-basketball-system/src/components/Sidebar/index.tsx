@@ -33,8 +33,8 @@ function Sidebar() {
         {isLogin && user.role === 'admin' && (
           <>
             <Link to='/attendance'>Attendance</Link>
-            <Link to='/order'>Order</Link>
-            <Link to='/admin/profile'>Admin Profile</Link>
+            <Link to='/admin/order'>Order</Link>
+            <Link to='/admin/profile'>Profile</Link>
           </>
         )}
         {isLogin && (

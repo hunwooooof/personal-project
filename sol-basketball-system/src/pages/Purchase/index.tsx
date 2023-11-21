@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
-import { arrayUnion, db, doc, serverTimestamp, setDoc, updateDoc } from '../../utils/firebase';
+import { arrayUnion, db, doc, getDoc, serverTimestamp, setDoc, updateDoc } from '../../utils/firebase';
 
 function Purchase() {
   const navigate = useNavigate();
-  const { userRef, kids, isLogin } = useStore();
+  const { userRef, kids, isLogin, getUserProfile } = useStore();
   const [selectPlanId, setSelectPlanId] = useState('01');
   const plans = [
     { id: '01', title: 'Single Session', price: 1000, priceText: '$ 1,000' },
@@ -46,6 +46,7 @@ function Purchase() {
   }, [kids, isLogin]);
 
   const handleSubmitOrder = () => {
+    console.log(order);
     const userConfirmed = confirm('Confirm Order?');
     if (userRef && userConfirmed) {
       const today = new Date();
@@ -55,11 +56,23 @@ function Purchase() {
       const hour = today.getHours();
       const ms = today.getMilliseconds();
       const orderId = `${yyyy}${mm}${dd}${hour}${ms}${order.method}${order.plan}`;
-      setDoc(doc(db, 'orders', orderId), { ...order, timestamp: serverTimestamp() });
+      setDoc(doc(db, 'orders', orderId), { ...order, timestamp: serverTimestamp(), id: orderId });
+      getDoc(doc(db, 'credits', order.kid.docId)).then((user) => {
+        const data = user.data();
+        if (!data) {
+          setDoc(doc(db, 'credits', order.kid.docId), {
+            all: 0,
+            used: 0,
+            docId: order.kid.docId,
+            name: `${order.kid.firstName}-${order.kid.lastName}`,
+          });
+        }
+      });
       updateDoc(userRef, {
         ordersRef: arrayUnion(doc(db, 'orders', orderId)),
       }).then(() => {
         setOrder(initialOrder);
+        getUserProfile(userRef);
         navigate('/order');
       });
     }
@@ -89,24 +102,27 @@ function Purchase() {
         <div className='flex mb-8 items-center'>
           <h4 className='px-8'>Kid</h4>
           {kids.length > 0 && (
-            <select name='kid' id='kid' className='ml-2 w-40 px-2 py-1 bg-gray-100 shadow-inner rounded-md'>
+            <select
+              name='kid'
+              id='kid'
+              className='ml-2 w-40 px-2 py-1 bg-gray-100 shadow-inner rounded-md'
+              onChange={(e) => {
+                const id = parseInt(e.target.value);
+                setOrder({
+                  ...order,
+                  kid: {
+                    docId: kids[id].docId,
+                    firstName: kids[id].firstName,
+                    lastName: kids[id].lastName,
+                  },
+                });
+              }}>
               <option value='' disabled>
                 Select a kid
               </option>
-              {kids.map((kid) => (
-                <option
-                  value={kid.docId}
-                  key={kid.docId}
-                  onClick={() =>
-                    setOrder({
-                      ...order,
-                      kid: {
-                        docId: kid.docId,
-                        firstName: kids[0].firstName,
-                        lastName: kids[0].lastName,
-                      },
-                    })
-                  }>
+
+              {kids.map((kid, index) => (
+                <option value={index} key={kid.docId}>
                   {kid.firstName}
                 </option>
               ))}
@@ -144,6 +160,7 @@ function Purchase() {
               type='radio'
               name='payment'
               className='mr-3'
+              defaultChecked
               onClick={() => setOrder({ ...order, method: 'cash' })}
             />
             By Cash
