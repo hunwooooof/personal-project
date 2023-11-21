@@ -36,7 +36,7 @@ function Order() {
         orders.push(order);
       }
     }
-    setOrders(orders);
+    setOrders(orders as OrderType[]);
   };
 
   useEffect(() => {
