@@ -1,10 +1,22 @@
-import './App.css';
+import { useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+import Sidebar from './components/Sidebar';
+import { useStore } from './store/store';
 
 function App() {
+  const { isLogin, userRef, checkLogIn, getUserProfile } = useStore();
+
+  useEffect(() => {
+    checkLogIn();
+    if (isLogin) {
+      getUserProfile(userRef);
+    }
+  }, [isLogin]);
+
   return (
     <>
-      <h1>Vite + React</h1>
-      <h1>test</h1>
+      <Sidebar />
+      <Outlet />
     </>
   );
 }
