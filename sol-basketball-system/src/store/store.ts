@@ -1,23 +1,20 @@
+import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { create } from 'zustand';
 import {
+  GoogleAuthProvider,
   auth,
   createUserWithEmailAndPassword,
   db,
-  signInWithCustomToken,
-  signOut,
+  doc,
+  getDoc,
+  onAuthStateChanged,
+  provider,
+  setDoc,
   signInWithEmailAndPassword,
   signInWithPopup,
-  GoogleAuthProvider,
-  provider,
-  collection,
-  addDoc,
-  setDoc,
-  getDoc,
-  doc,
+  signOut,
   updateProfile,
-  onAuthStateChanged,
 } from '../utils/firebase';
-import { DocumentData, DocumentReference } from 'firebase/firestore';
 
 interface UserType {
   photoURL?: string;

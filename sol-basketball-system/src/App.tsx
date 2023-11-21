@@ -1,6 +1,6 @@
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
-import { useEffect } from 'react';
 import { useStore } from './store/store';
 
 function App() {

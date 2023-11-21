@@ -1,18 +1,16 @@
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
+import { useStore } from '../../store/store';
 import {
   arrayRemove,
   db,
   deleteDoc,
   doc,
-  updateDoc,
-  setDoc,
-  arrayUnion,
+  getDownloadURL,
   ref,
   storage,
+  updateDoc,
   uploadBytes,
-  getDownloadURL,
 } from '../../utils/firebase';
-import { useStore } from '../../store/store';
 
 function Card({ kid }) {
   const { userRef, getUserProfile } = useStore();

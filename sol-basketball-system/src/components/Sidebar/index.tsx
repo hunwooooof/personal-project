@@ -24,6 +24,9 @@ function Sidebar() {
                 Session
               </Link>
             )}
+            <Link to='/order' className='pl-3 text-lg'>
+              Order
+            </Link>
             <Link to='/purchase'>Purchase</Link>
           </>
         )}

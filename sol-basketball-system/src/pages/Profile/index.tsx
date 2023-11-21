@@ -1,18 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { useStore } from '../../store/store';
 import { useNavigate } from 'react-router-dom';
-import {
-  updateDoc,
-  setDoc,
-  db,
-  doc,
-  arrayUnion,
-  ref,
-  storage,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from '../../utils/firebase';
+import { useStore } from '../../store/store';
+import { getDownloadURL, ref, storage, updateDoc, uploadBytes } from '../../utils/firebase';
 import Kids from './Kids';
 
 function Profile() {
