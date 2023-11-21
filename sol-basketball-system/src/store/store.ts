@@ -19,7 +19,8 @@ import {
 interface UserType {
   photoURL?: string;
   email?: string;
-  kids?: [];
+  kids?: DocumentReference<DocumentData, DocumentData>[];
+  ordersRef?: DocumentReference<DocumentData, DocumentData>[];
   displayName?: string;
   phoneNumber?: string;
   registrationDate?: string;

@@ -5,7 +5,7 @@ import { arrayUnion, db, doc, serverTimestamp, setDoc, updateDoc } from '../../u
 
 function Purchase() {
   const navigate = useNavigate();
-  const { user, userRef, kids, setUser, isLogin, getUserProfile, getKidsProfile } = useStore();
+  const { userRef, kids, isLogin } = useStore();
   const [selectPlanId, setSelectPlanId] = useState('01');
   const plans = [
     { id: '01', title: 'Single Session', price: 1000, priceText: '$ 1,000' },
@@ -40,7 +40,10 @@ function Purchase() {
         },
       });
     }
-  }, [kids]);
+    if (!isLogin) {
+      navigate('/login');
+    }
+  }, [kids, isLogin]);
 
   const handleSubmitOrder = () => {
     const userConfirmed = confirm('Confirm Order?');
@@ -150,7 +153,7 @@ function Purchase() {
               type='radio'
               name='payment'
               className='mr-3'
-              onClick={() => setOrder({ ...order, method: 'transfer' })}
+              onClick={() => setOrder({ ...order, method: 'tran' })}
             />
             Online Banking Transfer
             <span>Account: (808) 0624-979-171404</span>
