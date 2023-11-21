@@ -13,12 +13,24 @@ import {
 } from '../../utils/firebase';
 import Card from './Card';
 
+interface KidType {
+  docId: string;
+  firstName: string;
+  lastName: string;
+  chineseName: string;
+  birthday: string;
+  id: string;
+  school: string;
+  photoURL: string;
+}
+
 function Kids() {
-  const { user, userRef, kidsRef, kids, setUser, isLogin, getUserProfile, getKidsProfile } = useStore();
+  const { userRef, kids, getUserProfile } = useStore();
   const [isAddingKid, setAddingKid] = useState(false);
   const inputFileRef = useRef(null);
   const inputFieldClass = 'rounded-md px-2 w-full';
-
+  const defaultPhotoURL =
+    'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/default-avatar-profile.png?alt=media&token=2ca8bd76-a025-4b94-a2f6-d5d39210289c';
   const emptyNewKid = {
     firstName: '',
     lastName: '',
@@ -26,22 +38,25 @@ function Kids() {
     birthday: '',
     id: '',
     school: '',
-    photoURL:
-      'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/default-avatar-profile.png?alt=media&token=2ca8bd76-a025-4b94-a2f6-d5d39210289c',
+    photoURL: defaultPhotoURL,
   };
   const [newKid, setNewKid] = useState({ ...emptyNewKid });
 
-  const [newProfileImg, setNewProfileImg] = useState(null);
+  const [newProfileImg, setNewProfileImg] = useState<File>();
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const image = e.target.files[0];
-    const unitTime = Date.now();
-    const storageRef = ref(storage, `temporary-folder/${unitTime}${image.name}`);
-    uploadBytes(storageRef, image).then(() => {
-      getDownloadURL(ref(storage, `temporary-folder/${unitTime}${image.name}`)).then((url) => {
-        setNewKid({ ...newKid, photoURL: url });
+    if (e.target.files) {
+      const image = e.target.files[0];
+      const unitTime = Date.now();
+      const storageRef = ref(storage, `temporary-folder/${unitTime}${image.name}`);
+      uploadBytes(storageRef, image).then(() => {
+        getDownloadURL(ref(storage, `temporary-folder/${unitTime}${image.name}`)).then((url) => {
+          setNewKid({ ...newKid, photoURL: url });
+        });
       });
-    });
-    setNewProfileImg(image);
+      setNewProfileImg(image);
+    } else {
+      setNewKid({ ...newKid, photoURL: defaultPhotoURL });
+    }
   };
 
   const handleChangeNewKidProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +82,7 @@ function Kids() {
           updateDoc(userRef, { kids: arrayUnion(doc(db, 'students', docId)) }).then(() => getUserProfile(userRef));
         });
       });
-      setNewProfileImg(null);
+      setNewProfileImg(undefined);
     } else if (userRef) {
       const newKidWithDocId = { ...newKid, docId };
       setDoc(doc(db, 'students', docId), newKidWithDocId);
@@ -107,7 +122,7 @@ function Kids() {
       )}
       {kids.length > 0 &&
         kids.map((kid) => {
-          return <Card kid={kid} key={kid.docId} />;
+          return <Card kid={kid as KidType} key={kid.docId} />;
         })}
       {!isAddingKid && <span>{renderPlusCircle()}</span>}
       {isAddingKid && (

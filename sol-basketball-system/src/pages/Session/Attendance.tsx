@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { db, doc, getDoc } from '../../utils/firebase';
 
 interface PropsType {
-  currentKid: string;
+  currentKidId: string;
 }
 
-function Attendance({ currentKid }: PropsType) {
+function Attendance({ currentKidId }: PropsType) {
   const currentDate = new Date();
   function getCurrentQuarter(currentDate: Date) {
     const currentMonth = currentDate.getMonth() + 1; // JavaScript 中月份是從 0 開始的
@@ -33,7 +33,7 @@ function Attendance({ currentKid }: PropsType) {
 
   const [showUpDates, setShowUpDates] = useState(['']);
   async function getAttendanceDoc() {
-    const kidAttendanceSnapshot = await getDoc(doc(db, 'attendance', currentKid));
+    const kidAttendanceSnapshot = await getDoc(doc(db, 'attendance', currentKidId));
     if (kidAttendanceSnapshot) {
       const kidAttendance = kidAttendanceSnapshot.data();
       if (kidAttendance) setShowUpDates(kidAttendance.showUpDate);
@@ -41,7 +41,7 @@ function Attendance({ currentKid }: PropsType) {
   }
   useEffect(() => {
     getAttendanceDoc();
-  }, [quarter, year, currentKid]);
+  }, [quarter, year, currentKidId]);
 
   const months = () => {
     switch (quarter) {
@@ -164,7 +164,7 @@ function Attendance({ currentKid }: PropsType) {
         <>
           <div className='w-10/12 mt-5 mx-16 overflow-x-auto p-2 pb-4 rounded-lg shadow-inner'>
             <div className='flex mb-4'>
-              {dates.map((date) => {
+              {dates.map((date: string) => {
                 const formateDate = date.substring(5).replace('-', '/');
                 return (
                   <div

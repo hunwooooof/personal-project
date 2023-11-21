@@ -4,30 +4,44 @@ import { useStore } from '../../store/store';
 import { getDownloadURL, ref, storage, updateDoc, uploadBytes } from '../../utils/firebase';
 import Kids from './Kids';
 
+interface NewProfileType {
+  photoURL: string;
+  displayName: string;
+  phoneNumber: string;
+}
+
 function Profile() {
   const navigate = useNavigate();
-  // const [isLoading, setLoading] = useState(false);
-  const { user, userRef, setUser, isLogin, getUserProfile } = useStore();
+  const { user, userRef, isLogin, getUserProfile } = useStore();
   const [isEditProfile, setEditProfile] = useState(false);
-  const inputFileRef = useRef(null);
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const [newProfile, setNewProfile] = useState({});
+  const [newProfile, setNewProfile] = useState<NewProfileType>({
+    photoURL: user?.photoURL || '',
+    displayName: user?.displayName || '',
+    phoneNumber: user?.phoneNumber || '',
+  });
 
   useEffect(() => {
     if (!isLogin) navigate('/');
   }, [isLogin]);
 
-  const [newProfileImg, setNewProfileImg] = useState(null);
+  const [newProfileImg, setNewProfileImg] = useState<File>();
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const image = e.target.files[0];
-    const unitTime = Date.now();
-    const storageRef = ref(storage, `temporary-folder/${unitTime}${image.name}`);
-    uploadBytes(storageRef, image).then(() => {
-      getDownloadURL(ref(storage, `temporary-folder/${unitTime}${image.name}`)).then((url) => {
-        setNewProfile({ ...newProfile, photoURL: url });
+    if (e.target.files && e.target.files[0]) {
+      const image = e.target.files[0];
+      const unitTime = Date.now();
+      const storageRef = ref(storage, `temporary-folder/${unitTime}${image.name}`);
+      uploadBytes(storageRef, image).then(() => {
+        getDownloadURL(ref(storage, `temporary-folder/${unitTime}${image.name}`)).then((url) => {
+          setNewProfile({ ...newProfile, photoURL: url });
+        });
       });
-    });
-    setNewProfileImg(image);
+      setNewProfileImg(image);
+    } else {
+      setNewProfile({ ...newProfile, photoURL: user.photoURL || '' });
+      setNewProfileImg(undefined);
+    }
   };
 
   const handleChangeProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,18 +52,17 @@ function Profile() {
   const handleSaveProfile = () => {
     const unitTime = Date.now();
     if (newProfileImg && userRef) {
-      // deleteObject(ref(storage, `temporary-folder/`)).catch((error) => {
-      //   console.error(error);
-      // });
       const storageRef = ref(storage, `users-photo/${unitTime}${newProfileImg.name}`);
       uploadBytes(storageRef, newProfileImg).then(() => {
-        getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`)).then((url) => {
-          updateDoc(userRef, newProfile);
-          updateDoc(userRef, { photoURL: url });
-        });
+        getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`))
+          .then((url) => {
+            updateDoc(userRef, { ...newProfile });
+            updateDoc(userRef, { photoURL: url });
+          })
+          .then(() => getUserProfile(userRef));
       });
-      setNewProfileImg(null);
-    } else if (userRef) updateDoc(userRef, newProfile);
+      setNewProfileImg(undefined);
+    } else if (userRef) updateDoc(userRef, { ...newProfile });
     getUserProfile(userRef);
   };
 
@@ -84,9 +97,9 @@ function Profile() {
               onClick={() => {
                 setEditProfile(true);
                 setNewProfile({
-                  displayName: user.displayName,
-                  phoneNumber: user.phoneNumber,
-                  photoURL: user.photoURL,
+                  displayName: user?.displayName || '',
+                  phoneNumber: user?.phoneNumber || '',
+                  photoURL: user?.photoURL || '',
                 });
               }}>
               {renderEditIcon()}

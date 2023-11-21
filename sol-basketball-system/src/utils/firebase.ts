@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import {
   GoogleAuthProvider,
+  UserCredential,
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
@@ -73,3 +74,4 @@ export {
   updateProfile,
   uploadBytes,
 };
+export type { UserCredential };

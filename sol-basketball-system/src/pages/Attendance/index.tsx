@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { arrayRemove, arrayUnion, collection, db, doc, getDoc, getDocs, updateDoc } from '../../utils/firebase';
 
+interface AttendanceType {
+  docId: string;
+  name: string;
+  showUpDate: string[];
+}
+
 function Attendance() {
   const { user, isLogin } = useStore();
   const navigate = useNavigate();
@@ -37,14 +43,14 @@ function Attendance() {
     getDates();
   }, [quarter, year]);
 
-  const [attendances, setAttendances] = useState([{}]);
+  const [attendances, setAttendances] = useState<AttendanceType[]>([]);
   async function getAttendances() {
     const attendanceSnapshot = await getDocs(collection(db, 'attendance'));
     const attendanceArray: object[] = [];
     attendanceSnapshot.forEach((doc) => {
       attendanceArray.push(doc.data());
     });
-    setAttendances(attendanceArray);
+    setAttendances(attendanceArray as AttendanceType[]);
   }
   useEffect(() => {
     getAttendances();
@@ -184,7 +190,7 @@ function Attendance() {
         {dates.length > 0 && (
           <div className='mt-5 overflow-x-auto pr-16 pb-4'>
             <div className='pl-40 flex'>
-              {dates.map((date) => {
+              {dates.map((date: string) => {
                 const formateDate = date.substring(5).replace('-', '/');
                 return (
                   <div
@@ -196,12 +202,12 @@ function Attendance() {
               })}
             </div>
             {Object.keys(attendances[0]).length > 0 &&
-              attendances.map((attendance) => {
-                const { docId } = attendance;
+              attendances.map((attendance: AttendanceType) => {
+                const { docId, name, showUpDate } = attendance;
                 return (
-                  <div className='flex items-center mt-3' key={attendance.name}>
+                  <div className='flex items-center mt-3' key={name}>
                     <div className='shrink-0 w-40 bg-gray-50 font-bold tracking-wider border-2 border-white rounded-md py-1 px-2'>
-                      {attendance.name.replace('-', ' ')}
+                      {name.replace('-', ' ')}
                     </div>
                     <div className='flex shrink-0'>
                       {dates.map((date) => {
@@ -210,9 +216,7 @@ function Attendance() {
                             key={date}
                             id={date}
                             className='shrink-0 w-16 text-sm mx-auto border-2 border-white py-1 flex justify-center'>
-                            {attendance.showUpDate.includes(date)
-                              ? renderChecked(date, docId)
-                              : renderUncheck(date, docId)}
+                            {showUpDate.includes(date) ? renderChecked(date, docId) : renderUncheck(date, docId)}
                           </div>
                         );
                       })}

@@ -35,7 +35,7 @@ function AdminOrder() {
   async function getOrders() {
     const ordersSnapshot = await getDocs(collection(db, 'orders'));
     const ordersArray: OrderType[] = [];
-    ordersSnapshot.forEach((doc) => ordersArray.push(doc.data()));
+    ordersSnapshot.forEach((doc) => ordersArray.push(doc.data() as OrderType));
     setOrders(ordersArray);
   }
   useEffect(() => {
