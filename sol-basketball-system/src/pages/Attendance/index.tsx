@@ -116,14 +116,26 @@ function Attendance() {
         onClick={(e) => {
           updateDoc(doc(db, 'attendance', docId), {
             showUpDate: arrayUnion(e.currentTarget.id),
-          }).then(() => getAttendances());
+          })
+            .then(() => getAttendances())
+            .then(() => {
+              getDoc(doc(db, 'attendance', docId)).then((attendanceSnap) => {
+                const attendance = attendanceSnap.data();
+                if (attendance) {
+                  const countShowUp = attendance.showUpDate.length;
+                  updateDoc(doc(db, 'credits', docId), {
+                    used: countShowUp,
+                  });
+                }
+              });
+            });
         }}
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
         viewBox='0 0 24 24'
         strokeWidth={1.5}
         stroke='currentColor'
-        className='h-6 px-4 rounded-md cursor-pointer hover:bg-gray-100'>
+        className='h-6 px-4 rounded-md cursor-pointer hover:bg-green-100'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -140,12 +152,24 @@ function Attendance() {
         onClick={(e) => {
           updateDoc(doc(db, 'attendance', docId), {
             showUpDate: arrayRemove(e.currentTarget.id),
-          }).then(() => getAttendances());
+          })
+            .then(() => getAttendances())
+            .then(() => {
+              getDoc(doc(db, 'attendance', docId)).then((attendanceSnap) => {
+                const attendance = attendanceSnap.data();
+                if (attendance) {
+                  const countShowUp = attendance.showUpDate.length;
+                  updateDoc(doc(db, 'credits', docId), {
+                    used: countShowUp,
+                  });
+                }
+              });
+            });
         }}
         xmlns='http://www.w3.org/2000/svg'
         viewBox='0 0 24 24'
         fill='currentColor'
-        className='h-6 px-4 text-green-500 rounded-md cursor-pointer hover:bg-gray-100'>
+        className='h-6 px-4 text-green-500 rounded-md cursor-pointer hover:bg-red-100'>
         <path
           fillRule='evenodd'
           d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z'
@@ -188,25 +212,25 @@ function Attendance() {
           <div className='text-3xl text-center mt-40 text-gray-400'>No data available for this section.</div>
         )}
         {dates.length > 0 && (
-          <div className='mt-5 overflow-x-auto pr-16 pb-4'>
+          <div className='mt-5 overflow-x-auto p-2 pr-16 pb-4 rounded-lg shadow-inner bg-gray-50'>
             <div className='pl-40 flex'>
               {dates.map((date: string) => {
                 const formateDate = date.substring(5).replace('-', '/');
                 return (
                   <div
                     key={date}
-                    className='bg-gray-700 font-bold text-white shrink-0 w-16 text-sm tracking-wider text-center border-2 border-white rounded-md py-1 select-none'>
+                    className='bg-gray-700 font-bold text-white shrink-0 w-16 text-sm tracking-wider text-center border-2 border-gray-50 rounded-md py-1 select-none'>
                     {formateDate}
                   </div>
                 );
               })}
             </div>
-            {Object.keys(attendances[0]).length > 0 &&
+            {attendances.length > 0 &&
               attendances.map((attendance: AttendanceType) => {
                 const { docId, name, showUpDate } = attendance;
                 return (
                   <div className='flex items-center mt-3' key={name}>
-                    <div className='shrink-0 w-40 bg-gray-50 font-bold tracking-wider border-2 border-white rounded-md py-1 px-2'>
+                    <div className='shrink-0 w-40 bg-gray-200 font-bold tracking-wider border-2 border-gray-50 rounded-md py-1 px-2'>
                       {name.replace('-', ' ')}
                     </div>
                     <div className='flex shrink-0'>
@@ -215,7 +239,7 @@ function Attendance() {
                           <div
                             key={date}
                             id={date}
-                            className='shrink-0 w-16 text-sm mx-auto border-2 border-white py-1 flex justify-center'>
+                            className='shrink-0 w-16 text-sm mx-auto border-2 border-gray-50 py-1 flex justify-center'>
                             {showUpDate.includes(date) ? renderChecked(date, docId) : renderUncheck(date, docId)}
                           </div>
                         );
