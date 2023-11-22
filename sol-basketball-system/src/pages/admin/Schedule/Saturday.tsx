@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../../../store/store';
-import { arrayRemove, arrayUnion, db, deleteDoc, doc, getDoc, setDoc, updateDoc } from '../../../utils/firebase';
+import { arrayRemove, arrayUnion, db, doc, getDoc, setDoc, updateDoc } from '../../../utils/firebase';
 
 interface PropsType {
   date: string;
@@ -11,10 +11,28 @@ interface PropsType {
 interface DetailType {
   address: 'xindian-sport-center';
   date: string;
-  tag: 'u10' | 'u12';
+  tag: 'u10r' | 'u10' | 'u12';
   time: string;
   title: 'top-league-game';
 }
+
+const detailSelection = {
+  address: [
+    { id: 'xindian-sport-center', text: 'Xin Dian Sports Center' },
+    { id: 'high-school-normal-university', text: 'HSNU' },
+    { id: 'jianan-elementary', text: 'Jian An Elementary' },
+    { id: 'hondao-junior-high', text: 'Hon Dao Junior High' },
+  ],
+  tag: [
+    { id: 'u10r', text: 'U10 Roadrunners Rookies' },
+    { id: 'u10', text: 'U10 Roadrunners' },
+    { id: 'u12', text: 'U12 Roadrunners' },
+  ],
+  title: [
+    { id: 'top-league-game', text: 'Top League' },
+    { id: 'friendly', text: 'Friendly Game' },
+  ],
+};
 
 function Saturday({ date, quarter, year }: PropsType) {
   const { scheduledDates, getScheduledDates } = useStore();
@@ -23,7 +41,7 @@ function Saturday({ date, quarter, year }: PropsType) {
   const [detail, setDetail] = useState<DetailType>({
     address: 'xindian-sport-center',
     date: date,
-    tag: 'u10',
+    tag: 'u10r',
     time: '19:00-21:00',
     title: 'top-league-game',
   });
@@ -31,9 +49,9 @@ function Saturday({ date, quarter, year }: PropsType) {
   const [isEdit, setEdit] = useState<boolean>(false);
 
   const unScheduledClass = `relative px-12 py-5 border rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner ${
-    isEdit ? 'shadow-inner' : 'shadow-md hover:bg-teal-50'
+    isEdit ? 'shadow-inner' : 'shadow-md hover:[&:not(:has(*:hover))]:bg-teal-50'
   }`;
-  const isScheduledClass = `relative px-12 py-5 border shadow-md rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner hover:bg-teal-50 bg-teal-50`;
+  const isScheduledClass = `relative px-12 py-5 border shadow-md rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner hover:bg-teal-50 bg-teal-50 `;
 
   const renderEditIcon = () => {
     return (
@@ -65,12 +83,24 @@ function Saturday({ date, quarter, year }: PropsType) {
                     updateDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
                       all: arrayUnion(date),
                     });
-                    setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), detail);
+                    getDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date)).then((scheduleSnap) => {
+                      if (scheduleSnap.data()) {
+                        updateDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
+                          [date]: arrayUnion({ ...detail }),
+                        });
+                      } else {
+                        setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
+                          [date]: [{ ...detail }],
+                        });
+                      }
+                    });
                   } else {
                     setDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
                       all: [date],
                     }).then(() => {
-                      setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), detail);
+                      setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
+                        [date]: [{ ...detail }],
+                      });
                     });
                   }
                 })
@@ -79,7 +109,70 @@ function Saturday({ date, quarter, year }: PropsType) {
           }}>
           {!isEdit && showDate}
           {!isEdit && renderEditIcon()}
-          {isEdit && <div>Editing!</div>}
+          {isEdit && (
+            <div
+              className='fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 z-10'
+              onClick={() => setEdit(false)}>
+              <div
+                className='z-20 bg-white w-6/12 h-80 mx-auto mt-56 rounded-2xl py-5 cursor-default'
+                onClick={(e) => e.stopPropagation()}>
+                <div>{date}</div>
+                <div className='mt-4'>
+                  <label htmlFor='time' className='inline-block mr-4 w-2/12 text-end'>
+                    Time
+                  </label>
+                  <span className='inline-block w-5/12'>
+                    <input
+                      type='time'
+                      name='start'
+                      id='start'
+                      className='cursor-pointer border pl-1 py-1 rounded-md w-5/12'
+                    />
+                    <span className='inline-block w-2/12'>～</span>
+                    <input
+                      type='time'
+                      name='end'
+                      id='end'
+                      className='cursor-pointer border pl-1 py-1 rounded-md w-5/12'
+                    />
+                  </span>
+                </div>
+                <div className='mt-4'>
+                  <label htmlFor='title' className='inline-block mr-4 w-2/12 text-end'>
+                    Title
+                  </label>
+                  <select name='title' id='title' className='cursor-pointer border px-2 py-1 rounded-md w-5/12'>
+                    {detailSelection.title.map((title) => {
+                      return <option value={title.id}>{title.text}</option>;
+                    })}
+                  </select>
+                </div>
+                <div className='mt-4'>
+                  <label htmlFor='Team' className='inline-block mr-4 w-2/12 text-end'>
+                    Team
+                  </label>
+                  <select name='Team' id='Team' className='cursor-pointer border px-2 py-1 rounded-md w-5/12'>
+                    {detailSelection.tag.map((tag) => {
+                      return <option value={tag.id}>{tag.text}</option>;
+                    })}
+                  </select>
+                </div>
+                <div className='mt-4'>
+                  <label htmlFor='address' className='inline-block mr-4 w-2/12 text-end'>
+                    Location
+                  </label>
+                  <select name='address' id='address' className='cursor-pointer border px-2 py-1 rounded-md w-5/12'>
+                    {detailSelection.address.map((address) => {
+                      return <option value={address.id}>{address.text}</option>;
+                    })}
+                  </select>
+                </div>
+                <div onClick={() => setEdit(false)} className='text-red-500 cursor-pointer'>
+                  X
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
       {scheduledDates.includes(date) && (
@@ -89,7 +182,9 @@ function Saturday({ date, quarter, year }: PropsType) {
             updateDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
               all: arrayRemove(date),
             }).then(() => getScheduledDates(year, quarter));
-            deleteDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date));
+            updateDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
+              [date]: arrayRemove(detail),
+            });
           }}>
           {showDate}
         </div>
