@@ -102,7 +102,7 @@ function AdminOrder() {
         <div className='flex gap-4 text-xl border-b border-gray-200'>
           <div
             className={` w-32 text-center rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-              tag === 'all' ? 'shadow-inner bg-gray-200' : ''
+              tag === 'all' ? 'shadow-inner bg-gray-100' : ''
             }`}
             onClick={() => {
               setTag('all');
@@ -111,7 +111,7 @@ function AdminOrder() {
           </div>
           <div
             className={` w-32 text-center rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-              tag === 'inProcess' ? 'shadow-inner bg-gray-200' : ''
+              tag === 'inProcess' ? 'shadow-inner bg-gray-100' : ''
             }`}
             onClick={() => {
               setTag('inProcess');
