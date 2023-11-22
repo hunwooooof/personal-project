@@ -12,6 +12,7 @@ import Schedule from './pages/Schedule/index.tsx';
 import Session from './pages/Session/index.tsx';
 import Signup from './pages/Signup/index.tsx';
 import AdminOrder from './pages/admin/Order/index.tsx';
+import AdminSchedule from './pages/admin/Schedule/index.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <GoogleOAuthProvider clientId='401302748123-6csqfdahphv7pnrk3kt0a0rie81lg72a.apps.googleusercontent.com'>
@@ -27,6 +28,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path='purchase' element={<Purchase />} />
           <Route path='attendance' element={<Attendance />} />
           <Route path='admin/order' element={<AdminOrder />} />
+          <Route path='admin/schedule' element={<AdminSchedule />} />
           <Route path='*' element={<Navigate to='/' replace />} />
         </Route>
       </Routes>

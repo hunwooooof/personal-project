@@ -135,11 +135,16 @@ function AdminOrder() {
               const timestamp = new Date(seconds * 1000);
               const yyyy = timestamp.getFullYear();
               const mm = timestamp.getMonth() + 1;
+              const formattedMm = mm < 10 ? `0${mm}` : String(mm);
               const dd = timestamp.getDate();
+              const formattedDd = dd < 10 ? `0${dd}` : String(dd);
               const hour = timestamp.getHours();
+              const formattedHour = hour < 10 ? `0${hour}` : String(hour);
               const min = timestamp.getMinutes();
+              const formattedMin = min < 10 ? `0${min}` : String(min);
               const sec = timestamp.getSeconds();
-              const dateTime = `${yyyy}/${mm}/${dd} ${hour}:${min}:${sec}`;
+              const formattedSec = sec < 10 ? `0${sec}` : String(sec);
+              const dateTime = `${yyyy}/${formattedMm}/${formattedDd} ${formattedHour}:${formattedMin}:${formattedSec}`;
               if (tag === 'all' || (tag === 'inProcess' && order.status === 'IN_PROCESS'))
                 return (
                   <div className='bg-gray-100 flex items-center px-2 py-1 rounded-md  font-mono text-sm' key={seconds}>
