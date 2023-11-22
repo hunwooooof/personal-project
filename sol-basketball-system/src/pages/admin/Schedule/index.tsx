@@ -1,4 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useStore } from '../../../store/store';
+import Friday from './Friday';
+import Saturday from './Saturday';
+import Sunday from './Sunday';
 
 interface AllDatesType {
   friday: string[];
@@ -6,6 +10,7 @@ interface AllDatesType {
   sunday: string[];
 }
 function AdminSchedule() {
+  const { getScheduledDates } = useStore();
   const getCurrentQuarter = (currentDate: Date) => {
     const currentMonth = currentDate.getMonth() + 1; // JavaScript 中月份是從 0 開始的
     const currentQuarter = Math.ceil(currentMonth / 3);
@@ -99,6 +104,7 @@ function AdminSchedule() {
   useEffect(() => {
     const initialAllDates = getValidDate(startDate, endDate);
     setAllDates(initialAllDates);
+    getScheduledDates(year, quarter);
   }, [quarter, year]);
 
   const arrowClass = 'w-6 h-6 p-1 bg-amber-200 ml-2 rounded-md cursor-pointer shadow-md hover:bg-amber-300 select-none';
@@ -137,6 +143,7 @@ function AdminSchedule() {
       </svg>
     );
   };
+  const boxClass = `px-12 py-5 border rounded-lg mt-4 shadow-md font-bold font-mono tracking-wider`;
 
   return (
     <div className='custom-main-container mt-28'>
@@ -167,7 +174,7 @@ function AdminSchedule() {
           <div className='p-2 rounded-lg shadow-inner cursor-pointer hover:bg-gray-100'>{renderResetIcon()}</div>
         </div>
         <div className='w-full mr-5 flex flex-col'>
-          <div className='bg-teal-600 flex rounded-lg text-white font-bold font-serif tracking-wider py-2'>
+          <div className='bg-gray-300 flex rounded-lg text-black font-bold font-serif tracking-wider py-2 border-b-4 border-gray-400'>
             <div className='flex flex-col justify-center items-center w-4/12'>
               <div>Friday</div>
               <div>19:00-21:00</div>
@@ -179,41 +186,22 @@ function AdminSchedule() {
             </div>
           </div>
           {allDates && (
-            <div className='flex gap-3'>
+            <div className='flex gap-3 pb-24'>
               <div className='w-full text-center'>
-                {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && (
-                  <div className='px-12 py-5 border rounded-lg mt-4'>-</div>
-                )}
+                {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
                 {allDates.friday.map((date) => {
-                  const showDate = date.slice(5).replace('-', '/');
-                  return (
-                    <div key={date} className='px-12 py-5 border rounded-lg mt-4'>
-                      {showDate}
-                    </div>
-                  );
+                  return <Friday key={date} date={date} quarter={quarter} year={year} />;
                 })}
               </div>
               <div className='w-full text-center'>
-                {allDates.saturday[0].slice(8) > allDates.sunday[0].slice(8) && (
-                  <div className='px-12 py-5 border rounded-lg mt-4'>-</div>
-                )}
+                {allDates.saturday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
                 {allDates.saturday.map((date) => {
-                  const showDate = date.slice(5).replace('-', '/');
-                  return (
-                    <div key={date} className='px-12 py-5 border rounded-lg mt-4'>
-                      {showDate}
-                    </div>
-                  );
+                  return <Saturday key={date} date={date} quarter={quarter} year={year} />;
                 })}
               </div>
               <div className='w-full text-center'>
                 {allDates.sunday.map((date) => {
-                  const showDate = date.slice(5).replace('-', '/');
-                  return (
-                    <div key={date} className='px-12 py-5 border rounded-lg mt-4'>
-                      {showDate}
-                    </div>
-                  );
+                  return <Sunday key={date} date={date} quarter={quarter} year={year} />;
                 })}
               </div>
             </div>

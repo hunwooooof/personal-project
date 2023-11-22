@@ -12,13 +12,13 @@ interface OrderType {
     firstName: string;
     lastName: string;
   };
-  plan: string;
-  method: string;
-  status: string;
+  plan: '01' | '08' | '10' | '12';
+  method: 'cash' | 'tran';
+  status: 'SUCCESS' | 'IN_PROCESS';
   timestamp: {
     seconds: number;
   };
-  price: number;
+  price: 1000 | 7200 | 8250 | 9000;
 }
 
 function AdminOrder() {

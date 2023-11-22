@@ -59,6 +59,8 @@ interface StoreState {
   setLogOut: () => void;
   getUserProfile: (userRef: undefined | DocumentReference<DocumentData, DocumentData>) => object;
   getKidsProfile: (kidsRef: DocumentReference<DocumentData, DocumentData>[]) => void;
+  scheduledDates: string[];
+  getScheduledDates: (year: number, quarter: number) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -216,5 +218,12 @@ export const useStore = create<StoreState>((set) => ({
       }
     }
     set(() => ({ kids: kids }));
+  },
+  scheduledDates: [],
+  getScheduledDates: async (year, quarter) => {
+    const schedule = (await getDoc(doc(db, 'schedule', `${year}Q${quarter}`))).data();
+    if (schedule) {
+      set(() => ({ scheduledDates: schedule.all }));
+    }
   },
 }));
