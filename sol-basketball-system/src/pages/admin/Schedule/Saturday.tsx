@@ -67,7 +67,7 @@ function Saturday({ date, quarter, year }: PropsType) {
   const unScheduledClass = `relative px-12 py-5 border rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner ${
     isEdit ? 'shadow-inner' : 'shadow-md hover:[&:not(:has(*:hover))]:bg-teal-50'
   }`;
-  const isScheduledClass = `relative px-12 py-5 border shadow-md rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner hover:bg-teal-50 bg-teal-50 `;
+  const isScheduledClass = `relative px-12 py-5 border shadow-md rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner hover:bg-teal-100 bg-teal-100 `;
 
   const renderEditIcon = () => {
     return (
@@ -128,7 +128,8 @@ function Saturday({ date, quarter, year }: PropsType) {
           }}>
           {!isEdit && (
             <>
-              {showDate}
+              {showDate}{' '}
+              <span className='font-normal text-gray-500'>{`(${Object.values(todaySchedule)[0].length})`}</span>
               {renderEditIcon()}
             </>
           )}
@@ -264,7 +265,6 @@ function Saturday({ date, quarter, year }: PropsType) {
                     className='cursor-pointer border font-normal px-2 py-1 rounded-md w-6/12 text-center'
                     onChange={(e) => {
                       const id = e.target.value;
-                      console.log(id);
                       setDetail({
                         ...detail,
                         address: id,
@@ -300,7 +300,7 @@ function Saturday({ date, quarter, year }: PropsType) {
               [date]: arrayRemove(detail),
             });
           }}>
-          {showDate}
+          {showDate} <span className='font-normal text-gray-500'>{`(${Object.values(todaySchedule)[0].length})`}</span>
         </div>
       )}
     </div>
