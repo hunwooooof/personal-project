@@ -1,4 +1,4 @@
-import { DocumentData, DocumentReference } from 'firebase/firestore';
+import { DocumentData, DocumentReference, collection } from 'firebase/firestore';
 import { create } from 'zustand';
 import {
   UserCredential,
@@ -7,6 +7,7 @@ import {
   db,
   doc,
   getDoc,
+  getDocs,
   onAuthStateChanged,
   provider,
   setDoc,
@@ -59,6 +60,10 @@ interface StoreState {
   setLogOut: () => void;
   getUserProfile: (userRef: undefined | DocumentReference<DocumentData, DocumentData>) => object;
   getKidsProfile: (kidsRef: DocumentReference<DocumentData, DocumentData>[]) => void;
+  scheduledDates: string[];
+  getScheduledDates: (year: number, quarter: number) => void;
+  saturdaySchedules: object[];
+  getSaturdaySchedules: (year: number, quarter: number) => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
@@ -216,5 +221,21 @@ export const useStore = create<StoreState>((set) => ({
       }
     }
     set(() => ({ kids: kids }));
+  },
+  scheduledDates: [],
+  getScheduledDates: async (year, quarter) => {
+    const schedule = (await getDoc(doc(db, 'schedule', `${year}Q${quarter}`))).data();
+    if (schedule) {
+      set(() => ({ scheduledDates: schedule.all }));
+    }
+  },
+  saturdaySchedules: [],
+  getSaturdaySchedules: async (year, quarter) => {
+    const saturdaySchedulesSnapshot = await getDocs(collection(db, 'schedule', `${year}Q${quarter}`, 'saturday'));
+    const saturdaySchedules: object[] = [];
+    saturdaySchedulesSnapshot.forEach((doc) => {
+      saturdaySchedules.push(doc.data());
+    });
+    set(() => ({ saturdaySchedules: saturdaySchedules as object[] }));
   },
 }));

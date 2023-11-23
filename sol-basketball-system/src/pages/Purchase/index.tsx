@@ -100,7 +100,7 @@ function Purchase() {
       <div className='w-10/12 mx-auto'>
         <h3 className='mt-6 px-3 py-2 text-xl border-b border-gray-200 mb-8'>Purchase</h3>
         <div className='flex mb-8 items-center'>
-          <h4 className='px-8'>Kid</h4>
+          <label className='px-8'>Kid</label>
           {kids.length > 0 && (
             <select
               name='kid'

@@ -12,13 +12,13 @@ interface OrderType {
     firstName?: string;
     lastName?: string;
   };
-  plan?: string;
-  method?: string;
-  status?: string;
+  plan?: '01' | '08' | '10' | '12';
+  method?: 'cash' | 'tran';
+  status?: 'SUCCESS' | 'IN_PROCESS';
   timestamp: {
     seconds: number;
   };
-  price?: number;
+  price?: 1000 | 7200 | 8250 | 9000;
 }
 
 function Order() {
@@ -52,8 +52,8 @@ function Order() {
       <div className='w-10/12 mx-auto'>
         <div className='flex gap-4 text-xl border-b border-gray-200'>
           <div
-            className={` w-32 text-center rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-              tag === 'all' ? 'shadow-inner bg-gray-200' : ''
+            className={`w-32 text-center rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+              tag === 'all' ? 'shadow-inner bg-gray-100' : ''
             }`}
             onClick={() => {
               setTag('all');
@@ -61,8 +61,8 @@ function Order() {
             All
           </div>
           <div
-            className={` w-32 text-center rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-              tag === 'inProcess' ? 'shadow-inner bg-gray-200' : ''
+            className={`w-32 text-center rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+              tag === 'inProcess' ? 'shadow-inner bg-gray-100' : ''
             }`}
             onClick={() => {
               setTag('inProcess');
@@ -85,11 +85,16 @@ function Order() {
               const timestamp = new Date(seconds * 1000);
               const yyyy = timestamp.getFullYear();
               const mm = timestamp.getMonth() + 1;
+              const formattedMm = mm < 10 ? `0${mm}` : String(mm);
               const dd = timestamp.getDate();
+              const formattedDd = dd < 10 ? `0${dd}` : String(dd);
               const hour = timestamp.getHours();
+              const formattedHour = hour < 10 ? `0${hour}` : String(hour);
               const min = timestamp.getMinutes();
+              const formattedMin = min < 10 ? `0${min}` : String(min);
               const sec = timestamp.getSeconds();
-              const dateTime = `${yyyy}/${mm}/${dd} ${hour}:${min}:${sec}`;
+              const formattedSec = sec < 10 ? `0${sec}` : String(sec);
+              const dateTime = `${yyyy}/${formattedMm}/${formattedDd} ${formattedHour}:${formattedMin}:${formattedSec}`;
               if (tag === 'all' || (tag === 'inProcess' && order.status === 'IN_PROCESS'))
                 return (
                   <div className='bg-gray-100 flex px-2 py-1 rounded-md  font-mono text-sm' key={seconds}>
