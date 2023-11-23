@@ -144,18 +144,31 @@ function Saturday({ date, quarter, year }: PropsType) {
                   className='hover:bg-gray-300 px-2 py-1 rounded-full cursor-pointer absolute right-4 top-4'>
                   Ｘ
                 </button>
-                <div className='text-gray-500 text-xl mb-4'>{date}</div>
-                <div id='saturday-schedules'>
-                  <div className='shadow-inner mh-64 overflow-y-auto bg-gray-100 pt-4'>
-                    {todaySchedule &&
-                      Object.values(todaySchedule)[0].map((eachSchedule: DetailType) => {
-                        return <SatItem schedule={eachSchedule} key={eachSchedule.tag} />;
-                      })}
+                <div className='text-gray-500 text-xl mb-4'>{`${date} (${
+                  Object.values(todaySchedule)[0].length
+                })`}</div>
+                {Object.values(todaySchedule)[0].length > 0 && (
+                  <div>
+                    <div id='saturday-schedules'>
+                      <div className='shadow-inner max-h-60 overflow-y-auto bg-gray-100 pt-4'>
+                        {todaySchedule &&
+                          Object.values(todaySchedule)[0].map((eachSchedule: DetailType, id: number) => {
+                            return (
+                              <SatItem
+                                schedule={eachSchedule}
+                                key={`${eachSchedule.tag}${id}`}
+                                quarter={quarter}
+                                year={year}
+                              />
+                            );
+                          })}
+                      </div>
+                    </div>
+                    <div className='w-10/12 border mx-auto my-8' />
                   </div>
-                </div>
-                <div className='w-10/12 border mx-auto my-8' />
-                <div className='-mt-2'>
-                  <label htmlFor='time' className='inline-block mr-4 w-2/12 text-end'>
+                )}
+                <div className='-mt-2 text-sm'>
+                  <label htmlFor='time' className='inline-block mr-4 w-2/12 text-center'>
                     Time
                   </label>
                   <span className='inline-block w-6/12'>
@@ -190,8 +203,8 @@ function Saturday({ date, quarter, year }: PropsType) {
                     />
                   </span>
                 </div>
-                <div className='mt-4'>
-                  <label htmlFor='title' className='inline-block mr-4 w-2/12 text-end'>
+                <div className='mt-4 text-sm'>
+                  <label htmlFor='title' className='inline-block mr-4 w-2/12 text-center'>
                     Title
                   </label>
                   <select
@@ -215,8 +228,8 @@ function Saturday({ date, quarter, year }: PropsType) {
                     })}
                   </select>
                 </div>
-                <div className='mt-4'>
-                  <label htmlFor='team' className='inline-block mr-4 w-2/12 text-end'>
+                <div className='mt-4 text-sm'>
+                  <label htmlFor='team' className='inline-block mr-4 w-2/12 text-center'>
                     Team
                   </label>
                   <select
@@ -240,8 +253,8 @@ function Saturday({ date, quarter, year }: PropsType) {
                     })}
                   </select>
                 </div>
-                <div className='mt-4'>
-                  <label htmlFor='address' className='inline-block mr-4 w-2/12 text-end'>
+                <div className='mt-4 text-sm'>
+                  <label htmlFor='address' className='inline-block mr-4 w-2/12 text-center'>
                     Location
                   </label>
                   <select
@@ -266,8 +279,8 @@ function Saturday({ date, quarter, year }: PropsType) {
                     })}
                   </select>
                 </div>
-                <div className='flex gap-2 justify-center mt-3'>
-                  <button onClick={handleClickAdd} className='bg-green-400 px-2 py-1 rounded-md cursor-pointer'>
+                <div className='flex gap-2 justify-center mt-4 font-normal'>
+                  <button onClick={handleClickAdd} className='bg-green-400 px-3 py-1 rounded-md cursor-pointer'>
                     Add
                   </button>
                 </div>

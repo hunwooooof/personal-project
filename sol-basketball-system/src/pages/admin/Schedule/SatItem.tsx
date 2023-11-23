@@ -1,3 +1,6 @@
+import { useStore } from '../../../store/store';
+import { arrayRemove, db, doc, updateDoc } from '../../../utils/firebase';
+
 interface DetailType {
   address: string;
   date: string;
@@ -8,9 +11,13 @@ interface DetailType {
 
 interface PropsType {
   schedule: DetailType;
+  quarter: number;
+  year: number;
 }
 
-function SatItem({ schedule }: PropsType) {
+function SatItem({ schedule, quarter, year }: PropsType) {
+  const { getSaturdaySchedules } = useStore();
+
   const renderTitle = (title: string) => {
     switch (title) {
       case 'top-league-game':
@@ -54,16 +61,13 @@ function SatItem({ schedule }: PropsType) {
         xmlns='http://www.w3.org/2000/svg'
         viewBox='0 0 20 20'
         fill='currentColor'
-        // onClick={() => {
-        // const userConfirmed = confirm('Are you sure you want to delete?');
-        // if (userConfirmed && userRef) {
-        //   deleteDoc(doc(db, 'students', kid.docId));
-        //   updateDoc(userRef, {
-        //     kids: arrayRemove(doc(db, 'students', kid.docId)),
-        //   });
-        //   getUserProfile(userRef);
-        // }
-        // }}
+        onClick={() => {
+          console.log(schedule);
+          const { date } = schedule;
+          updateDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
+            [date]: arrayRemove({ ...schedule }),
+          }).then(() => getSaturdaySchedules(year, quarter));
+        }}
         className='w-6 h-6 inline-block text-gray-300 cursor-pointer hover:text-red-400'>
         <path
           fillRule='evenodd'
