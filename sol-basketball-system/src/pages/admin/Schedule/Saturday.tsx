@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStore } from '../../../store/store';
 import { arrayRemove, arrayUnion, db, doc, getDoc, setDoc, updateDoc } from '../../../utils/firebase';
+import SatItem from './SatItem';
 
 interface PropsType {
   date: string;
@@ -9,11 +10,11 @@ interface PropsType {
 }
 
 interface DetailType {
-  address: 'xindian-sport-center';
+  address: string;
   date: string;
-  tag: 'u10r' | 'u10' | 'u12';
+  tag: string;
   time: string;
-  title: 'top-league-game';
+  title: string;
 }
 
 const detailSelection = {
@@ -35,16 +36,31 @@ const detailSelection = {
 };
 
 function Saturday({ date, quarter, year }: PropsType) {
-  const { scheduledDates, getScheduledDates } = useStore();
+  const { scheduledDates, getScheduledDates, saturdaySchedules, getSaturdaySchedules } = useStore();
   const showDate = date.slice(5).replace('-', '/');
-
+  const [todaySchedule, setTodaySchedule] = useState<object>({ [date]: [] });
   const [detail, setDetail] = useState<DetailType>({
     address: 'xindian-sport-center',
     date: date,
     tag: 'u10r',
-    time: '19:00-21:00',
+    time: '00:00-00:00',
     title: 'top-league-game',
   });
+
+  const getTodaySchedule = (date: string) => {
+    const theDay = saturdaySchedules.find((dateEvents) => {
+      const dateString = Object.keys(dateEvents);
+      return dateString[0] === date;
+    });
+    if (theDay) return theDay;
+  };
+
+  useEffect(() => {
+    if (saturdaySchedules) {
+      const initialSchedule = getTodaySchedule(date);
+      if (initialSchedule) setTodaySchedule(initialSchedule);
+    }
+  }, [saturdaySchedules]);
 
   const [isEdit, setEdit] = useState<boolean>(false);
 
@@ -70,6 +86,20 @@ function Saturday({ date, quarter, year }: PropsType) {
     );
   };
 
+  const handleClickAdd = () => {
+    getDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date)).then((scheduleSnap) => {
+      if (scheduleSnap.data()) {
+        updateDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
+          [date]: arrayUnion({ ...detail }),
+        }).then(() => getSaturdaySchedules(year, quarter));
+      } else {
+        setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
+          [date]: [{ ...detail }],
+        }).then(() => getSaturdaySchedules(year, quarter));
+      }
+    });
+  };
+
   return (
     <div>
       {!scheduledDates.includes(date) && (
@@ -82,17 +112,6 @@ function Saturday({ date, quarter, year }: PropsType) {
                   if (scheduleSnap.data()) {
                     updateDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
                       all: arrayUnion(date),
-                    });
-                    getDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date)).then((scheduleSnap) => {
-                      if (scheduleSnap.data()) {
-                        updateDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
-                          [date]: arrayUnion({ ...detail }),
-                        });
-                      } else {
-                        setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
-                          [date]: [{ ...detail }],
-                        });
-                      }
                     });
                   } else {
                     setDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
@@ -107,33 +126,67 @@ function Saturday({ date, quarter, year }: PropsType) {
                 .then(() => getScheduledDates(year, quarter));
             }
           }}>
-          {!isEdit && showDate}
-          {!isEdit && renderEditIcon()}
+          {!isEdit && (
+            <>
+              {showDate}
+              {renderEditIcon()}
+            </>
+          )}
           {isEdit && (
             <div
               className='fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 z-10'
               onClick={() => setEdit(false)}>
               <div
-                className='z-20 bg-white w-6/12 h-80 mx-auto mt-56 rounded-2xl py-5 cursor-default'
+                className='z-20 bg-white w-5/12 mx-auto mt-28 rounded-2xl py-8 cursor-default font-sans relative'
                 onClick={(e) => e.stopPropagation()}>
-                <div>{date}</div>
-                <div className='mt-4'>
+                <button
+                  onClick={() => setEdit(false)}
+                  className='hover:bg-gray-300 px-2 py-1 rounded-full cursor-pointer absolute right-4 top-4'>
+                  Ｘ
+                </button>
+                <div className='text-gray-500 text-xl mb-4'>{date}</div>
+                <div id='saturday-schedules'>
+                  <div className='shadow-inner mh-64 overflow-y-auto bg-gray-100 pt-4'>
+                    {todaySchedule &&
+                      Object.values(todaySchedule)[0].map((eachSchedule: DetailType) => {
+                        return <SatItem schedule={eachSchedule} key={eachSchedule.tag} />;
+                      })}
+                  </div>
+                </div>
+                <div className='w-10/12 border mx-auto my-8' />
+                <div className='-mt-2'>
                   <label htmlFor='time' className='inline-block mr-4 w-2/12 text-end'>
                     Time
                   </label>
-                  <span className='inline-block w-5/12'>
+                  <span className='inline-block w-6/12'>
                     <input
                       type='time'
                       name='start'
                       id='start'
-                      className='cursor-pointer border pl-1 py-1 rounded-md w-5/12'
+                      value={detail.time.slice(0, 5)}
+                      className='cursor-pointer border pl-2 py-1 rounded-md w-5/12 font-normal'
+                      onChange={(e) => {
+                        const id = e.target.value;
+                        setDetail({
+                          ...detail,
+                          time: `${id}-${detail.time.slice(6)}`,
+                        });
+                      }}
                     />
                     <span className='inline-block w-2/12'>～</span>
                     <input
                       type='time'
                       name='end'
                       id='end'
-                      className='cursor-pointer border pl-1 py-1 rounded-md w-5/12'
+                      value={detail.time.slice(6)}
+                      className='cursor-pointer border pl-2 py-1 rounded-md w-5/12 font-normal'
+                      onChange={(e) => {
+                        const id = e.target.value;
+                        setDetail({
+                          ...detail,
+                          time: `${detail.time.slice(0, 5)}-${id}`,
+                        });
+                      }}
                     />
                   </span>
                 </div>
@@ -141,19 +194,49 @@ function Saturday({ date, quarter, year }: PropsType) {
                   <label htmlFor='title' className='inline-block mr-4 w-2/12 text-end'>
                     Title
                   </label>
-                  <select name='title' id='title' className='cursor-pointer border px-2 py-1 rounded-md w-5/12'>
+                  <select
+                    name='title'
+                    id='title'
+                    value={detail.title}
+                    className='cursor-pointer border font-normal px-2 py-1 rounded-md w-6/12 text-center'
+                    onChange={(e) => {
+                      const id = e.target.value;
+                      setDetail({
+                        ...detail,
+                        title: id,
+                      });
+                    }}>
                     {detailSelection.title.map((title) => {
-                      return <option value={title.id}>{title.text}</option>;
+                      return (
+                        <option key={title.id} value={title.id}>
+                          {title.text}
+                        </option>
+                      );
                     })}
                   </select>
                 </div>
                 <div className='mt-4'>
-                  <label htmlFor='Team' className='inline-block mr-4 w-2/12 text-end'>
+                  <label htmlFor='team' className='inline-block mr-4 w-2/12 text-end'>
                     Team
                   </label>
-                  <select name='Team' id='Team' className='cursor-pointer border px-2 py-1 rounded-md w-5/12'>
+                  <select
+                    name='team'
+                    id='team'
+                    value={detail.tag}
+                    className='cursor-pointer border font-normal px-2 py-1 rounded-md w-6/12 text-center'
+                    onChange={(e) => {
+                      const id = e.target.value;
+                      setDetail({
+                        ...detail,
+                        tag: id,
+                      });
+                    }}>
                     {detailSelection.tag.map((tag) => {
-                      return <option value={tag.id}>{tag.text}</option>;
+                      return (
+                        <option key={tag.id} value={tag.id}>
+                          {tag.text}
+                        </option>
+                      );
                     })}
                   </select>
                 </div>
@@ -161,14 +244,32 @@ function Saturday({ date, quarter, year }: PropsType) {
                   <label htmlFor='address' className='inline-block mr-4 w-2/12 text-end'>
                     Location
                   </label>
-                  <select name='address' id='address' className='cursor-pointer border px-2 py-1 rounded-md w-5/12'>
+                  <select
+                    name='address'
+                    id='address'
+                    value={detail.address}
+                    className='cursor-pointer border font-normal px-2 py-1 rounded-md w-6/12 text-center'
+                    onChange={(e) => {
+                      const id = e.target.value;
+                      console.log(id);
+                      setDetail({
+                        ...detail,
+                        address: id,
+                      });
+                    }}>
                     {detailSelection.address.map((address) => {
-                      return <option value={address.id}>{address.text}</option>;
+                      return (
+                        <option key={address.id} value={address.id}>
+                          {address.text}
+                        </option>
+                      );
                     })}
                   </select>
                 </div>
-                <div onClick={() => setEdit(false)} className='text-red-500 cursor-pointer'>
-                  X
+                <div className='flex gap-2 justify-center mt-3'>
+                  <button onClick={handleClickAdd} className='bg-green-400 px-2 py-1 rounded-md cursor-pointer'>
+                    Add
+                  </button>
                 </div>
               </div>
             </div>

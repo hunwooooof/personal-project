@@ -10,7 +10,7 @@ interface AllDatesType {
   sunday: string[];
 }
 function AdminSchedule() {
-  const { getScheduledDates } = useStore();
+  const { getScheduledDates, getSaturdaySchedules } = useStore();
   const getCurrentQuarter = (currentDate: Date) => {
     const currentMonth = currentDate.getMonth() + 1; // JavaScript 中月份是從 0 開始的
     const currentQuarter = Math.ceil(currentMonth / 3);
@@ -105,6 +105,7 @@ function AdminSchedule() {
     const initialAllDates = getValidDate(startDate, endDate);
     setAllDates(initialAllDates);
     getScheduledDates(year, quarter);
+    getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
   const arrowClass = 'w-6 h-6 p-1 bg-amber-200 ml-2 rounded-md cursor-pointer shadow-md hover:bg-amber-300 select-none';
