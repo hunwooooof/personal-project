@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import App from './App.tsx';
-import TestDemo from './components/Test.tsx';
+
 import './index.css';
 import Attendance from './pages/Attendance/index.tsx';
 import Login from './pages/Login/index.tsx';
@@ -28,7 +28,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path='attendance' element={<Attendance />} />
         <Route path='admin/order' element={<AdminOrder />} />
         <Route path='admin/schedule' element={<AdminSchedule />} />
-        <Route path='test' element={<TestDemo />} />
         <Route path='*' element={<Navigate to='/' replace />} />
       </Route>
     </Routes>

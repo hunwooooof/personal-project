@@ -4,8 +4,11 @@ import { apiCalendar } from '../../utils/googleCalendar';
 import Friday from './Friday';
 import Saturday from './Saturday';
 import Sunday from './Sunday';
+import calendarIcon from './calendar-icon.png';
 import googleCalendarIco from './google-calendar_icon.png';
-import iosCalendarIco from './ios-calendar_icon.webp';
+import locationIcon from './location-icon.png';
+import personIcon from './person-icon.png';
+import timeIcon from './time-icon.png';
 
 interface AllDatesType {
   friday: string[];
@@ -331,25 +334,33 @@ function Schedule() {
             )}
           </div>
           {isInfoShow && info && (
-            <div className='w-4/12 p-6 ml-5 border rounded-lg relative shadow-md h-screen overflow-y-auto'>
+            <div className='w-4/12 px-6 py-4 ml-5 border rounded-xl relative shadow-md max-h-[79vh] overflow-y-auto'>
               <button
                 onClick={() => setInfoShow(false)}
-                className='hover:text-black text-gray-300 px-2 py-1 rounded-full cursor-pointer absolute right-4 top-4'>
+                className='hover:text-black text-gray-300 px-2 py-1 rounded-full cursor-pointer absolute font-bold right-2 top-2'>
                 Ｘ
               </button>
               {!Array.isArray(info) && (
                 <div>
-                  <div className='border-b'>{renderTitle(info.title)}</div>
-                  <div>{info.date.replace('-', '/').replace('-', '/')}</div>
-                  {info.tag && <div>{renderTeam(info.tag)}</div>}
-                  <div>{renderAddress(info.address)}</div>
-                  <div>{info.time}</div>
+                  <div className='border-b font-serif font-bold text-xl mb-2 pb-2'>{renderTitle(info.title)}</div>
+                  <div className='mt-4 flex gap-2 items-center tracking-wider'>
+                    <img className='opacity-50 inline w-5 h-5' src={calendarIcon} alt='' />
+                    {info.date.replace('-', '/').replace('-', '/')}
+                  </div>
+                  <div className='mt-4 flex gap-2'>
+                    <img className='opacity-50 inline w-5 h-5 mt-1' src={locationIcon} alt='' />
+                    {renderAddress(info.address)}
+                  </div>
+                  <div className='mt-4 flex gap-2 items-center'>
+                    <img className='opacity-50 inline w-5 h-5' src={timeIcon} alt='' />
+                    {info.time}
+                  </div>
                   <iframe
                     src={`https://www.google.com/maps/embed${getGoogleMapIframe(info.address)}`}
-                    className='w-full h-80'
+                    className='w-full h-80 mt-4 border'
                     loading='lazy'></iframe>
-                  <div className='flex'>
-                    <span>Add to calendar</span>
+                  <div className='flex justify-between items-center mt-4'>
+                    <span className='tracking-wider font-semibold text-gray-600'>Add to calendar</span>
                     <img
                       src={googleCalendarIco}
                       alt='google-calendar-icon'
@@ -358,7 +369,6 @@ function Schedule() {
                         handleClickGoogleCalendar(info);
                       }}
                     />
-                    <img src={iosCalendarIco} alt='ios-calendar-ico' className='w-8 h-8 border rounded-lg' />
                   </div>
                 </div>
               )}
@@ -366,17 +376,32 @@ function Schedule() {
                 info.map((item, index) => {
                   return (
                     <div key={index}>
-                      <div className='border-b'>{renderTitle(item.title)}</div>
-                      <div>{item.date.replace('-', '/').replace('-', '/')}</div>
-                      {item.tag && <div>{renderTeam(item.tag)}</div>}
-                      <div>{renderAddress(item.address)}</div>
-                      <div>{item.time}</div>
+                      {index > 0 && <div className='w-full border border-gray-500 my-5' />}
+                      <div className='border-b font-serif font-bold text-xl mb-2 pb-2'>{renderTitle(item.title)}</div>
+                      <div className='mt-4 flex gap-2 items-center tracking-wider'>
+                        <img className='opacity-50 inline w-5 h-5' src={calendarIcon} alt='calendar-icon' />
+                        {item.date.replace('-', '/').replace('-', '/')}
+                      </div>
+                      {item.tag && (
+                        <div className='mt-4 flex gap-2 tracking-wider'>
+                          <img className='opacity-50 inline w-5 h-5 mt-1' src={personIcon} alt='team-icon' />
+                          {renderTeam(item.tag)}
+                        </div>
+                      )}
+                      <div className='mt-4 flex gap-2'>
+                        <img className='opacity-50 inline w-5 h-5 mt-1' src={locationIcon} alt='address-icon' />
+                        {renderAddress(item.address)}
+                      </div>
+                      <div className='mt-4 flex gap-2 items-center'>
+                        <img className='opacity-50 inline w-5 h-5' src={timeIcon} alt='time-icon' />
+                        {item.time}
+                      </div>
                       <iframe
                         src={`https://www.google.com/maps/embed${getGoogleMapIframe(item.address)}`}
-                        className='w-full h-80'
+                        className='w-full h-80 mt-4 border'
                         loading='lazy'></iframe>
-                      <div className='flex'>
-                        <span>Add to calendar</span>
+                      <div className='flex justify-between items-center mt-4'>
+                        <span className='tracking-wider font-semibold text-gray-600'>Add to calendar</span>
                         <img
                           src={googleCalendarIco}
                           alt='google-calendar-icon'
@@ -384,11 +409,6 @@ function Schedule() {
                           onClick={() => {
                             handleClickGoogleCalendar(item);
                           }}
-                        />
-                        <img
-                          src={iosCalendarIco}
-                          alt='ios-calendar-ico'
-                          className='w-8 h-8 border rounded-lg cursor-pointer'
                         />
                       </div>
                     </div>
