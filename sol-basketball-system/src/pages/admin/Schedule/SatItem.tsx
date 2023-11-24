@@ -62,7 +62,6 @@ function SatItem({ schedule, quarter, year }: PropsType) {
         viewBox='0 0 20 20'
         fill='currentColor'
         onClick={() => {
-          console.log(schedule);
           const { date } = schedule;
           updateDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
             [date]: arrayRemove({ ...schedule }),

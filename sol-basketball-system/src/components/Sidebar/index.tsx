@@ -13,7 +13,7 @@ function Sidebar() {
       <div className='flex text-white flex-col text-2xl gap-2 pl-2'>
         <Link to='/'>Schedules</Link>
         <Link to='/games'>Games</Link>
-        {isLogin && user.role === 'user' && (
+        {isLogin && user && user.role === 'user' && (
           <>
             <div>Member</div>
             <Link to='/profile' className='pl-3 text-lg'>
@@ -30,7 +30,7 @@ function Sidebar() {
             <Link to='/purchase'>Purchase</Link>
           </>
         )}
-        {isLogin && user.role === 'admin' && (
+        {isLogin && user && user.role === 'admin' && (
           <>
             <Link to='/admin/schedule'>Manage Schedules</Link>
             <Link to='/attendance'>Attendance</Link>

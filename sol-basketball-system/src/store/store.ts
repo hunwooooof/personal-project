@@ -133,7 +133,6 @@ export const useStore = create<StoreState>((set) => ({
   googleSignup: () => {
     signInWithPopup(auth, provider)
       .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
         set(() => ({ isLogin: true }));
         const { user } = result;
         return user;
@@ -160,12 +159,31 @@ export const useStore = create<StoreState>((set) => ({
   googleLogin: () => {
     signInWithPopup(auth, provider)
       .then((result) => {
-        set(() => ({ isLogin: true }));
         const { user } = result;
         return user;
       })
       .then((user) => {
-        set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        getDoc(doc(db, 'users', user.uid)).then((userSnap) => {
+          const userDoc = userSnap.data();
+          if (userDoc) {
+            set(() => ({ userRef: doc(db, 'users', user.uid) }));
+            set(() => ({ isLogin: true }));
+          } else {
+            const initialProfile = {
+              photoURL: user.photoURL,
+              email: user.email,
+              kids: [],
+              displayName: user.displayName,
+              phoneNumber: user.phoneNumber,
+              registrationDate: user.metadata.creationTime,
+              role: 'user',
+            };
+            set(() => ({ user: initialProfile as UserType }));
+            set(() => ({ isLogin: true }));
+            setDoc(doc(db, 'users', user.uid), initialProfile);
+            set(() => ({ userRef: doc(db, 'users', user.uid) }));
+          }
+        });
       })
       .catch((error) => {
         console.error(error);

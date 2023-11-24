@@ -12,7 +12,7 @@ interface DetailType {
   date: string;
   tag?: string;
   time: '19:00-21:00';
-  title: 'skills-training';
+  title: 'team-practice';
 }
 
 function Sunday({ date, quarter, year }: PropsType) {
@@ -20,13 +20,13 @@ function Sunday({ date, quarter, year }: PropsType) {
   const showDate = date.slice(5).replace('-', '/');
   const detail: DetailType = {
     address: 'blessed-imeldas-school',
-    date: showDate,
+    date: date,
     time: '19:00-21:00',
-    title: 'skills-training',
+    title: 'team-practice',
   };
 
   const unScheduledClass = `px-12 py-5 border shadow-md rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner hover:bg-teal-50`;
-  const isScheduledClass = `px-12 py-5 border shadow-md rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner hover:bg-teal-50 bg-teal-50`;
+  const isScheduledClass = `px-12 py-5 border shadow-md rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner hover:bg-teal-100 bg-teal-100`;
 
   return (
     <div>
