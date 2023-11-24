@@ -1,12 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '../../store/store';
-import { arrayRemove, arrayUnion, collection, db, doc, getDoc, getDocs, updateDoc } from '../../utils/firebase';
+import { useStore } from '../../../store/store';
+import { arrayRemove, arrayUnion, collection, db, doc, getDoc, getDocs, updateDoc } from '../../../utils/firebase';
 
 interface AttendanceType {
   docId: string;
   name: string;
   showUpDate: string[];
+}
+
+interface CreditDocType {
+  all: number;
+  docId: string;
+  name: string;
+  used: number;
 }
 
 function Attendance() {
@@ -71,6 +78,19 @@ function Attendance() {
     }
   };
 
+  const [allCredits, setAllCredits] = useState<CreditDocType[]>();
+  async function getCredits() {
+    const creditsSnapshot = await getDocs(collection(db, 'credits'));
+    const creditsArray: object[] = [];
+    creditsSnapshot.forEach((doc) => {
+      creditsArray.push(doc.data());
+    });
+    setAllCredits(creditsArray as CreditDocType[]);
+  }
+  useEffect(() => {
+    getCredits();
+  }, []);
+
   const arrowClass = 'w-6 h-6 p-1 bg-amber-200 ml-2 rounded-md cursor-pointer shadow-md hover:bg-amber-300 select-none';
   const renderArrowLeft = () => {
     return (
@@ -125,7 +145,7 @@ function Attendance() {
                   const countShowUp = attendance.showUpDate.length;
                   updateDoc(doc(db, 'credits', docId), {
                     used: countShowUp,
-                  });
+                  }).then(() => getCredits());
                 }
               });
             });
@@ -161,7 +181,7 @@ function Attendance() {
                   const countShowUp = attendance.showUpDate.length;
                   updateDoc(doc(db, 'credits', docId), {
                     used: countShowUp,
-                  });
+                  }).then(() => getCredits());
                 }
               });
             });
@@ -224,6 +244,12 @@ function Attendance() {
                   </div>
                 );
               })}
+              <div className='bg-red-600 font-bold text-white shrink-0 w-24 text-sm tracking-wider text-center border-2 border-red-50 rounded-md py-1 select-none'>
+                Used
+              </div>
+              <div className='bg-orange-600 font-bold text-white shrink-0 w-24 text-sm tracking-wider text-center border-2 border-orange-50 rounded-md py-1 select-none'>
+                Purchased
+              </div>
             </div>
             {attendances.length > 0 &&
               attendances.map((attendance: AttendanceType) => {
@@ -245,6 +271,30 @@ function Attendance() {
                         );
                       })}
                     </div>
+                    {allCredits?.map((each) => {
+                      if (each.docId === docId) {
+                        return (
+                          <div className='flex' key={`${docId}${each.used}${each.all}`}>
+                            <div className='shrink-0 w-24 text-md mx-auto border-2 border-gray-50 py-1 flex justify-center font-bold'>
+                              {each.used}
+                            </div>
+                            <div className='shrink-0 w-24 text-md mx-auto border-2 border-gray-50 py-1 flex justify-center font-bold'>
+                              {each.all}
+                            </div>
+                          </div>
+                        );
+                      }
+                    })}
+                    {!allCredits?.some((each) => each.docId === docId) && (
+                      <div className='flex' key={`${docId}0`}>
+                        <div className='shrink-0 w-24 text-md mx-auto border-2 border-gray-50 py-1 flex justify-center font-bold'>
+                          0
+                        </div>
+                        <div className='shrink-0 w-24 text-md mx-auto border-2 border-gray-50 py-1 flex justify-center font-bold'>
+                          0
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}

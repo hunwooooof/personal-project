@@ -3,7 +3,6 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import App from './App.tsx';
 
 import './index.css';
-import Attendance from './pages/Attendance/index.tsx';
 import Login from './pages/Login/index.tsx';
 import Order from './pages/Order/index.tsx';
 import Profile from './pages/Profile/index.tsx';
@@ -11,6 +10,7 @@ import Purchase from './pages/Purchase/index.tsx';
 import Schedule from './pages/Schedule/index.tsx';
 import Session from './pages/Session/index.tsx';
 import Signup from './pages/Signup/index.tsx';
+import Attendance from './pages/admin/Attendance/index.tsx';
 import AdminOrder from './pages/admin/Order/index.tsx';
 import AdminSchedule from './pages/admin/Schedule/index.tsx';
 
