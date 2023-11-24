@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
+import { apiCalendar } from '../../utils/googleCalendar';
 import Friday from './Friday';
 import Saturday from './Saturday';
 import Sunday from './Sunday';
 import googleCalendarIco from './google-calendar_icon.png';
 import iosCalendarIco from './ios-calendar_icon.webp';
+
 interface AllDatesType {
   friday: string[];
   saturday: string[];
@@ -17,6 +19,20 @@ interface DetailType {
   tag?: string;
   time: string;
   title: string;
+}
+
+interface EventType {
+  end: {
+    dateTime: string;
+    timeZone: string;
+  };
+  start: {
+    dateTime: string;
+    timeZone: string;
+  };
+  location: string;
+  summary: string;
+  description: string;
 }
 
 function Schedule() {
@@ -222,6 +238,35 @@ function Schedule() {
     }
   };
 
+  // ==========
+  //  Calendar
+  // ==========
+
+  const handleClickGoogleCalendar = (item: DetailType) => {
+    console.log(item);
+    const userConfirm = confirm('To add an event to your Google Calendar, press "OK" to select an account.');
+    if (userConfirm) {
+      apiCalendar.handleAuthClick().then(() => {
+        const event: EventType = {
+          start: {
+            dateTime: `${item.date}T${item.time.slice(0, 5)}:00+08:00`,
+            timeZone: 'Asia/Taipei',
+          },
+          end: {
+            dateTime: `${item.date}T${item.time.slice(6)}:00+08:00`,
+            timeZone: 'Asia/Taipei',
+          },
+          location: `${renderAddress(item.address)}`,
+          summary: `${renderTitle(item.title)}`,
+          description: `${item.tag ? renderTeam(item.tag) : ''}`,
+        };
+        apiCalendar.createEvent(event).then((result: object) => {
+          console.log(result);
+        });
+      });
+    }
+  };
+
   return (
     <div className='custom-main-container mt-14'>
       <div className='w-10/12 mx-auto'>
@@ -286,7 +331,7 @@ function Schedule() {
             )}
           </div>
           {isInfoShow && info && (
-            <div className='w-4/12 p-6 ml-5 border rounded-lg relative shadow-md'>
+            <div className='w-4/12 p-6 ml-5 border rounded-lg relative shadow-md h-screen overflow-y-auto'>
               <button
                 onClick={() => setInfoShow(false)}
                 className='hover:text-black text-gray-300 px-2 py-1 rounded-full cursor-pointer absolute right-4 top-4'>
@@ -305,7 +350,14 @@ function Schedule() {
                     loading='lazy'></iframe>
                   <div className='flex'>
                     <span>Add to calendar</span>
-                    <img src={googleCalendarIco} alt='google-calendar-icon' className='w-8 h-8' />
+                    <img
+                      src={googleCalendarIco}
+                      alt='google-calendar-icon'
+                      className='w-8 h-8 cursor-pointer'
+                      onClick={() => {
+                        handleClickGoogleCalendar(info);
+                      }}
+                    />
                     <img src={iosCalendarIco} alt='ios-calendar-ico' className='w-8 h-8 border rounded-lg' />
                   </div>
                 </div>
@@ -325,8 +377,19 @@ function Schedule() {
                         loading='lazy'></iframe>
                       <div className='flex'>
                         <span>Add to calendar</span>
-                        <img src={googleCalendarIco} alt='google-calendar-icon' className='w-8 h-8' />
-                        <img src={iosCalendarIco} alt='ios-calendar-ico' className='w-8 h-8 border rounded-lg' />
+                        <img
+                          src={googleCalendarIco}
+                          alt='google-calendar-icon'
+                          className='w-8 h-8 cursor-pointer'
+                          onClick={() => {
+                            handleClickGoogleCalendar(item);
+                          }}
+                        />
+                        <img
+                          src={iosCalendarIco}
+                          alt='ios-calendar-ico'
+                          className='w-8 h-8 border rounded-lg cursor-pointer'
+                        />
                       </div>
                     </div>
                   );
