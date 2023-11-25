@@ -13,6 +13,7 @@ import Signup from './pages/Signup/index.tsx';
 import Attendance from './pages/admin/Attendance/index.tsx';
 import AdminOrder from './pages/admin/Order/index.tsx';
 import AdminSchedule from './pages/admin/Schedule/index.tsx';
+import Student from './pages/admin/Students/index.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
@@ -25,9 +26,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path='session' element={<Session />} />
         <Route path='order' element={<Order />} />
         <Route path='purchase' element={<Purchase />} />
-        <Route path='attendance' element={<Attendance />} />
+        <Route path='admin/attendance' element={<Attendance />} />
         <Route path='admin/order' element={<AdminOrder />} />
         <Route path='admin/schedule' element={<AdminSchedule />} />
+        <Route path='admin/students' element={<Student />} />
         <Route path='*' element={<Navigate to='/' replace />} />
       </Route>
     </Routes>
