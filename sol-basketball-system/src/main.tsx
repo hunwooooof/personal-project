@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import App from './App.tsx';
 
 import './index.css';
+import GameVideos from './pages/GameVideos/index.tsx';
 import Login from './pages/Login/index.tsx';
 import Order from './pages/Order/index.tsx';
 import Profile from './pages/Profile/index.tsx';
@@ -26,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path='session' element={<Session />} />
         <Route path='order' element={<Order />} />
         <Route path='purchase' element={<Purchase />} />
+        <Route path='videos' element={<GameVideos />} />
         <Route path='admin/attendance' element={<Attendance />} />
         <Route path='admin/order' element={<AdminOrder />} />
         <Route path='admin/schedule' element={<AdminSchedule />} />

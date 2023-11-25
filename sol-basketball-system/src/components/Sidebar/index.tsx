@@ -12,7 +12,7 @@ function Sidebar() {
       </Link>
       <div className='flex text-white flex-col text-2xl gap-2 pl-2'>
         <Link to='/'>Schedules</Link>
-        <Link to='/games'>Games</Link>
+        <Link to='/videos'>Game Videos</Link>
         {isLogin && user && user.role === 'user' && (
           <>
             <div>Member</div>
