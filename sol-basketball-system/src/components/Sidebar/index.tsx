@@ -35,7 +35,7 @@ function Sidebar() {
             <Link to='/admin/schedule'>Manage Schedules</Link>
             <Link to='/attendance'>Attendance</Link>
             <Link to='/admin/order'>Orders</Link>
-            <Link to='/admin/profile'>Profile</Link>
+            <Link to='/admin/students'>Students</Link>
           </>
         )}
         {isLogin && (
