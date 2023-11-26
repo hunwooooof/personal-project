@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useStore } from '../../store/store';
 import { collection, db, doc, getDocs, setDoc } from '../../utils/firebase';
 import Video from './Video';
 
@@ -10,11 +11,11 @@ interface VideoType {
   type?: string;
 }
 function GameVideos() {
+  const { user, isLogin } = useStore();
   const [topLeague, setTopLeague] = useState<VideoType[]>([]);
   const [friendlyGame, setFriendlyGame] = useState<VideoType[]>([]);
-  const [filteredTopLeague, setFilteredTopLeague] = useState<VideoType[]>([]);
-  const [filteredFriendlyGame, setFilteredFriendlyGame] = useState<VideoType[]>([]);
-  const [tagFilter, setTagFilter] = useState('all');
+  const [filteredTopLeague, setFilteredTopLeague] = useState<VideoType[]>(topLeague);
+  const [filteredFriendlyGame, setFilteredFriendlyGame] = useState<VideoType[]>(friendlyGame);
   const [newVideo, setNewVideo] = useState<VideoType>({
     tag: 'u10',
     date: '',
@@ -35,6 +36,7 @@ function GameVideos() {
       return videoA - videoB;
     });
     setTopLeague(videos);
+    setFilteredTopLeague(videos);
   };
 
   const getFriendlyGameVideos = async () => {
@@ -49,12 +51,13 @@ function GameVideos() {
       return videoA - videoB;
     });
     setFriendlyGame(videos);
+    setFilteredFriendlyGame(videos);
   };
 
   useEffect(() => {
     getTopLeagueVideos();
     getFriendlyGameVideos();
-  }, []);
+  }, [isLogin]);
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
@@ -83,7 +86,7 @@ function GameVideos() {
   return (
     <div className='custom-main-container mt-28'>
       <div className='w-10/12 mx-auto pb-20'>
-        {true && (
+        {user.role === 'admin' && (
           <div>
             <div className='flex mt-6  px-3 py-2 text-xl border-b border-gray-200 mb-8'>
               <div>Add Video</div>
@@ -131,17 +134,6 @@ function GameVideos() {
                         ...newVideo,
                         tag: value,
                       });
-                      if (tagFilter === 'u10') {
-                        setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u10'));
-                        setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u10'));
-                      }
-                      if (tagFilter === 'u12') {
-                        setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u12'));
-                        setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u12'));
-                      } else {
-                        setFilteredTopLeague(topLeague);
-                        setFilteredFriendlyGame(friendlyGame);
-                      }
                     }}>
                     <option value='u10' id='u10'>
                       U10
@@ -212,14 +204,29 @@ function GameVideos() {
         <div className='flex px-3 py-2 text-xl border-b border-gray-200 mb-8 mt-16'>
           <div>Top League</div>
           <div className='ml-auto'>
-            <select name='tag' id='tag' className='text-md px-2' onChange={(e) => setTagFilter(e.target.value)}>
+            <select
+              name='tag'
+              id='tag'
+              className='text-md px-2'
+              onChange={(e) => {
+                if (e.target.value === 'u10') {
+                  setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u10'));
+                  setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u10'));
+                } else if (e.target.value === 'u12') {
+                  setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u12'));
+                  setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u12'));
+                } else {
+                  setFilteredTopLeague(topLeague);
+                  setFilteredFriendlyGame(friendlyGame);
+                }
+              }}>
               <option value='all'>All</option>
               <option value='u10'>U10</option>
               <option value='u12'>U12</option>
             </select>
           </div>
         </div>
-        <div className='w-11/12 mx-auto overflow-x-auto flex gap-6'>
+        <div className='w-11/12 mx-auto overflow-x-auto flex gap-6 pb-5'>
           {filteredTopLeague.map((video) => {
             return <Video key={video.youtubeId} video={video} type='top-league' getVideo={getTopLeagueVideos} />;
           })}
@@ -230,7 +237,7 @@ function GameVideos() {
         <div className='flex px-3 py-2 text-xl border-b border-gray-200 mb-8 mt-16'>
           <div>Friendly Game</div>
         </div>
-        <div className='w-11/12 mx-auto overflow-x-auto flex gap-6'>
+        <div className='w-11/12 mx-auto overflow-x-auto flex gap-6 pb-5'>
           {filteredFriendlyGame.map((video) => {
             return <Video key={video.youtubeId} video={video} type='friendly-game' getVideo={getFriendlyGameVideos} />;
           })}

@@ -1,3 +1,4 @@
+import { useStore } from '../../store/store';
 import { db, deleteDoc, doc } from '../../utils/firebase';
 
 interface PropsType {
@@ -19,6 +20,8 @@ interface VideoType {
 }
 
 function Video({ video, type, getVideo }: PropsType) {
+  const { user } = useStore();
+
   const handleDelete = (video: VideoType, type: string, getVideo: () => void) => {
     const userConfirm = confirm('Are you sure you want to delete this video?');
     if (userConfirm) deleteDoc(doc(db, 'videos', 'roadrunners', type, video.youtubeId)).then(() => getVideo());
@@ -40,9 +43,11 @@ function Video({ video, type, getVideo }: PropsType) {
         </div>
         <div className='flex justify-between mt-2 px-2 items-center'>
           <div className='font-bold'>{video.title}</div>
-          <button className='text-gray-400 hover:text-red-500' onClick={() => handleDelete(video, type, getVideo)}>
-            Delete
-          </button>
+          {user.role === 'admin' && (
+            <button className='text-gray-400 hover:text-red-500' onClick={() => handleDelete(video, type, getVideo)}>
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </div>
