@@ -13,11 +13,3 @@ html {
 .custom-signin-input {
   @apply w-full p-4 border border-[#00000060] rounded-sm;
 }
-
-.material-icons {
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
-}

@@ -203,7 +203,8 @@ export const useStore = create<StoreState>((set) => ({
       .then(() => {
         console.log('Sign-out successful');
         set(() => ({ isLogin: false }));
-        localStorage.removeItem('jwtToken');
+        set(() => ({ user: {} }));
+        set(() => ({ userRef: undefined }));
       })
       .catch((error) => {
         console.log(error);
