@@ -1,7 +1,5 @@
-# Sol Basketball Manage System
+# [Sol Basketball Manage System](https://system-1.web.app)
 
-
-[Demo](https://system-1.web.app)
 
 ## 作品說明
 為了 Sol Basketball 週末籃球訓練班所設計的課表與出席系統，使用者能在上面查看每一季課表與賽程、比賽影片，登入後能購買課程點數、查看點數使用狀況以及出席情況。管理員登入管理帳號後，則能新增刪除課表、影片，編輯學生出席狀況與管理已購買的課程訂單。
