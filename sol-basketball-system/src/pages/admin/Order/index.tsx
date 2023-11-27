@@ -134,7 +134,7 @@ function AdminOrder() {
             status: 'IN_PROCESS',
           }).then(() => getOrders());
         }}
-        className='h-6 py-1 cursor-pointer hover:text-blue-400'>
+        className='h-6 p-1 cursor-pointer hover:text-blue-400'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -211,7 +211,7 @@ function AdminOrder() {
                     <div className='w-36'>
                       {order.status === 'SUCCESS' ? 'Success' : order.status === 'IN_PROCESS' ? 'In process' : 'Failed'}
                     </div>
-                    <div className='w-16 flex items-center gap-4 justify-center'>
+                    <div className='w-16 flex items-center gap-4'>
                       {order.status === 'IN_PROCESS'
                         ? renderUncheck(order.id, order.kid.docId, order.plan)
                         : order.status === 'SUCCESS'

@@ -91,6 +91,7 @@ function Profile() {
         <div className='w-8/12 mx-auto flex flex-col items-center gap-3'>
           <img src={user.photoURL} className='w-24 h-24 object-cover rounded-full border border-slate-200' />
           <div>{user.displayName}</div>
+          <div>{user.phoneNumber}</div>
           <div className='flex gap-2 items-center'>
             <div>{user.email}</div>
             <span

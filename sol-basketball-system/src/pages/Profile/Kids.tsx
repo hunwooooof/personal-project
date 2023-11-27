@@ -61,7 +61,7 @@ function Kids() {
 
   const handleChangeNewKidProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
-    setNewKid({ ...newKid, [id]: e.target.value });
+    setNewKid({ ...newKid, [id]: e.target.value.trim() });
   };
 
   const handleAddNewKid = () => {
@@ -207,9 +207,10 @@ function Kids() {
             onChange={handleChangeNewKidProfile}
             className={inputFieldClass}
           />
-          <div className='flex gap-2 items-center mt-1'>
+          <div className='flex gap-2 items-center mt-1 text-white'>
             <button
-              className='px-1 rounded-sm bg-green-300 hover:bg-gray-300 text-md w-20 text-center'
+              className='px-1 rounded-sm bg-green-600 text-md w-20 text-center hover:bg-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed'
+              disabled={Object.values(newKid).some((item) => item.length === 0)}
               onClick={() => {
                 setAddingKid(false);
                 handleAddNewKid();
@@ -217,9 +218,10 @@ function Kids() {
               Save
             </button>
             <button
-              className='px-1 rounded-sm bg-red-300 hover:bg-gray-300 text-md w-20 text-center'
+              className='px-1 rounded-sm bg-red-500 text-md w-20 text-center hover:bg-red-400'
               onClick={() => {
                 setAddingKid(false);
+                setNewKid({ ...emptyNewKid });
               }}>
               Cancel
             </button>

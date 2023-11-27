@@ -17,11 +17,11 @@ function GameVideos() {
   const [filteredTopLeague, setFilteredTopLeague] = useState<VideoType[]>(topLeague);
   const [filteredFriendlyGame, setFilteredFriendlyGame] = useState<VideoType[]>(friendlyGame);
   const [newVideo, setNewVideo] = useState<VideoType>({
-    tag: 'u10',
+    tag: '',
     date: '',
     title: '',
     youtubeId: '',
-    type: 'top-league',
+    type: '',
   });
 
   const getTopLeagueVideos = async () => {
@@ -61,7 +61,7 @@ function GameVideos() {
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
-    setNewVideo({ ...newVideo, [id]: e.target.value });
+    setNewVideo({ ...newVideo, [id]: e.target.value.trim() });
   };
 
   const handleSubmit = () => {
@@ -75,11 +75,11 @@ function GameVideos() {
       type === 'top-league' ? getTopLeagueVideos() : getFriendlyGameVideos();
     });
     setNewVideo({
-      tag: 'u10',
+      tag: '',
       date: '',
       title: '',
       youtubeId: '',
-      type: 'top-league',
+      type: '',
     });
   };
 
@@ -94,7 +94,7 @@ function GameVideos() {
             <div className='flex justify-between items-center w-11/12 mx-auto'>
               <div className='flex flex-col gap-2'>
                 <div>
-                  <label className='inline-block w-32 text-gray-500 text-center' htmlFor='date'>
+                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='date'>
                     Date
                   </label>
                   <input
@@ -104,10 +104,11 @@ function GameVideos() {
                     className='border border-gray-800 py-1 rounded-lg px-2 w-36'
                     value={newVideo.date}
                     onChange={handleChangeInput}
+                    required
                   />
                 </div>
                 <div>
-                  <label className='inline-block w-32 text-gray-500 text-center' htmlFor='title'>
+                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='title'>
                     Title
                   </label>
                   <input
@@ -116,12 +117,14 @@ function GameVideos() {
                     id='title'
                     className='border border-gray-800 py-1 rounded-lg w-56 px-2'
                     value={newVideo.title}
+                    placeholder='Roadrunners vs TOP'
                     onChange={handleChangeInput}
+                    required
                   />
                 </div>
 
                 <div>
-                  <label className='inline-block w-32 text-gray-500 text-center' htmlFor='tag'>
+                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='tag'>
                     Age
                   </label>
                   <select
@@ -135,7 +138,7 @@ function GameVideos() {
                         tag: value,
                       });
                     }}>
-                    <option value='select' selected>
+                    <option value='' selected>
                       Select age
                     </option>
                     <option value='u10'>U10</option>
@@ -143,7 +146,7 @@ function GameVideos() {
                   </select>
                 </div>
                 <div>
-                  <label className='inline-block w-32 text-gray-500 text-center' htmlFor='tag'>
+                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='tag'>
                     Type
                   </label>
 
@@ -158,7 +161,7 @@ function GameVideos() {
                         type: value,
                       });
                     }}>
-                    <option value='select' selected>
+                    <option value='' selected>
                       Select game type
                     </option>
                     <option value='top-league'>Top League</option>
@@ -166,7 +169,7 @@ function GameVideos() {
                   </select>
                 </div>
                 <div>
-                  <label className='inline-block w-32 text-gray-500 text-center' htmlFor='link'>
+                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='link'>
                     YouTube Link
                   </label>
                   <span className='text-gray-500 text-sm font-serif'>https://www.youtube.com/watch?v=</span>
@@ -177,11 +180,16 @@ function GameVideos() {
                     className='border border-gray-800 py-1 rounded-lg w-36 px-2'
                     value={newVideo.youtubeId}
                     onChange={handleChangeInput}
+                    placeholder='07NkJZ2N94M'
                   />
                 </div>
                 <button
-                  className='w-32 mx-auto rounded-md text-white bg-gray-500 mt-4 py-1 hover:bg-black'
-                  onClick={handleSubmit}>
+                  className='w-32 mx-auto rounded-md text-white bg-green-800 mt-4 py-1 shadow-lg hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none'
+                  onClick={handleSubmit}
+                  disabled={
+                    Object.values(newVideo).some((item) => item.length === 0) || newVideo.youtubeId.length !== 11
+                  }
+                  type='submit'>
                   Add Video
                 </button>
               </div>
@@ -200,7 +208,7 @@ function GameVideos() {
                       {newVideo.tag === 'u10' ? 'U10' : newVideo.tag === 'u12' ? 'U12' : ''}
                     </div>
                   </div>
-                  <div className='font-bold'>{newVideo.title}</div>
+                  <div className='font-bold w-72'>{newVideo.title}</div>
                 </div>
               </div>
             </div>
