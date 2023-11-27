@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../../store/store';
-import { arrayRemove, arrayUnion, collection, db, doc, getDoc, getDocs, updateDoc } from '../../../utils/firebase';
+import { collection, db, doc, firestoreApi, getDoc, getDocs } from '../../../utils/firebase';
 
 interface AttendanceType {
   docId: string;
@@ -134,18 +134,15 @@ function Attendance() {
       <svg
         id={date}
         onClick={(e) => {
-          updateDoc(doc(db, 'attendance', docId), {
-            showUpDate: arrayUnion(e.currentTarget.id),
-          })
+          firestoreApi
+            .updateDocArrayUnion('attendance', docId, 'showUpDate', e.currentTarget.id)
             .then(() => getAttendances())
             .then(() => {
               getDoc(doc(db, 'attendance', docId)).then((attendanceSnap) => {
                 const attendance = attendanceSnap.data();
                 if (attendance) {
                   const countShowUp = attendance.showUpDate.length;
-                  updateDoc(doc(db, 'credits', docId), {
-                    used: countShowUp,
-                  }).then(() => getCredits());
+                  firestoreApi.updateDocWithObject('credits', docId, 'used', countShowUp).then(() => getCredits());
                 }
               });
             });
@@ -170,18 +167,15 @@ function Attendance() {
       <svg
         id={date}
         onClick={(e) => {
-          updateDoc(doc(db, 'attendance', docId), {
-            showUpDate: arrayRemove(e.currentTarget.id),
-          })
+          firestoreApi
+            .updateDocArrayRemove('attendance', docId, 'showUpDate', e.currentTarget.id)
             .then(() => getAttendances())
             .then(() => {
               getDoc(doc(db, 'attendance', docId)).then((attendanceSnap) => {
                 const attendance = attendanceSnap.data();
                 if (attendance) {
                   const countShowUp = attendance.showUpDate.length;
-                  updateDoc(doc(db, 'credits', docId), {
-                    used: countShowUp,
-                  }).then(() => getCredits());
+                  firestoreApi.updateDocWithObject('credits', docId, 'used', countShowUp).then(() => getCredits());
                 }
               });
             });

@@ -44,6 +44,77 @@ const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 const storage = getStorage(app);
 
+const firestoreApi = {
+  updateDocWithObject: async (
+    collection1: string,
+    document1: string,
+    field: string,
+    content: string,
+    collection2?: string,
+    document2?: string,
+  ) => {
+    if (!collection2 || !document2)
+      await updateDoc(doc(db, collection1, document1), {
+        [field]: content,
+      });
+    if (collection2 && document2)
+      await updateDoc(doc(db, collection1, document1, collection2, document2), {
+        [field]: content,
+      });
+  },
+  updateDocArrayUnion: async (
+    collection1: string,
+    document1: string,
+    field: string,
+    content: string | object,
+    collection2?: string,
+    document2?: string,
+  ) => {
+    if (!collection2 || !document2)
+      await updateDoc(doc(db, collection1, document1), {
+        [field]: arrayUnion(content),
+      });
+    if (collection2 && document2)
+      await updateDoc(doc(db, collection1, document1, collection2, document2), {
+        [field]: arrayUnion(content),
+      });
+  },
+  updateDocArrayRemove: async (
+    collection1: string,
+    document1: string,
+    field: string,
+    content: string | object,
+    collection2?: string,
+    document2?: string,
+  ) => {
+    if (!collection2 || !document2)
+      await updateDoc(doc(db, collection1, document1), {
+        [field]: arrayRemove(content),
+      });
+    if (collection2 && document2)
+      await updateDoc(doc(db, collection1, document1, collection2, document2), {
+        [field]: arrayRemove(content),
+      });
+  },
+  updateDocIncrement: async (
+    collection1: string,
+    document1: string,
+    field: string,
+    content: number,
+    collection2?: string,
+    document2?: string,
+  ) => {
+    if (!collection2 || !document2)
+      await updateDoc(doc(db, collection1, document1), {
+        [field]: increment(content),
+      });
+    if (collection2 && document2)
+      await updateDoc(doc(db, collection1, document1, collection2, document2), {
+        [field]: increment(content),
+      });
+  },
+};
+
 export {
   GoogleAuthProvider,
   addDoc,
@@ -56,6 +127,7 @@ export {
   deleteDoc,
   deleteObject,
   doc,
+  firestoreApi,
   getDoc,
   getDocs,
   getDownloadURL,

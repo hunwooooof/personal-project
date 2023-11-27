@@ -1,5 +1,5 @@
 import { useStore } from '../../../store/store';
-import { arrayRemove, arrayUnion, db, deleteDoc, doc, getDoc, setDoc, updateDoc } from '../../../utils/firebase';
+import { db, deleteDoc, doc, firestoreApi, getDoc, setDoc } from '../../../utils/firebase';
 
 interface PropsType {
   date: string;
@@ -37,9 +37,7 @@ function Sunday({ date, quarter, year }: PropsType) {
             getDoc(doc(db, 'schedule', `${year}Q${quarter}`))
               .then((scheduleSnap) => {
                 if (scheduleSnap.data()) {
-                  updateDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
-                    all: arrayUnion(date),
-                  });
+                  firestoreApi.updateDocArrayUnion('schedule', `${year}Q${quarter}`, 'all', date);
                   setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'sunday', date), detail);
                 } else {
                   setDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
@@ -58,9 +56,9 @@ function Sunday({ date, quarter, year }: PropsType) {
         <div
           className={isScheduledClass}
           onClick={() => {
-            updateDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
-              all: arrayRemove(date),
-            }).then(() => getScheduledDates(year, quarter));
+            firestoreApi
+              .updateDocArrayRemove('schedule', `${year}Q${quarter}`, 'all', date)
+              .then(() => getScheduledDates(year, quarter));
             deleteDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'sunday', date));
           }}>
           {showDate}

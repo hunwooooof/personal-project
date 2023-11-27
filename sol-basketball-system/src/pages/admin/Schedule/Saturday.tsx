@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '../../../store/store';
-import { arrayRemove, arrayUnion, db, doc, getDoc, setDoc, updateDoc } from '../../../utils/firebase';
+import { db, doc, firestoreApi, getDoc, setDoc } from '../../../utils/firebase';
 import SatItem from './SatItem';
 
 interface PropsType {
@@ -89,9 +89,9 @@ function Saturday({ date, quarter, year }: PropsType) {
   const handleClickAdd = () => {
     getDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date)).then((scheduleSnap) => {
       if (scheduleSnap.data()) {
-        updateDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
-          [date]: arrayUnion({ ...detail }),
-        }).then(() => getSaturdaySchedules(year, quarter));
+        firestoreApi
+          .updateDocArrayUnion('schedule', `${year}Q${quarter}`, date, { ...detail }, 'saturday', date)
+          .then(() => getSaturdaySchedules(year, quarter));
       } else {
         setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
           [date]: [{ ...detail }],
@@ -110,9 +110,7 @@ function Saturday({ date, quarter, year }: PropsType) {
               getDoc(doc(db, 'schedule', `${year}Q${quarter}`))
                 .then((scheduleSnap) => {
                   if (scheduleSnap.data()) {
-                    updateDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
-                      all: arrayUnion(date),
-                    });
+                    firestoreApi.updateDocArrayUnion('schedule', `${year}Q${quarter}`, 'all', date);
                   } else {
                     setDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
                       all: [date],
@@ -297,12 +295,10 @@ function Saturday({ date, quarter, year }: PropsType) {
         <div
           className={isScheduledClass}
           onClick={() => {
-            updateDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
-              all: arrayRemove(date),
-            }).then(() => getScheduledDates(year, quarter));
-            updateDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
-              [date]: arrayRemove(detail),
-            });
+            firestoreApi
+              .updateDocArrayRemove('schedule', `${year}Q${quarter}`, 'all', date)
+              .then(() => getScheduledDates(year, quarter));
+            firestoreApi.updateDocArrayRemove('schedule', `${year}Q${quarter}`, date, detail, 'saturday', date);
           }}>
           {showDate} <span className='font-normal text-gray-500'>{`(${Object.values(todaySchedule)[0].length})`}</span>
         </div>
