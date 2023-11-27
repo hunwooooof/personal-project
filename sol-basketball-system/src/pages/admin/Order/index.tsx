@@ -2,7 +2,7 @@ import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../../store/store';
-import { collection, db, firestoreApi, getDocs } from '../../../utils/firebase';
+import { firestore } from '../../../utils/firestore';
 
 interface OrderType {
   id: string;
@@ -33,10 +33,12 @@ function AdminOrder() {
   const [tag, setTag] = useState('all');
   const [orders, setOrders] = useState<OrderType[]>([]);
   async function getOrders() {
-    const ordersSnapshot = await getDocs(collection(db, 'orders'));
-    const ordersArray: OrderType[] = [];
-    ordersSnapshot.forEach((doc) => ordersArray.push(doc.data() as OrderType));
-    setOrders(ordersArray);
+    const ordersArray = (await firestore.getDocs('orders')) as OrderType[];
+    const sortByTimestamp = (a: OrderType, b: OrderType) => b.timestamp.seconds - a.timestamp.seconds;
+    if (ordersArray) {
+      ordersArray.sort(sortByTimestamp);
+      setOrders(ordersArray as OrderType[]);
+    }
   }
   useEffect(() => {
     getOrders();
@@ -50,8 +52,8 @@ function AdminOrder() {
         onClick={() => {
           const userConfirm = confirm('Set the order to SUCCESS?');
           if (userConfirm) {
-            firestoreApi.updateDocWithObject('orders', orderId, 'status', 'SUCCESS').then(() => getOrders());
-            firestoreApi.updateDocIncrement('credits', docId, 'all', credit);
+            firestore.updateDoc('orders', orderId, { status: 'SUCCESS' }).then(() => getOrders());
+            firestore.updateDocIncrement('credits', docId, 'all', credit);
           }
         }}
         xmlns='http://www.w3.org/2000/svg'
@@ -79,7 +81,7 @@ function AdminOrder() {
         stroke='currentColor'
         fill='none'
         onClick={() => {
-          firestoreApi.updateDocWithObject('orders', orderId, 'status', 'FAILED').then(() => getOrders());
+          firestore.updateDoc('orders', orderId, { status: 'FAILED' }).then(() => getOrders());
         }}
         className='w-6 cursor-pointer hover:text-red-400'>
         <path
@@ -101,7 +103,7 @@ function AdminOrder() {
         strokeWidth={1.5}
         stroke='currentColor'
         onClick={() => {
-          firestoreApi.updateDocWithObject('orders', orderId, 'status', 'IN_PROCESS').then(() => getOrders());
+          firestore.updateDoc('orders', orderId, { status: 'IN_PROCESS' }).then(() => getOrders());
         }}
         className='h-6 p-1 cursor-pointer hover:text-blue-400'>
         <path

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import email from '../../utils/emailJS';
-import { arrayUnion, db, doc, getDoc, serverTimestamp, setDoc, updateDoc } from '../../utils/firebase';
+import { db, doc, firestore, serverTimestamp } from '../../utils/firestore';
 
 function Purchase() {
   const navigate = useNavigate();
@@ -46,11 +46,10 @@ function Purchase() {
       const min = today.getMinutes();
       const ms = today.getMilliseconds();
       const orderId = `${yyyy}${mm}${dd}${hour}${ms}${order.method}${order.plan}`;
-      setDoc(doc(db, 'orders', orderId), { ...order, timestamp: serverTimestamp(), id: orderId });
-      getDoc(doc(db, 'credits', order.kid.docId)).then((user) => {
-        const data = user.data();
-        if (!data) {
-          setDoc(doc(db, 'credits', order.kid.docId), {
+      firestore.setDoc('orders', orderId, { ...order, timestamp: serverTimestamp(), id: orderId });
+      firestore.getDoc('credits', order.kid.docId).then((user) => {
+        if (!user) {
+          firestore.setDoc('credits', order.kid.docId, {
             all: 0,
             used: 0,
             docId: order.kid.docId,
@@ -58,9 +57,7 @@ function Purchase() {
           });
         }
       });
-      updateDoc(userRef, {
-        ordersRef: arrayUnion(doc(db, 'orders', orderId)),
-      }).then(() => {
+      firestore.updateDocArrayUnionByRef(userRef, 'ordersRef', doc(db, 'orders', orderId)).then(() => {
         setOrder(initialOrder);
         getUserProfile(userRef);
         navigate('/order');

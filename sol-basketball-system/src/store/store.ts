@@ -1,21 +1,17 @@
-import { DocumentData, DocumentReference, collection } from 'firebase/firestore';
+import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { create } from 'zustand';
 import {
   UserCredential,
   auth,
   createUserWithEmailAndPassword,
-  db,
-  doc,
-  getDoc,
-  getDocs,
   onAuthStateChanged,
   provider,
-  setDoc,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
   updateProfile,
-} from '../utils/firebase';
+} from '../utils/firebaseAuth';
+import { db, doc, firestore } from '../utils/firestore';
 
 interface UserType {
   photoURL?: string;
@@ -79,8 +75,6 @@ export const useStore = create<StoreState>((set) => ({
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential: UserCredential) => {
         const { user } = userCredential;
-        console.log(typeof user);
-
         set(() => ({ isLogin: true }));
         if (auth.currentUser)
           updateProfile(auth.currentUser, {
@@ -105,7 +99,7 @@ export const useStore = create<StoreState>((set) => ({
           registrationDate: user.metadata.creationTime,
           role: 'user',
         };
-        setDoc(doc(db, 'users', user.uid), initialProfile);
+        firestore.setDoc('users', user.uid, initialProfile);
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })
       .catch((error: { code: number; message: string }) => {
@@ -149,7 +143,7 @@ export const useStore = create<StoreState>((set) => ({
           registrationDate: user.metadata.creationTime,
           role: 'user',
         };
-        setDoc(doc(db, 'users', user.uid), initialProfile);
+        firestore.setDoc('users', user.uid, initialProfile);
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })
       .catch((error) => {
@@ -163,8 +157,7 @@ export const useStore = create<StoreState>((set) => ({
         return user;
       })
       .then((user) => {
-        getDoc(doc(db, 'users', user.uid)).then((userSnap) => {
-          const userDoc = userSnap.data();
+        firestore.getDoc('users', user.uid).then((userDoc) => {
           if (userDoc) {
             set(() => ({ userRef: doc(db, 'users', user.uid) }));
             set(() => ({ isLogin: true }));
@@ -180,7 +173,7 @@ export const useStore = create<StoreState>((set) => ({
             };
             set(() => ({ user: initialProfile as UserType }));
             set(() => ({ isLogin: true }));
-            setDoc(doc(db, 'users', user.uid), initialProfile);
+            firestore.setDoc('users', user.uid, initialProfile);
             set(() => ({ userRef: doc(db, 'users', user.uid) }));
           }
         });
@@ -213,19 +206,14 @@ export const useStore = create<StoreState>((set) => ({
   },
   getUserProfile: async (userRef) => {
     if (userRef) {
-      const profileSnap = await getDoc(userRef);
-      if (profileSnap) {
-        const profile = profileSnap.data();
+      const profile = await firestore.getDocByRef(userRef);
+      if (profile) {
         set(() => ({ user: profile }));
         const kids: KidType[] = [];
-        if (profile)
-          for (const kidRef of profile.kids) {
-            const kidSnap = await getDoc(kidRef);
-            if (kidSnap.exists()) {
-              const kid = kidSnap.data();
-              kids.push(kid as KidType);
-            }
-          }
+        for (const kidRef of profile.kids) {
+          const kid = await firestore.getDocByRef(kidRef);
+          if (kid) kids.push(kid as KidType);
+        }
         set(() => ({ kids: kids }));
         return profile;
       }
@@ -234,28 +222,19 @@ export const useStore = create<StoreState>((set) => ({
   getKidsProfile: async (kidsRef) => {
     const kids: KidType[] = [];
     for (const kidRef of kidsRef) {
-      const kidSnap = await getDoc(kidRef);
-      if (kidSnap.exists()) {
-        const kid = kidSnap.data();
-        kids.push(kid as KidType);
-      }
+      const kid = await firestore.getDocByRef(kidRef);
+      if (kid) kids.push(kid as KidType);
     }
     set(() => ({ kids: kids }));
   },
   scheduledDates: [],
   getScheduledDates: async (year, quarter) => {
-    const schedule = (await getDoc(doc(db, 'schedule', `${year}Q${quarter}`))).data();
-    if (schedule) {
-      set(() => ({ scheduledDates: schedule.all }));
-    }
+    const schedule = await firestore.getDoc('schedule', `${year}Q${quarter}`);
+    if (schedule) set(() => ({ scheduledDates: schedule.all }));
   },
   saturdaySchedules: [],
   getSaturdaySchedules: async (year, quarter) => {
-    const saturdaySchedulesSnapshot = await getDocs(collection(db, 'schedule', `${year}Q${quarter}`, 'saturday'));
-    const saturdaySchedules: object[] = [];
-    saturdaySchedulesSnapshot.forEach((doc) => {
-      saturdaySchedules.push(doc.data());
-    });
+    const saturdaySchedules = await firestore.getDocs('schedule', `${year}Q${quarter}`, 'saturday');
     set(() => ({ saturdaySchedules: saturdaySchedules as object[] }));
   },
 }));

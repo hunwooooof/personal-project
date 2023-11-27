@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { db, doc, getDoc } from '../../utils/firebase';
+import { firestore } from '../../utils/firestore';
 
 interface PropsType {
   currentKidId: string;
@@ -19,8 +19,7 @@ function Credits({ currentKidId }: PropsType) {
   });
 
   useEffect(() => {
-    getDoc(doc(db, 'credits', currentKidId)).then((creditSnap) => {
-      const credit = creditSnap.data();
+    firestore.getDoc('credits', currentKidId).then((credit) => {
       if (credit) {
         setCredit({
           all: credit.all,

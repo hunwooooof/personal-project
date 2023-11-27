@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
-import { getDownloadURL, ref, storage, updateDoc, uploadBytes } from '../../utils/firebase';
+import { firestore, getDownloadURL, ref, storage, uploadBytes } from '../../utils/firestore';
 import Kids from './Kids';
 
 interface NewProfileType {
@@ -56,13 +56,13 @@ function Profile() {
       uploadBytes(storageRef, newProfileImg).then(() => {
         getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`))
           .then((url) => {
-            updateDoc(userRef, { ...newProfile });
-            updateDoc(userRef, { photoURL: url });
+            firestore.updateDocByRef(userRef, { ...newProfile });
+            firestore.updateDocByRef(userRef, { photoURL: url });
           })
           .then(() => getUserProfile(userRef));
       });
       setNewProfileImg(undefined);
-    } else if (userRef) updateDoc(userRef, { ...newProfile });
+    } else if (userRef) firestore.updateDocByRef(userRef, { ...newProfile });
     getUserProfile(userRef);
   };
 
@@ -86,7 +86,6 @@ function Profile() {
 
   return (
     <div className='custom-main-container mt-28'>
-      {/* {isLoading && <div className=''>Loading!</div>} */}
       {!isEditProfile && (
         <div className='w-8/12 mx-auto flex flex-col items-center gap-3'>
           <img src={user.photoURL} className='w-24 h-24 object-cover rounded-full border border-slate-200' />

@@ -3,17 +3,7 @@ import AgeIcon from '../../components/AgeIcon';
 import CakeIcon from '../../components/CakeIcon';
 import SchoolIcon from '../../components/SchoolIcon';
 import { useStore } from '../../store/store';
-import {
-  arrayRemove,
-  db,
-  deleteDoc,
-  doc,
-  getDownloadURL,
-  ref,
-  storage,
-  updateDoc,
-  uploadBytes,
-} from '../../utils/firebase';
+import { db, doc, firestore, getDownloadURL, ref, storage, uploadBytes } from '../../utils/firestore';
 
 interface PropsType {
   kid: {
@@ -77,7 +67,7 @@ function Card({ kid }: PropsType) {
         .then(() => {
           getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`)).then((url) => {
             const kidWithPhoto = { ...newKid, photoURL: url };
-            updateDoc(doc(db, 'students', docId), kidWithPhoto);
+            firestore.updateDoc('students', docId, kidWithPhoto);
           });
         })
         .then(() => {
@@ -85,7 +75,7 @@ function Card({ kid }: PropsType) {
         });
       setNewProfileImg(undefined);
     } else if (userRef) {
-      updateDoc(doc(db, 'students', docId), newKid).then(() => getUserProfile(userRef));
+      firestore.updateDoc('students', docId, newKid).then(() => getUserProfile(userRef));
     }
   };
 
@@ -98,10 +88,8 @@ function Card({ kid }: PropsType) {
         onClick={() => {
           const userConfirmed = confirm('Are you sure you want to delete?');
           if (userConfirmed && userRef) {
-            deleteDoc(doc(db, 'students', kid.docId));
-            updateDoc(userRef, {
-              kids: arrayRemove(doc(db, 'students', kid.docId)),
-            });
+            firestore.deleteDoc('students', kid.docId);
+            firestore.updateDocArrayRemoveByRef(userRef, 'kids', doc(db, 'students', kid.docId));
             getUserProfile(userRef);
           }
         }}

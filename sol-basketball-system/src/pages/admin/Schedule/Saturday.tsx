@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '../../../store/store';
-import { db, doc, firestoreApi, getDoc, setDoc } from '../../../utils/firebase';
+import { firestore } from '../../../utils/firestore';
 import SatItem from './SatItem';
 
 interface PropsType {
@@ -87,15 +87,15 @@ function Saturday({ date, quarter, year }: PropsType) {
   };
 
   const handleClickAdd = () => {
-    getDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date)).then((scheduleSnap) => {
-      if (scheduleSnap.data()) {
-        firestoreApi
+    firestore.getDoc('schedule', `${year}Q${quarter}`, 'saturday', date).then((schedule) => {
+      if (schedule) {
+        firestore
           .updateDocArrayUnion('schedule', `${year}Q${quarter}`, date, { ...detail }, 'saturday', date)
           .then(() => getSaturdaySchedules(year, quarter));
       } else {
-        setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
-          [date]: [{ ...detail }],
-        }).then(() => getSaturdaySchedules(year, quarter));
+        firestore
+          .setDoc('schedule', `${year}Q${quarter}`, { [date]: [{ ...detail }] }, 'saturday', date)
+          .then(() => getSaturdaySchedules(year, quarter));
       }
     });
   };
@@ -107,17 +107,14 @@ function Saturday({ date, quarter, year }: PropsType) {
           className={unScheduledClass}
           onClick={() => {
             if (!isEdit) {
-              getDoc(doc(db, 'schedule', `${year}Q${quarter}`))
-                .then((scheduleSnap) => {
-                  if (scheduleSnap.data()) {
-                    firestoreApi.updateDocArrayUnion('schedule', `${year}Q${quarter}`, 'all', date);
+              firestore
+                .getDoc('schedule', `${year}Q${quarter}`)
+                .then((schedule) => {
+                  if (schedule) {
+                    firestore.updateDocArrayUnion('schedule', `${year}Q${quarter}`, 'all', date);
                   } else {
-                    setDoc(doc(db, 'schedule', `${year}Q${quarter}`), {
-                      all: [date],
-                    }).then(() => {
-                      setDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
-                        [date]: [{ ...detail }],
-                      });
+                    firestore.setDoc('schedule', `${year}Q${quarter}`, { all: [date] }).then(() => {
+                      firestore.setDoc('schedule', `${year}Q${quarter}`, { [date]: [detail] }, 'saturday', date);
                     });
                   }
                 })
@@ -295,10 +292,10 @@ function Saturday({ date, quarter, year }: PropsType) {
         <div
           className={isScheduledClass}
           onClick={() => {
-            firestoreApi
+            firestore
               .updateDocArrayRemove('schedule', `${year}Q${quarter}`, 'all', date)
               .then(() => getScheduledDates(year, quarter));
-            firestoreApi.updateDocArrayRemove('schedule', `${year}Q${quarter}`, date, detail, 'saturday', date);
+            firestore.updateDocArrayRemove('schedule', `${year}Q${quarter}`, date, detail, 'saturday', date);
           }}>
           {showDate} <span className='font-normal text-gray-500'>{`(${Object.values(todaySchedule)[0].length})`}</span>
         </div>

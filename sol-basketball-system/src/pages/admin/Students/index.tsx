@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import AgeIcon from '../../../components/AgeIcon';
 import CakeIcon from '../../../components/CakeIcon';
 import SchoolIcon from '../../../components/SchoolIcon';
-import { collection, db, getDocs } from '../../../utils/firebase';
+import { firestore } from '../../../utils/firestore';
 
 interface StudentProfile {
   birthday: string;
@@ -18,11 +18,7 @@ interface StudentProfile {
 function Student() {
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const getStudentsProfile = async () => {
-    const studentsSnapshot = await getDocs(collection(db, 'students'));
-    const studentsProfiles: StudentProfile[] = [];
-    studentsSnapshot.forEach((docSnap) => {
-      studentsProfiles.push(docSnap.data() as StudentProfile);
-    });
+    const studentsProfiles = await firestore.getDocs('students');
     setStudents(studentsProfiles as StudentProfile[]);
   };
 

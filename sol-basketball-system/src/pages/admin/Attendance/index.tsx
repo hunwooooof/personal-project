@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../../store/store';
-import { collection, db, doc, firestoreApi, getDoc, getDocs } from '../../../utils/firebase';
+import { firestore } from '../../../utils/firestore';
 
 interface AttendanceType {
   docId: string;
@@ -39,24 +39,17 @@ function Attendance() {
   const [dates, setDates] = useState([]);
   useEffect(() => {
     async function getDates() {
-      const scheduleSnap = await getDoc(doc(db, 'schedule', `${year}Q${quarter}`));
-      if (scheduleSnap) {
-        const schedule = scheduleSnap.data();
-        if (schedule) {
-          setDates(schedule.all.sort());
-        } else setDates([]);
-      }
+      const schedule = await firestore.getDoc('schedule', `${year}Q${quarter}`);
+      if (schedule) {
+        setDates(schedule.all.sort());
+      } else setDates([]);
     }
     getDates();
   }, [quarter, year]);
 
   const [attendances, setAttendances] = useState<AttendanceType[]>([]);
   async function getAttendances() {
-    const attendanceSnapshot = await getDocs(collection(db, 'attendance'));
-    const attendanceArray: object[] = [];
-    attendanceSnapshot.forEach((doc) => {
-      attendanceArray.push(doc.data());
-    });
+    const attendanceArray = await firestore.getDocs('attendance');
     setAttendances(attendanceArray as AttendanceType[]);
   }
   useEffect(() => {
@@ -80,11 +73,7 @@ function Attendance() {
 
   const [allCredits, setAllCredits] = useState<CreditDocType[]>();
   async function getCredits() {
-    const creditsSnapshot = await getDocs(collection(db, 'credits'));
-    const creditsArray: object[] = [];
-    creditsSnapshot.forEach((doc) => {
-      creditsArray.push(doc.data());
-    });
+    const creditsArray = await firestore.getDocs('credits');
     setAllCredits(creditsArray as CreditDocType[]);
   }
   useEffect(() => {
@@ -134,15 +123,14 @@ function Attendance() {
       <svg
         id={date}
         onClick={(e) => {
-          firestoreApi
+          firestore
             .updateDocArrayUnion('attendance', docId, 'showUpDate', e.currentTarget.id)
             .then(() => getAttendances())
             .then(() => {
-              getDoc(doc(db, 'attendance', docId)).then((attendanceSnap) => {
-                const attendance = attendanceSnap.data();
+              firestore.getDoc('attendance', docId).then((attendance) => {
                 if (attendance) {
                   const countShowUp = attendance.showUpDate.length;
-                  firestoreApi.updateDocWithObject('credits', docId, 'used', countShowUp).then(() => getCredits());
+                  firestore.updateDoc('credits', docId, { used: countShowUp }).then(() => getCredits());
                 }
               });
             });
@@ -167,15 +155,14 @@ function Attendance() {
       <svg
         id={date}
         onClick={(e) => {
-          firestoreApi
+          firestore
             .updateDocArrayRemove('attendance', docId, 'showUpDate', e.currentTarget.id)
             .then(() => getAttendances())
             .then(() => {
-              getDoc(doc(db, 'attendance', docId)).then((attendanceSnap) => {
-                const attendance = attendanceSnap.data();
+              firestore.getDoc('attendance', docId).then((attendance) => {
                 if (attendance) {
                   const countShowUp = attendance.showUpDate.length;
-                  firestoreApi.updateDocWithObject('credits', docId, 'used', countShowUp).then(() => getCredits());
+                  firestore.updateDoc('credits', docId, { used: countShowUp }).then(() => getCredits());
                 }
               });
             });

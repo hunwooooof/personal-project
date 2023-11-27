@@ -1,5 +1,5 @@
 import { useStore } from '../../../store/store';
-import { firestoreApi } from '../../../utils/firebase';
+import { firestore } from '../../../utils/firestore';
 
 interface DetailType {
   address: string;
@@ -63,7 +63,7 @@ function SatItem({ schedule, quarter, year }: PropsType) {
         fill='currentColor'
         onClick={() => {
           const { date } = schedule;
-          firestoreApi
+          firestore
             .updateDocArrayRemove('schedule', `${year}Q${quarter}`, date, { ...schedule }, 'saturday', date)
             .then(() => getSaturdaySchedules(year, quarter));
         }}

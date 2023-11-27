@@ -1,16 +1,6 @@
 import { useRef, useState } from 'react';
 import { useStore } from '../../store/store';
-import {
-  arrayUnion,
-  db,
-  doc,
-  getDownloadURL,
-  ref,
-  setDoc,
-  storage,
-  updateDoc,
-  uploadBytes,
-} from '../../utils/firebase';
+import { db, doc, firestore, getDownloadURL, ref, storage, uploadBytes } from '../../utils/firestore';
 import Card from './Card';
 
 interface KidType {
@@ -73,27 +63,29 @@ function Kids() {
       uploadBytes(storageRef, newProfileImg).then(() => {
         getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`)).then((url) => {
           const newKidWithDocId = { ...newKid, docId, photoURL: url };
-          setDoc(doc(db, 'students', docId), newKidWithDocId);
-          setDoc(doc(db, 'attendance', docId), {
+          firestore.setDoc('students', docId, newKidWithDocId);
+          firestore.setDoc('attendance', docId, {
             name: `${newKidWithDocId.firstName}-${newKidWithDocId.lastName}`,
             showUpDate: [],
             docId,
           });
-          updateDoc(userRef, { kids: arrayUnion(doc(db, 'students', docId)) }).then(() => getUserProfile(userRef));
+          firestore
+            .updateDocArrayUnionByRef(userRef, ' kids', doc(db, 'students', docId))
+            .then(() => getUserProfile(userRef));
         });
       });
       setNewProfileImg(undefined);
     } else if (userRef) {
       const newKidWithDocId = { ...newKid, docId };
-      setDoc(doc(db, 'students', docId), newKidWithDocId);
-      setDoc(doc(db, 'attendance', docId), {
+      firestore.setDoc('students', docId, newKidWithDocId);
+      firestore.setDoc('attendance', docId, {
         name: `${newKidWithDocId.firstName}-${newKidWithDocId.lastName}`,
         showUpDate: [],
         docId,
       });
-      updateDoc(userRef, {
-        kids: arrayUnion(doc(db, 'students', docId)),
-      }).then(() => getUserProfile(userRef));
+      firestore
+        .updateDocArrayUnionByRef(userRef, ' kids', doc(db, 'students', docId))
+        .then(() => getUserProfile(userRef));
     }
     setNewKid(emptyNewKid);
   };
