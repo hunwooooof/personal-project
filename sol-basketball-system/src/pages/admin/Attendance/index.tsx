@@ -232,53 +232,83 @@ function Attendance() {
           <div className='text-3xl text-center mt-40 text-gray-400'>No data available for this section.</div>
         )}
         {dates.length > 0 && (
-          <div className='mt-5 overflow-x-auto p-2 pr-16 pb-4 rounded-lg shadow-inner bg-gray-50'>
-            <div className='pl-40 flex'>
-              {dates.map((date: string) => {
-                const formateDate = date.substring(5).replace('-', '/');
-                return (
-                  <div
-                    key={date}
-                    className='bg-gray-700 font-bold text-white shrink-0 w-16 text-sm tracking-wider text-center border-2 border-gray-50 rounded-md py-1 select-none'>
-                    {formateDate}
-                  </div>
-                );
-              })}
-              <div className='bg-red-600 font-bold text-white shrink-0 w-24 text-sm tracking-wider text-center border-2 border-red-50 rounded-md py-1 select-none'>
-                Used
+          <div className='flex'>
+            <div className='p-2'>
+              <div className='bg-gray-700 font-bold text-white w-40 text-sm tracking-wider text-center border-2 border-gray-50 rounded-md py-1'>
+                Name
               </div>
-              <div className='bg-orange-600 font-bold text-white shrink-0 w-24 text-sm tracking-wider text-center border-2 border-orange-50 rounded-md py-1 select-none'>
-                Purchased
-              </div>
-            </div>
-            {attendances.length > 0 &&
-              attendances.map((attendance: AttendanceType) => {
-                const { docId, name, showUpDate } = attendance;
+              {attendances.map((attendance: AttendanceType) => {
+                const { name } = attendance;
                 return (
                   <div className='flex items-center mt-3' key={name}>
                     <div className='shrink-0 w-40 bg-gray-200 font-bold tracking-wider border-2 border-gray-50 rounded-md py-1 px-2'>
                       {name.replace('-', ' ')}
                     </div>
-                    <div className='flex shrink-0'>
-                      {dates.map((date) => {
-                        return (
-                          <div
-                            key={date}
-                            id={date}
-                            className='shrink-0 w-16 text-sm mx-auto border-2 border-gray-50 py-1 flex justify-center'>
-                            {showUpDate.includes(date) ? renderChecked(date, docId) : renderUncheck(date, docId)}
-                          </div>
-                        );
-                      })}
+                  </div>
+                );
+              })}
+            </div>
+            <div className='overflow-x-auto p-2 pr-16 pb-4 rounded-lg shadow-inner bg-gray-50'>
+              <div className='flex'>
+                {dates.map((date: string) => {
+                  const formateDate = date.substring(5).replace('-', '/');
+                  return (
+                    <div
+                      key={date}
+                      className='bg-gray-700 font-bold text-white shrink-0 w-16 text-sm tracking-wider text-center border-2 border-gray-50 rounded-md py-1 select-none'>
+                      {formateDate}
                     </div>
+                  );
+                })}
+              </div>
+              {attendances.length > 0 &&
+                attendances.map((attendance: AttendanceType) => {
+                  const { docId, name, showUpDate } = attendance;
+                  return (
+                    <div className='flex items-center mt-3' key={name}>
+                      {/* <div className='shrink-0 w-40 bg-gray-200 font-bold tracking-wider border-2 border-gray-50 rounded-md py-1 px-2'>
+                        {name.replace('-', ' ')}
+                      </div> */}
+                      <div className='flex shrink-0'>
+                        {dates.map((date) => {
+                          return (
+                            <div
+                              key={date}
+                              id={date}
+                              className='shrink-0 w-16 text-sm mx-auto border-2 border-gray-50 py-1 flex justify-center'>
+                              {showUpDate.includes(date) ? renderChecked(date, docId) : renderUncheck(date, docId)}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+            <div className='p-2'>
+              <div className='flex'>
+                <div className='bg-red-600 font-bold text-white shrink-0 w-24 text-sm tracking-wider text-center border-2 border-red-50 rounded-md py-1 select-none'>
+                  Used
+                </div>
+                <div className='bg-orange-600 font-bold text-white shrink-0 w-24 text-sm tracking-wider text-center border-2 border-orange-50 rounded-md py-1 select-none'>
+                  Purchased
+                </div>
+              </div>
+              {attendances.map((attendance: AttendanceType) => {
+                const { docId, name } = attendance;
+                return (
+                  <div className='flex items-center mt-4' key={name}>
                     {allCredits?.map((each) => {
                       if (each.docId === docId) {
                         return (
                           <div className='flex' key={`${docId}${each.used}${each.all}`}>
-                            <div className='shrink-0 w-24 text-md mx-auto border-2 border-gray-50 py-1 flex justify-center font-bold'>
+                            <div
+                              className={`shrink-0 w-24 text-md mx-auto py-1 flex justify-center font-bold ${
+                                each.used > each.all ? 'text-red-600' : ''
+                              }`}>
                               {each.used}
                             </div>
-                            <div className='shrink-0 w-24 text-md mx-auto border-2 border-gray-50 py-1 flex justify-center font-bold'>
+                            <div className='shrink-0 w-24 text-md mx-auto py-1 flex justify-center font-bold'>
                               {each.all}
                             </div>
                           </div>
@@ -287,17 +317,14 @@ function Attendance() {
                     })}
                     {!allCredits?.some((each) => each.docId === docId) && (
                       <div className='flex' key={`${docId}0`}>
-                        <div className='shrink-0 w-24 text-md mx-auto border-2 border-gray-50 py-1 flex justify-center font-bold'>
-                          0
-                        </div>
-                        <div className='shrink-0 w-24 text-md mx-auto border-2 border-gray-50 py-1 flex justify-center font-bold'>
-                          0
-                        </div>
+                        <div className='shrink-0 w-24 text-md mx-auto py-1 flex justify-center font-bold'>0</div>
+                        <div className='shrink-0 w-24 text-md mx-auto py-1 flex justify-center font-bold'>0</div>
                       </div>
                     )}
                   </div>
                 );
               })}
+            </div>
           </div>
         )}
       </div>
