@@ -193,6 +193,7 @@ export const useStore = create<StoreState>((set) => ({
   checkLogIn: () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        set(() => ({ user: user as UserType }));
         set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
       }

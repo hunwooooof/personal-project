@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
+import email from '../../utils/emailJS';
 import { arrayUnion, db, doc, getDoc, serverTimestamp, setDoc, updateDoc } from '../../utils/firebase';
 
 function Purchase() {
   const navigate = useNavigate();
-  const { userRef, kids, isLogin, getUserProfile } = useStore();
+  const { user, userRef, kids, isLogin, getUserProfile } = useStore();
   const [selectPlanId, setSelectPlanId] = useState('01');
   const plans = [
     { id: '01', title: 'Single Session', price: 1000, priceText: '$ 1,000' },
@@ -35,7 +36,6 @@ function Purchase() {
   }, [kids, isLogin]);
 
   const handleSubmitOrder = () => {
-    console.log(order);
     const userConfirmed = confirm('Confirm Order?');
     if (userRef && userConfirmed) {
       const today = new Date();
@@ -43,6 +43,7 @@ function Purchase() {
       const mm = today.getMonth() + 1;
       const dd = today.getDate();
       const hour = today.getHours();
+      const min = today.getMinutes();
       const ms = today.getMilliseconds();
       const orderId = `${yyyy}${mm}${dd}${hour}${ms}${order.method}${order.plan}`;
       setDoc(doc(db, 'orders', orderId), { ...order, timestamp: serverTimestamp(), id: orderId });
@@ -64,6 +65,16 @@ function Purchase() {
         getUserProfile(userRef);
         navigate('/order');
       });
+      email.notifyNewOrder(
+        { ...order, time: `${yyyy}/${mm}/${dd} ${hour}:${min}` },
+        orderId,
+        user as { displayName: string },
+      );
+      email.orderCreate(
+        { ...order, time: `${yyyy}/${mm}/${dd} ${hour}:${min}` },
+        orderId,
+        user as { displayName: string; email: string },
+      );
     }
   };
 
