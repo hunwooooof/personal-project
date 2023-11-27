@@ -29,17 +29,6 @@ function Purchase() {
   const [order, setOrder] = useState(initialOrder);
 
   useEffect(() => {
-    if (kids.length > 0) {
-      setOrder({
-        ...order,
-        userRef: userRef,
-        kid: {
-          docId: kids[0].docId,
-          firstName: kids[0].firstName,
-          lastName: kids[0].lastName,
-        },
-      });
-    }
     if (!isLogin) {
       navigate('/login');
     }
@@ -107,20 +96,28 @@ function Purchase() {
               id='kid'
               className='ml-2 w-40 px-2 py-1 bg-gray-100 shadow-inner rounded-md'
               onChange={(e) => {
-                const id = parseInt(e.target.value);
-                setOrder({
-                  ...order,
-                  kid: {
-                    docId: kids[id].docId,
-                    firstName: kids[id].firstName,
-                    lastName: kids[id].lastName,
-                  },
-                });
+                if (e.target.value === '-1') {
+                  setOrder({
+                    ...order,
+                    kid: {
+                      docId: '',
+                      firstName: '',
+                      lastName: '',
+                    },
+                  });
+                } else {
+                  const id = parseInt(e.target.value);
+                  setOrder({
+                    ...order,
+                    kid: {
+                      docId: kids[id].docId,
+                      firstName: kids[id].firstName,
+                      lastName: kids[id].lastName,
+                    },
+                  });
+                }
               }}>
-              <option value='' disabled>
-                Select a kid
-              </option>
-
+              <option value='-1'>Select a kid</option>
               {kids.map((kid, index) => (
                 <option value={index} key={kid.docId}>
                   {kid.firstName}
@@ -178,7 +175,8 @@ function Purchase() {
         </div>
         <button
           type='submit'
-          className='ml-8 mt-8 bg-gray-100 rounded-lg w-28 text-center py-1 shadow-md hover:shadow-inner hover:bg-gray-200'
+          className='ml-8 mt-8 bg-black text-white rounded-lg w-28 text-center py-1 shadow-md disabled:bg-gray-200'
+          disabled={order.kid.docId.length === 0}
           onClick={handleSubmitOrder}>
           Confirm
         </button>

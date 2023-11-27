@@ -43,7 +43,7 @@ function Saturday({ date, quarter, year }: PropsType) {
     address: 'xindian-sport-center',
     date: date,
     tag: 'u10r',
-    time: '00:00-00:00',
+    time: '',
     title: 'top-league-game',
   });
 
@@ -186,6 +186,7 @@ function Saturday({ date, quarter, year }: PropsType) {
                           time: `${id}-${detail.time.slice(6)}`,
                         });
                       }}
+                      required
                     />
                     <span className='inline-block w-2/12'>～</span>
                     <input
@@ -206,7 +207,7 @@ function Saturday({ date, quarter, year }: PropsType) {
                 </div>
                 <div className='mt-4 text-sm'>
                   <label htmlFor='title' className='inline-block mr-4 w-2/12 text-center'>
-                    Title
+                    Game Type
                   </label>
                   <select
                     name='title'
@@ -280,7 +281,10 @@ function Saturday({ date, quarter, year }: PropsType) {
                   </select>
                 </div>
                 <div className='flex gap-2 justify-center mt-4 font-normal'>
-                  <button onClick={handleClickAdd} className='bg-green-400 px-3 py-1 rounded-md cursor-pointer'>
+                  <button
+                    onClick={handleClickAdd}
+                    className={`bg-green-800 text-white px-3 py-1 rounded-md cursor-pointer hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-gray-300`}
+                    disabled={Object.values(detail).some((item) => item.length === 0)}>
                     Add
                   </button>
                 </div>
