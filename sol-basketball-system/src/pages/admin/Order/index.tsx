@@ -60,7 +60,7 @@ function AdminOrder() {
         viewBox='0 0 24 24'
         strokeWidth={1.5}
         stroke='currentColor'
-        className='h-6 rounded-md cursor-pointer hover:bg-gray-100'>
+        className='h-6 rounded-md cursor-pointer hover:text-green-600'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -96,29 +96,31 @@ function AdminOrder() {
     );
   };
 
-  const renderTrashIcon = (orderId: string) => {
+  const renderRemoveIcon = (orderId: string) => {
     return (
       <svg
         id={orderId}
         xmlns='http://www.w3.org/2000/svg'
-        viewBox='0 0 20 20'
-        fill='currentColor'
+        viewBox='0 0 24 24'
+        strokeWidth={1.5}
+        stroke='currentColor'
+        fill='none'
         onClick={() => {
           updateDoc(doc(db, 'orders', orderId), {
             status: 'FAILED',
           }).then(() => getOrders());
         }}
-        className='w-5 h-5 text-black cursor-pointer hover:text-red-400'>
+        className='w-6 cursor-pointer hover:text-red-400'>
         <path
-          fillRule='evenodd'
-          d='M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z'
-          clipRule='evenodd'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          d='M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
         />
       </svg>
     );
   };
 
-  const renderUntoss = (orderId: string) => {
+  const renderReset = (orderId: string) => {
     return (
       <svg
         xmlns='http://www.w3.org/2000/svg'
@@ -132,11 +134,11 @@ function AdminOrder() {
             status: 'IN_PROCESS',
           }).then(() => getOrders());
         }}
-        className='h-6 text-gray-400 cursor-pointer hover:text-blue-400'>
+        className='h-6 py-1 cursor-pointer hover:text-blue-400'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
-          d='M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75'
+          d='M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99'
         />
       </svg>
     );
@@ -214,8 +216,8 @@ function AdminOrder() {
                         ? renderUncheck(order.id, order.kid.docId, order.plan)
                         : order.status === 'SUCCESS'
                           ? renderChecked(order.id, order.kid.docId, order.plan)
-                          : renderUntoss(order.id)}
-                      {order.status === 'IN_PROCESS' && renderTrashIcon(order.id)}
+                          : renderReset(order.id)}
+                      {order.status === 'IN_PROCESS' && renderRemoveIcon(order.id)}
                     </div>
                   </div>
                 );
