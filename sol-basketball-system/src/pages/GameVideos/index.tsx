@@ -127,7 +127,7 @@ function GameVideos() {
                   <select
                     name='tag'
                     id='tag'
-                    className='border border-gray-800 py-1 rounded-lg w-36 px-2'
+                    className='border border-gray-800 py-1 rounded-lg w-56 px-2'
                     onChange={(e) => {
                       const value = e.target.value;
                       setNewVideo({
@@ -135,22 +135,22 @@ function GameVideos() {
                         tag: value,
                       });
                     }}>
-                    <option value='u10' id='u10'>
-                      U10
+                    <option value='select' selected>
+                      Select age
                     </option>
-                    <option value='u12' id='u12'>
-                      U12
-                    </option>
+                    <option value='u10'>U10</option>
+                    <option value='u12'>U12</option>
                   </select>
                 </div>
                 <div>
                   <label className='inline-block w-32 text-gray-500 text-center' htmlFor='tag'>
                     Type
                   </label>
+
                   <select
                     name='type'
                     id='type'
-                    className='border border-gray-800 py-1 rounded-lg w-36 px-2'
+                    className='border border-gray-800 py-1 rounded-lg w-56 px-2'
                     onChange={(e) => {
                       const value = e.target.value;
                       setNewVideo({
@@ -158,6 +158,9 @@ function GameVideos() {
                         type: value,
                       });
                     }}>
+                    <option value='select' selected>
+                      Select game type
+                    </option>
                     <option value='top-league'>Top League</option>
                     <option value='friendly-game'>Friendly Game</option>
                   </select>
@@ -182,7 +185,7 @@ function GameVideos() {
                   Add Video
                 </button>
               </div>
-              <div className='p-2 border shadow-md'>
+              <div className='p-2 border shadow-md' id='video-demonstrate'>
                 <iframe
                   src={`https://www.youtube.com/embed/${newVideo.youtubeId}`}
                   title='YouTube video player'
@@ -193,7 +196,9 @@ function GameVideos() {
                 <div className='flex flex-col gap-2 mt-2'>
                   <div className='flex justify-between items-center'>
                     <div className='font-bold text-gray-500 tracking-wider'>{newVideo.date}</div>
-                    <div className='px-2 bg-green-200 rounded-2xl'>{newVideo.tag === 'u10' ? 'U10' : 'U12'}</div>
+                    <div className='px-2 bg-green-200 rounded-2xl'>
+                      {newVideo.tag === 'u10' ? 'U10' : newVideo.tag === 'u12' ? 'U12' : ''}
+                    </div>
                   </div>
                   <div className='font-bold'>{newVideo.title}</div>
                 </div>
