@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Age, Cake, School } from '../../components/icon';
+import { Age, Cake, School } from '../../components/Icon';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { db, doc, firestore } from '../../utils/firestore';
@@ -21,7 +21,7 @@ function Card({ kid }: PropsType) {
   const { userRef, getUserProfile } = useStore();
   const [isEdit, setEdit] = useState(false);
   const inputFileRef = useRef(null);
-  const inputFieldClass = 'rounded-md px-2 w-full';
+  const inputFieldClass = 'rounded-full px-2 w-full bg-slate-100';
 
   const defaultKid = {
     firstName: kid.firstName,
@@ -84,7 +84,7 @@ function Card({ kid }: PropsType) {
             getUserProfile(userRef);
           }
         }}
-        className='w-6 h-6 inline-block text-gray-300 cursor-pointer hover:text-red-400'>
+        className='w-6 h-6 inline-block text-gray-200 cursor-pointer hover:text-red-400'>
         <path
           fillRule='evenodd'
           d='M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z'
@@ -103,7 +103,7 @@ function Card({ kid }: PropsType) {
         strokeWidth={1.5}
         stroke='currentColor'
         onClick={() => setEdit(true)}
-        className='w-6 h-6 inline-block text-gray-300 cursor-pointer hover:text-blue-400'>
+        className='w-6 h-6 inline-block text-gray-200 cursor-pointer hover:text-blue-400'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -123,32 +123,32 @@ function Card({ kid }: PropsType) {
   return (
     <div>
       {!isEdit && (
-        <div className='flex flex-col shrink-0 items-center w-56 h-96 bg-gray-200 p-3 rounded-md' key={kid.id}>
+        <div className='flex flex-col shrink-0 items-center w-56 h-96 bg-white p-3 rounded-3xl' key={kid.id}>
           <div className='w-full flex justify-between mb-2'>
             {renderTrashIcon()}
             {renderEditIcon()}
           </div>
-          <img src={kid.photoURL} className='w-24 h-24 object-cover rounded-full mb-5' />
+          <img src={kid.photoURL} className='w-24 h-24 object-cover rounded-full my-2' />
           <div className='text-xl text-black mb-2'>
             {kid.firstName} {kid.lastName}
           </div>
           <div className=' text-black mb-5'>{kid.chineseName}</div>
           <div className='flex w-8/12 gap-1 mb-2 items-center'>
-            <Cake />
+            {Cake()}
             {kid.birthday}
           </div>
           <div className='flex w-8/12 gap-1 mb-2 items-center'>
-            <School />
+            {School()}
             {kid.school}
           </div>
           <div className='flex w-8/12 gap-1 items-center'>
-            <Age />
+            {Age()}
             {calculate_age(kid.birthday)} y
           </div>
         </div>
       )}
       {isEdit && (
-        <div className='flex flex-col gap-3 items-center w-56 h-96 shrink-0 bg-gray-100 p-3 rounded-md'>
+        <div className='flex flex-col gap-3 items-center w-56 h-96 shrink-0 bg-white px-5 py-3 rounded-3xl'>
           <div className='relative w-full flex flex-col items-center'>
             <img src={newKid.photoURL} className='w-16 h-16 object-cover rounded-full mb-1' />
             <input
@@ -161,7 +161,7 @@ function Card({ kid }: PropsType) {
             />
             <label
               htmlFor='fileInput'
-              className='absolute right-12 bottom-0 p-1 bg-zinc-300 text-white rounded-md cursor-pointer text-sm hover:bg-orange-500'>
+              className='absolute right-12 bottom-0 p-1 bg-zinc-300 text-white rounded-md cursor-pointer text-sm hover:bg-slate-700'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
@@ -205,7 +205,7 @@ function Card({ kid }: PropsType) {
             onChange={handleChangeKidProfile}
           />
           <div>
-            <label htmlFor='birthday' className='text-gray-600 text-sm self-start'>
+            <label htmlFor='birthday' className='text-gray-400 text-sm self-start'>
               Birthday
             </label>
             <input
@@ -235,9 +235,9 @@ function Card({ kid }: PropsType) {
             value={newKid.school}
             onChange={handleChangeKidProfile}
           />
-          <div className='flex gap-2 items-center mt-1'>
+          <div className='flex gap-2 items-center mt-1 text-white'>
             <button
-              className='px-1 rounded-sm bg-green-300 hover:bg-gray-300 text-md w-20 text-center'
+              className='px-1 rounded-full bg-green-600 hover:bg-slate-700  text-md w-20 text-center'
               onClick={() => {
                 setEdit(false);
                 handleSaveKid();
@@ -245,7 +245,7 @@ function Card({ kid }: PropsType) {
               Save
             </button>
             <button
-              className='px-1 rounded-sm bg-red-300 hover:bg-gray-300 text-md w-20 text-center'
+              className='px-1 rounded-full bg-red-500 hover:bg-slate-700 text-md w-20 text-center'
               onClick={() => {
                 setEdit(false);
               }}>

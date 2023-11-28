@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Reset } from '../../../components/icon';
+import { ArrowLeft, ArrowRight, Reset } from '../../../components/Icon';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
 
@@ -60,15 +60,15 @@ function Attendance() {
   const months = () => {
     switch (quarter) {
       case 1:
-        return 'Jan － Mar';
+        return 'M1 － M3';
       case 2:
-        return 'Apr － Jun';
+        return 'M4 － M6';
       case 3:
-        return 'Jul － Sep';
+        return 'M7 － M9';
       case 4:
-        return 'Oct － Dec';
+        return 'M10 － M12';
       default:
-        return 'Jan － Mar';
+        return 'M1 － M3';
     }
   };
 
@@ -81,21 +81,7 @@ function Attendance() {
     getCredits();
   }, []);
 
-  const arrowClass = 'w-6 h-6 p-1 bg-amber-200 ml-2 rounded-md cursor-pointer shadow-md hover:bg-amber-300 select-none';
-  const renderArrowLeft = () => {
-    return (
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className={arrowClass}>
-        <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
-      </svg>
-    );
-  };
-  const renderArrowRight = () => {
-    return (
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className={arrowClass}>
-        <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
-      </svg>
-    );
-  };
+  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-slate-400 cursor-pointer hover:text-black select-none';
 
   const renderUncheck = (date: string, docId: string) => {
     return (
@@ -119,7 +105,7 @@ function Attendance() {
         viewBox='0 0 24 24'
         strokeWidth={1.5}
         stroke='currentColor'
-        className='h-6 px-4 rounded-md cursor-pointer hover:bg-green-100'>
+        className='h-6 px-4 rounded-md cursor-pointer hover:text-green-500'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -149,7 +135,7 @@ function Attendance() {
         xmlns='http://www.w3.org/2000/svg'
         viewBox='0 0 24 24'
         fill='currentColor'
-        className='h-6 px-4 text-green-500 rounded-md cursor-pointer hover:bg-red-100'>
+        className='h-6 px-4 text-green-500 rounded-md cursor-pointer hover:text-slate-300'>
         <path
           fillRule='evenodd'
           d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z'
@@ -160,67 +146,61 @@ function Attendance() {
   };
 
   return (
-    <div className='custom-main-container mt-28'>
+    <div className='custom-main-container pt-16'>
       <div className='w-10/12 mx-auto'>
-        <div className='mt-6  px-3 py-2 text-xl border-b border-gray-200 mb-8'>Attendance</div>
-        <div className='flex justify-end gap-5 mb-8 pr-16'>
-          <div className='flex bg-gray-100 px-3 py-2 rounded-lg shadow-inner'>
-            <div className='mr-2 text-gray-800 font-medium select-none'>{months()}</div>
-            <span
-              onClick={() => {
+        <div className='flex justify-between items-center mb-6'>
+          <div className='custom-page-title'>Attendance</div>
+          <div className='flex items-center gap-2 bg-white rounded-full py-2 px-3'>
+            <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
+              <div className='text-gray-800 font-medium select-none text-center w-24'>{months()}</div>
+              {ArrowLeft(arrowClass, () => {
                 if (quarter > 1) setQuarter((n) => n - 1);
                 else setQuarter(4);
-              }}>
-              {renderArrowLeft()}
-            </span>
-            <span
-              onClick={() => {
+              })}
+              {ArrowRight(arrowClass, () => {
                 if (quarter < 4) setQuarter((n) => n + 1);
                 else setQuarter(1);
-              }}>
-              {renderArrowRight()}
-            </span>
-          </div>
-          <div className='flex bg-gray-100 px-3 py-2 rounded-lg shadow-inner'>
-            <div className='mr-2 text-gray-800 font-medium select-none'>{year}</div>
-            <span onClick={() => setYear((n) => n - 1)}>{renderArrowLeft()}</span>
-            <span onClick={() => setYear((n) => n + 1)}>{renderArrowRight()}</span>
-          </div>
-          <div className='p-2 rounded-lg shadow-inner cursor-pointer hover:bg-gray-100'>
-            {Reset('w-6 h-6', () => {
-              setQuarter(currentQuarter);
-              setYear(currentYear);
-            })}
+              })}
+            </div>
+            <div className='flex bg-slate-100 pr-2 pl-4 py-1 rounded-full'>
+              <div className='text-gray-800 font-medium select-none'>{year}</div>
+              {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
+              {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
+            </div>
+            <div className=' rounded-full cursor-pointer text-slate-400 hover:text-black'>
+              {Reset('w-5 h-5', () => {
+                setQuarter(currentQuarter);
+                setYear(currentYear);
+              })}
+            </div>
           </div>
         </div>
         {dates.length === 0 && (
-          <div className='text-3xl text-center mt-40 text-gray-400'>No data available for this section.</div>
+          <div className='w-full h-[70vh] p-2 bg-white text-4xl text-center text-gray-400 rounded-3xl flex justify-center items-center'>
+            No data available for this section.
+          </div>
         )}
         {dates.length > 0 && (
-          <div className='flex'>
-            <div className='p-2'>
-              <div className='bg-gray-700 font-bold text-white w-40 text-sm tracking-wider text-center border-2 border-gray-50 rounded-md py-1'>
-                Name
-              </div>
+          <div className='w-full min-h-[70vh] bg-white rounded-3xl flex p-6'>
+            <div className='m-2 border-r'>
+              <div className='font-bold text-slate-400 w-40 tracking-wider px-2 mb-5'>Name</div>
               {attendances.map((attendance: AttendanceType) => {
                 const { name } = attendance;
                 return (
-                  <div className='flex items-center mt-3' key={name}>
-                    <div className='shrink-0 w-40 bg-gray-200 font-bold tracking-wider border-2 border-gray-50 rounded-md py-1 px-2'>
-                      {name.replace('-', ' ')}
-                    </div>
+                  <div className='shrink-0 w-40 mt-3 font-bold tracking-wider py-1 px-2' key={name}>
+                    {name.replace('-', ' ')}
                   </div>
                 );
               })}
             </div>
-            <div className='overflow-x-auto p-2 pr-16 pb-4 rounded-lg shadow-inner bg-gray-50'>
-              <div className='flex'>
+            <div className='overflow-x-auto py-2 mx-4'>
+              <div className='flex mb-5'>
                 {dates.map((date: string) => {
                   const formateDate = date.substring(5).replace('-', '/');
                   return (
                     <div
                       key={date}
-                      className='bg-gray-700 font-bold text-white shrink-0 w-16 text-sm tracking-wider text-center border-2 border-gray-50 rounded-md py-1 select-none'>
+                      className='font-bold text-slate-400 text-center w-16 tracking-wider shrink-0 select-none'>
                       {formateDate}
                     </div>
                   );
@@ -231,16 +211,13 @@ function Attendance() {
                   const { docId, name, showUpDate } = attendance;
                   return (
                     <div className='flex items-center mt-3' key={name}>
-                      {/* <div className='shrink-0 w-40 bg-gray-200 font-bold tracking-wider border-2 border-gray-50 rounded-md py-1 px-2'>
-                        {name.replace('-', ' ')}
-                      </div> */}
                       <div className='flex shrink-0'>
                         {dates.map((date) => {
                           return (
                             <div
                               key={date}
                               id={date}
-                              className='shrink-0 w-16 text-sm mx-auto border-2 border-gray-50 py-1 flex justify-center'>
+                              className='shrink-0 w-16 text-sm mx-auto py-1 flex justify-center'>
                               {showUpDate.includes(date) ? renderChecked(date, docId) : renderUncheck(date, docId)}
                             </div>
                           );
@@ -250,30 +227,30 @@ function Attendance() {
                   );
                 })}
             </div>
-            <div className='p-2'>
-              <div className='flex'>
-                <div className='bg-red-600 font-bold text-white shrink-0 w-24 text-sm tracking-wider text-center border-2 border-red-50 rounded-md py-1 select-none'>
+            <div className='m-2 border-l'>
+              <div className='flex mb-5'>
+                <div className='font-bold text-slate-400 shrink-0 w-20 tracking-wider text-center select-none'>
                   Used
                 </div>
-                <div className='bg-orange-600 font-bold text-white shrink-0 w-24 text-sm tracking-wider text-center border-2 border-orange-50 rounded-md py-1 select-none'>
+                <div className='font-bold text-slate-400 shrink-0 w-24 tracking-wider text-center select-none'>
                   Purchased
                 </div>
               </div>
               {attendances.map((attendance: AttendanceType) => {
                 const { docId, name } = attendance;
                 return (
-                  <div className='flex items-center mt-4' key={name}>
+                  <div className='flex items-center mt-3' key={name}>
                     {allCredits?.map((each) => {
                       if (each.docId === docId) {
                         return (
                           <div className='flex' key={`${docId}${each.used}${each.all}`}>
                             <div
-                              className={`shrink-0 w-24 text-md mx-auto py-1 flex justify-center font-bold ${
+                              className={`shrink-0 w-20 text-md mx-auto py-1 px-2 flex justify-center font-bold ${
                                 each.used > each.all ? 'text-red-600' : ''
                               }`}>
                               {each.used}
                             </div>
-                            <div className='shrink-0 w-24 text-md mx-auto py-1 flex justify-center font-bold'>
+                            <div className='shrink-0 w-24 text-md mx-auto py-1 px-2 flex justify-center font-bold'>
                               {each.all}
                             </div>
                           </div>
@@ -282,8 +259,8 @@ function Attendance() {
                     })}
                     {!allCredits?.some((each) => each.docId === docId) && (
                       <div className='flex' key={`${docId}0`}>
-                        <div className='shrink-0 w-24 text-md mx-auto py-1 flex justify-center font-bold'>0</div>
-                        <div className='shrink-0 w-24 text-md mx-auto py-1 flex justify-center font-bold'>0</div>
+                        <div className='shrink-0 w-20 text-md mx-auto py-1 px-2 flex justify-center font-bold'>0</div>
+                        <div className='shrink-0 w-24 text-md mx-auto py-1 px-2 flex justify-center font-bold'>0</div>
                       </div>
                     )}
                   </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ArrowLeft, ArrowRight, Reset } from '../../components/Icon';
 import { useStore } from '../../store/store';
 import { apiCalendar } from '../../utils/googleCalendar';
 import Friday from './Friday';
@@ -84,15 +85,15 @@ function Schedule() {
   const months = () => {
     switch (quarter) {
       case 1:
-        return 'Jan － Mar';
+        return 'M1 － M3';
       case 2:
-        return 'Apr － Jun';
+        return 'M4 － M6';
       case 3:
-        return 'Jul － Sep';
+        return 'M7 － M9';
       case 4:
-        return 'Oct － Dec';
+        return 'M10 － M12';
       default:
-        return 'Jan － Mar';
+        return 'M1 － M3';
     }
   };
 
@@ -137,43 +138,8 @@ function Schedule() {
     getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
-  const arrowClass = 'w-6 h-6 p-1 bg-amber-200 ml-2 rounded-md cursor-pointer shadow-md hover:bg-amber-300 select-none';
-  const renderArrowLeft = () => {
-    return (
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className={arrowClass}>
-        <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
-      </svg>
-    );
-  };
-  const renderArrowRight = () => {
-    return (
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className={arrowClass}>
-        <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
-      </svg>
-    );
-  };
-  const renderResetIcon = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        fill='none'
-        viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
-        className='w-6 h-6'
-        onClick={() => {
-          setQuarter(currentQuarter);
-          setYear(currentYear);
-        }}>
-        <path
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          d='M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99'
-        />
-      </svg>
-    );
-  };
-  const boxClass = `px-12 py-5 border rounded-lg mt-4 shadow-md font-bold font-mono tracking-wider`;
+  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-slate-400 cursor-pointer hover:text-black select-none';
+  const boxClass = `px-12 py-5 rounded-3xl mt-4 font-bold `;
 
   // ==================
   //  More Information
@@ -271,36 +237,39 @@ function Schedule() {
   };
 
   return (
-    <div className='custom-main-container mt-14'>
+    <div className='custom-main-container pt-14'>
       <div className='w-10/12 mx-auto'>
-        <div className='flex justify-start gap-5 mb-8 pr-16'>
-          <div className='flex bg-gray-100 px-3 py-2 rounded-lg shadow-inner'>
-            <div className='mr-2 text-gray-800 font-medium select-none'>{months()}</div>
-            <span
-              onClick={() => {
+        <div className='flex justify-between items-center mb-6'>
+          <div className='custom-page-title'>Schedule</div>
+          <div className='flex items-center gap-2 bg-white rounded-full p-2'>
+            <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
+              <div className='text-gray-800 font-medium select-none text-center w-24'>{months()}</div>
+              {ArrowLeft(arrowClass, () => {
                 if (quarter > 1) setQuarter((n) => n - 1);
                 else setQuarter(4);
-              }}>
-              {renderArrowLeft()}
-            </span>
-            <span
-              onClick={() => {
+              })}
+              {ArrowRight(arrowClass, () => {
                 if (quarter < 4) setQuarter((n) => n + 1);
                 else setQuarter(1);
-              }}>
-              {renderArrowRight()}
-            </span>
+              })}
+            </div>
+            <div className='flex bg-slate-100 pr-2 pl-4 py-1 rounded-full'>
+              <div className='text-gray-800 font-medium select-none'>{year}</div>
+              {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
+              {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
+            </div>
+            <div className=' rounded-full cursor-pointer text-slate-400 hover:text-black'>
+              {Reset('w-5 h-5', () => {
+                setQuarter(currentQuarter);
+                setYear(currentYear);
+              })}
+            </div>
           </div>
-          <div className='flex bg-gray-100 px-3 py-2 rounded-lg shadow-inner'>
-            <div className='mr-2 text-gray-800 font-medium select-none'>{year}</div>
-            <span onClick={() => setYear((n) => n - 1)}>{renderArrowLeft()}</span>
-            <span onClick={() => setYear((n) => n + 1)}>{renderArrowRight()}</span>
-          </div>
-          <div className='p-2 rounded-lg shadow-inner cursor-pointer hover:bg-gray-100'>{renderResetIcon()}</div>
         </div>
+
         <div className='flex'>
-          <div className='w-full flex flex-col'>
-            <div className='bg-gray-300 flex rounded-lg text-black font-bold font-serif tracking-wider py-2 border-b-4 border-gray-400'>
+          <div className='w-full flex flex-col min-h-[75vh] bg-white rounded-3xl p-6'>
+            <div className='flex text-slate-500 text-lg font-bold tracking-wider mb-4'>
               <div className='flex flex-col justify-center items-center w-4/12'>
                 <div>Friday</div>
                 <div>19:00-21:00</div>
@@ -312,7 +281,7 @@ function Schedule() {
               </div>
             </div>
             {allDates && (
-              <div className='flex gap-3 rounded-lg h-[70vh] overflow-y-auto shadow-inner'>
+              <div className='flex gap-3 h-[60vh] overflow-y-auto rounded-3xl rounded-r-md'>
                 <div id='friday-container' className='w-full text-center'>
                   {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
                   {allDates.friday.map((date) => {
@@ -334,7 +303,7 @@ function Schedule() {
             )}
           </div>
           {isInfoShow && info && (
-            <div className='w-4/12 px-6 py-4 ml-5 border rounded-xl relative shadow-md max-h-[79vh] overflow-y-auto'>
+            <div className='w-4/12 px-6 py-5 ml-5 bg-white rounded-3xl relative max-h-[75vh] overflow-y-auto'>
               <button
                 onClick={() => setInfoShow(false)}
                 className='hover:text-black text-gray-300 px-2 py-1 rounded-full cursor-pointer absolute font-bold right-2 top-2'>
@@ -359,7 +328,7 @@ function Schedule() {
                     src={`https://www.google.com/maps/embed${getGoogleMapIframe(info.address)}`}
                     className='w-full h-80 mt-4 border'
                     loading='lazy'></iframe>
-                  <div className='flex justify-between items-center mt-4'>
+                  <div className='flex gap-5 justify-center items-center mt-4'>
                     <span className='tracking-wider font-semibold text-gray-600'>Add to calendar</span>
                     <img
                       src={googleCalendarIco}
@@ -376,7 +345,7 @@ function Schedule() {
                 info.map((item, index) => {
                   return (
                     <div key={index}>
-                      {index > 0 && <div className='w-full border border-gray-500 my-5' />}
+                      {index > 0 && <div className='w-full border border-gray-500 my-8' />}
                       <div className='border-b font-serif font-bold text-xl mb-2 pb-2'>{renderTitle(item.title)}</div>
                       <div className='mt-4 flex gap-2 items-center tracking-wider'>
                         <img className='opacity-50 inline w-5 h-5' src={calendarIcon} alt='calendar-icon' />
@@ -400,7 +369,7 @@ function Schedule() {
                         src={`https://www.google.com/maps/embed${getGoogleMapIframe(item.address)}`}
                         className='w-full h-80 mt-4 border'
                         loading='lazy'></iframe>
-                      <div className='flex justify-between items-center mt-4'>
+                      <div className='flex gap-5 justify-center items-center mt-4'>
                         <span className='tracking-wider font-semibold text-gray-600'>Add to calendar</span>
                         <img
                           src={googleCalendarIco}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Edit } from '../../components/icon';
+import { Edit } from '../../components/Icon';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { firestore } from '../../utils/firestore';
@@ -67,14 +67,26 @@ function Profile() {
   };
 
   return (
-    <div className='custom-main-container mt-28'>
-      {!isEditProfile && (
-        <div className='w-8/12 mx-auto flex flex-col items-center gap-3'>
-          <img src={user.photoURL} className='w-24 h-24 object-cover rounded-full border border-slate-200' />
-          <div>{user.displayName}</div>
-          <div>{user.phoneNumber}</div>
-          <div className='flex gap-2 items-center'>
-            <div>{user.email}</div>
+    <div className='custom-main-container pt-20'>
+      <div className='w-9/12 mx-auto'>
+        <div className='custom-page-title mb-6'>Profile</div>
+        {!isEditProfile && (
+          <div className='flex items-center justify-center gap-16 p-8 rounded-3xl bg-white'>
+            <img src={user.photoURL} className='w-24 h-24 object-cover rounded-full border border-slate-200' />
+            <div className='w-80 flex flex-col gap-2'>
+              <div className='flex gap-10 items-center'>
+                <div className='text-gray-500 w-14'>Name</div>
+                {user.displayName}
+              </div>
+              <div className='flex gap-10 items-center'>
+                <div className='text-gray-500 w-14'>Phone</div>
+                {user.phoneNumber}
+              </div>
+              <div className='flex gap-10 items-center'>
+                <div className='text-gray-500 w-14'>Email</div>
+                {user.email}
+              </div>
+            </div>
             <span
               onClick={() => {
                 setEditProfile(true);
@@ -87,12 +99,9 @@ function Profile() {
               {Edit('w-6 h-6 inline-block text-gray-400 cursor-pointer')}
             </span>
           </div>
-        </div>
-      )}
-      {isEditProfile && (
-        <div className='w-8/12 mx-auto '>
-          <div className='w-full text-center text-2xl mb-7'>Edit profile</div>
-          <div className='flex items-center justify-between bg-gray-100 rounded-md px-8 py-5'>
+        )}
+        {isEditProfile && (
+          <div className='flex items-center justify-center gap-16 p-8 rounded-3xl bg-white'>
             <div className='flex flex-col gap-4 items-center'>
               <img
                 src={newProfile.photoURL}
@@ -101,39 +110,40 @@ function Profile() {
               <input type='file' accept='image/*' ref={inputFileRef} onChange={handleImageChange} className=' w-60' />
             </div>
             <div className='flex flex-col justify-center gap-4 w-80 h-32'>
-              <div className='flex justify-between'>
-                <label>Name</label>
+              <div className='flex justify-between items-center'>
+                <label className='text-gray-500'>Name</label>
                 <input
                   type='text'
                   value={newProfile.displayName}
                   id='displayName'
                   onChange={handleChangeProfile}
-                  className='w-64 px-2 rounded-md'
+                  className='w-64 px-2 py-1 rounded-xl bg-slate-100'
                 />
               </div>
-              <div className='flex justify-between'>
-                <label>Phone</label>
+              <div className='flex justify-between items-center'>
+                <label className='text-gray-500'>Phone</label>
                 <input
                   type='text'
                   value={newProfile.phoneNumber}
                   id='phoneNumber'
                   onChange={handleChangeProfile}
-                  className='w-64 px-2 rounded-md'
+                  className='w-64 px-2 py-1 rounded-xl bg-slate-100'
                 />
               </div>
+              <button
+                onClick={() => {
+                  setEditProfile(false);
+                  handleSaveProfile();
+                }}
+                className='text-white px-3 py-1 bg-slate-400 rounded-lg hover:bg-slate-500'>
+                Save
+              </button>
             </div>
-            <button
-              onClick={() => {
-                setEditProfile(false);
-                handleSaveProfile();
-              }}
-              className=' text-lg px-3 bg-gray-200 rounded-sm'>
-              Save
-            </button>
           </div>
-        </div>
-      )}
-      <Kids />
+        )}
+        <div className='custom-page-title mt-8'>Kids</div>
+        <Kids />
+      </div>
     </div>
   );
 }

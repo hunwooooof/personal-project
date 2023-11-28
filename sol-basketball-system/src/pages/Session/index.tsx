@@ -21,25 +21,28 @@ function Session() {
   };
 
   return (
-    <div className='custom-main-container mt-28'>
+    <div className='custom-main-container pt-16'>
       <div className='w-10/12 mx-auto'>
-        <div className='flex gap-10 text-xl border-b border-gray-200'>
-          {kids.map((kid, index) => {
-            return (
-              <div
-                key={kid.docId}
-                onClick={() => setCurrentKidIndex(index)}
-                className={`rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-200 ${
-                  index === currentKidIndex ? 'border-b-4 border-[#14B8A6] rounded-b-none' : ''
-                }`}>
-                {kid.firstName}
-              </div>
-            );
-          })}
+        <div className='flex justify-between items-center mb-6'>
+          <div className='custom-page-title'>Session</div>
+          <div className='flex gap-1 text-lg font-bold items-center text-gray-400 bg-white rounded-full p-2'>
+            {kids.map((kid, index) => {
+              return (
+                <div
+                  key={kid.docId}
+                  onClick={() => setCurrentKidIndex(index)}
+                  className={`text-center rounded-full py-1 px-3 cursor-pointer hover:bg-gray-100 ${
+                    index === currentKidIndex ? 'text-gray-800 bg-slate-100' : ''
+                  }`}>
+                  {kid.firstName}
+                </div>
+              );
+            })}
+          </div>
         </div>
         {kids[currentKidIndex] && (
           <>
-            <div className='mt-6 flex gap-16 items-center pl-16 py-3'>
+            <div className='mt-6 flex gap-16 items-center pl-16 py-3 bg-white rounded-3xl'>
               <img src={kids[currentKidIndex]?.photoURL} className='w-20 h-20 object-cover bg-white rounded-full' />
               <div className='w-36'>
                 <div className='text-gray-400 font-bold mb-2'>Name</div>
