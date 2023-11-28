@@ -56,15 +56,15 @@ function AdminSchedule() {
   const months = () => {
     switch (quarter) {
       case 1:
-        return 'Jan － Mar';
+        return 'M1 － M3';
       case 2:
-        return 'Apr － Jun';
+        return 'M4 － M6';
       case 3:
-        return 'Jul － Sep';
+        return 'M7 － M9';
       case 4:
-        return 'Oct － Dec';
+        return 'M10 － M12';
       default:
-        return 'Jan － Mar';
+        return 'M1 － M3';
     }
   };
 
@@ -119,7 +119,7 @@ function AdminSchedule() {
           <div className='custom-page-title'>Manage Schedules</div>
           <div className='flex items-center gap-2 bg-white rounded-full py-2 px-3'>
             <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
-              <div className='text-gray-800 font-medium select-none'>{months()}</div>
+              <div className='text-gray-800 font-medium select-none text-center w-24'>{months()}</div>
               {ArrowLeft(arrowClass, () => {
                 if (quarter > 1) setQuarter((n) => n - 1);
                 else setQuarter(4);
