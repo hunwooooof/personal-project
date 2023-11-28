@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Edit } from '../../../components/icon';
+import { Edit } from '../../../components/Icon';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
 import SatItem from './SatItem';
@@ -65,10 +65,10 @@ function Saturday({ date, quarter, year }: PropsType) {
 
   const [isEdit, setEdit] = useState<boolean>(false);
 
-  const unScheduledClass = `relative px-12 py-5 border rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner ${
-    isEdit ? 'shadow-inner' : 'shadow-md hover:[&:not(:has(*:hover))]:bg-teal-50'
+  const unScheduledClass = `relative px-12 py-5 rounded-3xl mt-4 font-bold text-gray-400 tracking-wider cursor-pointer ${
+    isEdit ? '' : 'hover:[&:not(:has(*:hover))]:bg-slate-200'
   }`;
-  const isScheduledClass = `relative px-12 py-5 border shadow-md rounded-lg mt-4 font-bold font-mono tracking-wider cursor-pointer relative hover:shadow-inner hover:bg-teal-100 bg-teal-100 `;
+  const isScheduledClass = `relative px-12 py-5 rounded-3xl mt-4 font-bold tracking-wider text-white cursor-pointer bg-slate-500 hover:bg-slate-400`;
 
   const handleClickAdd = () => {
     firestore.getDoc('schedule', `${year}Q${quarter}`, 'saturday', date).then((schedule) => {
@@ -107,20 +107,19 @@ function Saturday({ date, quarter, year }: PropsType) {
           }}>
           {!isEdit && (
             <>
-              {showDate}{' '}
-              <span className='font-normal text-gray-500'>{`(${Object.values(todaySchedule)[0].length})`}</span>
+              {`${showDate} (${Object.values(todaySchedule)[0].length})`}
               <span
                 onClick={(e) => {
                   e.stopPropagation();
                   setEdit(true);
                 }}>
-                {Edit('absolute right-3 w-6 h-6 inline-block pb-1 text-gray-300 cursor-pointer hover:text-black')}
+                {Edit('absolute right-8 w-6 h-6 inline-block text-gray-300 cursor-pointer hover:text-black')}
               </span>
             </>
           )}
           {isEdit && (
             <div
-              className='fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 z-10'
+              className='fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-60 z-10'
               onClick={() => setEdit(false)}>
               <div
                 className='z-20 bg-white w-5/12 mx-auto mt-28 rounded-2xl py-8 cursor-default font-sans relative'
@@ -153,7 +152,7 @@ function Saturday({ date, quarter, year }: PropsType) {
                     <div className='w-10/12 border mx-auto my-8' />
                   </div>
                 )}
-                <div className='-mt-2 text-sm'>
+                <div className='mt-2 text-sm'>
                   <label htmlFor='time' className='inline-block mr-4 w-2/12 text-center'>
                     Time
                   </label>
@@ -163,7 +162,7 @@ function Saturday({ date, quarter, year }: PropsType) {
                       name='start'
                       id='start'
                       value={detail.time.slice(0, 5)}
-                      className='cursor-pointer border pl-2 py-1 rounded-md w-5/12 font-normal'
+                      className='cursor-pointer border pl-2 py-1 rounded-md w-5/12 font-bold text-gray-800'
                       onChange={(e) => {
                         const id = e.target.value;
                         setDetail({
@@ -179,7 +178,7 @@ function Saturday({ date, quarter, year }: PropsType) {
                       name='end'
                       id='end'
                       value={detail.time.slice(6)}
-                      className='cursor-pointer border pl-2 py-1 rounded-md w-5/12 font-normal'
+                      className='cursor-pointer border pl-2 py-1 rounded-md w-5/12 font-bold text-gray-800'
                       onChange={(e) => {
                         const id = e.target.value;
                         setDetail({
@@ -198,7 +197,7 @@ function Saturday({ date, quarter, year }: PropsType) {
                     name='title'
                     id='title'
                     value={detail.title}
-                    className='cursor-pointer border font-normal px-2 py-1 rounded-md w-6/12 text-center'
+                    className='cursor-pointer border font-bold px-2 py-1 rounded-md w-6/12 text-center text-gray-800'
                     onChange={(e) => {
                       const id = e.target.value;
                       setDetail({
@@ -223,7 +222,7 @@ function Saturday({ date, quarter, year }: PropsType) {
                     name='team'
                     id='team'
                     value={detail.tag}
-                    className='cursor-pointer border font-normal px-2 py-1 rounded-md w-6/12 text-center'
+                    className='cursor-pointer border font-bold px-2 py-1 rounded-md w-6/12 text-center text-gray-800'
                     onChange={(e) => {
                       const id = e.target.value;
                       setDetail({
@@ -248,7 +247,7 @@ function Saturday({ date, quarter, year }: PropsType) {
                     name='address'
                     id='address'
                     value={detail.address}
-                    className='cursor-pointer border font-normal px-2 py-1 rounded-md w-6/12 text-center'
+                    className='cursor-pointer border font-bold px-2 py-1 rounded-md w-6/12 text-center text-gray-800'
                     onChange={(e) => {
                       const id = e.target.value;
                       setDetail({
@@ -287,7 +286,7 @@ function Saturday({ date, quarter, year }: PropsType) {
               .then(() => getScheduledDates(year, quarter));
             firestore.updateDocArrayRemove('schedule', `${year}Q${quarter}`, date, detail, 'saturday', date);
           }}>
-          {showDate} <span className='font-normal text-gray-500'>{`(${Object.values(todaySchedule)[0].length})`}</span>
+          {`${showDate} (${Object.values(todaySchedule)[0].length})`}
         </div>
       )}
     </div>

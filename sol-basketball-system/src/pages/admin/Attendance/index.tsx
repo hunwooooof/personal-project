@@ -150,7 +150,7 @@ function Attendance() {
       <div className='w-10/12 mx-auto'>
         <div className='flex justify-between items-center mb-6'>
           <div className='custom-page-title'>Attendance</div>
-          <div className='flex items-center gap-2 bg-white rounded-full p-2'>
+          <div className='flex items-center gap-2 bg-white rounded-full py-2 px-3'>
             <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
               <div className='text-gray-800 font-medium select-none'>{months()}</div>
               {ArrowLeft(arrowClass, () => {

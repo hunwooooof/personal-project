@@ -109,38 +109,42 @@ function AdminSchedule() {
     getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
-  const arrowClass = 'w-6 h-6 p-1 bg-amber-200 ml-2 rounded-md cursor-pointer shadow-md hover:bg-amber-300 select-none';
-  const boxClass = `px-12 py-5 border rounded-lg mt-4 shadow-md font-bold font-mono tracking-wider`;
+  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-slate-400 cursor-pointer hover:text-black select-none';
+  const boxClass = `px-12 py-5 rounded-3xl mt-4 font-bold `;
 
   return (
-    <div className='custom-main-container pt-28'>
+    <div className='custom-main-container pt-16'>
       <div className='w-10/12 flex flex-col mx-auto'>
-        <div className='flex justify-end gap-5 mb-8 pr-16'>
-          <div className='flex bg-gray-100 px-3 py-2 rounded-lg shadow-inner'>
-            <div className='mr-2 text-gray-800 font-medium select-none'>{months()}</div>
-            {ArrowLeft(arrowClass, () => {
-              if (quarter > 1) setQuarter((n) => n - 1);
-              else setQuarter(4);
-            })}
-            {ArrowRight(arrowClass, () => {
-              if (quarter < 4) setQuarter((n) => n + 1);
-              else setQuarter(1);
-            })}
-          </div>
-          <div className='flex bg-gray-100 px-3 py-2 rounded-lg shadow-inner'>
-            <div className='mr-2 text-gray-800 font-medium select-none'>{year}</div>
-            {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
-            {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
-          </div>
-          <div className='p-2 rounded-lg shadow-inner cursor-pointer hover:bg-gray-100'>
-            {Reset('w-6 h-6', () => {
-              setQuarter(currentQuarter);
-              setYear(currentYear);
-            })}
+        <div className='flex justify-between items-center mb-6'>
+          <div className='custom-page-title'>Manage Schedules</div>
+          <div className='flex items-center gap-2 bg-white rounded-full py-2 px-3'>
+            <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
+              <div className='text-gray-800 font-medium select-none'>{months()}</div>
+              {ArrowLeft(arrowClass, () => {
+                if (quarter > 1) setQuarter((n) => n - 1);
+                else setQuarter(4);
+              })}
+              {ArrowRight(arrowClass, () => {
+                if (quarter < 4) setQuarter((n) => n + 1);
+                else setQuarter(1);
+              })}
+            </div>
+            <div className='flex bg-slate-100 pr-2 pl-4 py-1 rounded-full'>
+              <div className='text-gray-800 font-medium select-none'>{year}</div>
+              {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
+              {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
+            </div>
+            <div className=' rounded-full cursor-pointer text-slate-400 hover:text-black'>
+              {Reset('w-5 h-5', () => {
+                setQuarter(currentQuarter);
+                setYear(currentYear);
+              })}
+            </div>
           </div>
         </div>
-        <div className='w-full mr-5 flex flex-col'>
-          <div className='bg-gray-300 flex rounded-lg text-black font-bold font-serif tracking-wider py-2 border-b-4 border-gray-400'>
+
+        <div className='w-full mr-5 flex flex-col min-h-[75vh] bg-white rounded-3xl p-6'>
+          <div className='flex text-slate-500 text-lg font-bold tracking-wider mb-4'>
             <div className='flex flex-col justify-center items-center w-4/12'>
               <div>Friday</div>
               <div>19:00-21:00</div>
@@ -152,7 +156,7 @@ function AdminSchedule() {
             </div>
           </div>
           {allDates && (
-            <div className='flex gap-3 pb-24'>
+            <div className='flex gap-3 h-[60vh] overflow-y-auto rounded-3xl rounded-r-md'>
               <div className='w-full text-center'>
                 {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
                 {allDates.friday.map((date) => {
