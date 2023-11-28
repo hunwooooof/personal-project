@@ -7,9 +7,8 @@ function Sidebar() {
   const activeNavClass = 'border-r-4 text-xl text-slate-800 border-slate-800';
   const normalNavClass = 'text-slate-300 text-xl hover:text-slate-500';
 
-  const handleClickNav = (e) => {
-    setCurrentNav(e.target.id);
-    console.log(e.target.id);
+  const handleClickNav = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    setCurrentNav((e.target as Element).id);
   };
 
   return (
@@ -17,7 +16,7 @@ function Sidebar() {
       <Link to='/' className='block my-3'>
         <img src={logoUrl} alt='sol-basketball-logo' className='w-24' />
       </Link>
-      <div className='flex flex-col gap-2 pl-2 font-bold'>
+      <div className='flex flex-col gap-3 pl-2 font-bold'>
         <Link
           to='/'
           id='schedules'
