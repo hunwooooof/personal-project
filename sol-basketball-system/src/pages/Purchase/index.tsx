@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle } from '../../components/icon';
+import { PlusCircle } from '../../components/Icon';
 import { useStore } from '../../store/store';
 import email from '../../utils/emailJS';
 import { db, doc, firestore, serverTimestamp } from '../../utils/firestore';

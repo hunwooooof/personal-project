@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Edit } from '../../components/icon';
+import { Edit } from '../../components/Icon';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { firestore } from '../../utils/firestore';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ArrowRight, Reset } from '../../../components/icon';
+import { ArrowLeft, ArrowRight, Reset } from '../../../components/Icon';
 import { useStore } from '../../../store/store';
 import Friday from './Friday';
 import Saturday from './Saturday';
@@ -113,7 +113,7 @@ function AdminSchedule() {
   const boxClass = `px-12 py-5 border rounded-lg mt-4 shadow-md font-bold font-mono tracking-wider`;
 
   return (
-    <div className='custom-main-container mt-28'>
+    <div className='custom-main-container pt-28'>
       <div className='w-10/12 flex flex-col mx-auto'>
         <div className='flex justify-end gap-5 mb-8 pr-16'>
           <div className='flex bg-gray-100 px-3 py-2 rounded-lg shadow-inner'>

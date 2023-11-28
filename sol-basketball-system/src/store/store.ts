@@ -32,6 +32,8 @@ interface AccountType {
 }
 
 interface StoreState {
+  currentNav: string;
+  setCurrentNav: (nav: string) => void;
   user: UserType;
   userRef: undefined | DocumentReference<DocumentData, DocumentData>;
   kids: KidType[] | [];
@@ -42,7 +44,6 @@ interface StoreState {
   checkLogIn: () => void;
   setLogOut: () => void;
   getUserProfile: (userRef: undefined | DocumentReference<DocumentData, DocumentData>) => object;
-  // getKidsProfile: (kidsRef: DocumentReference<DocumentData, DocumentData>[]) => void;
   scheduledDates: string[];
   getScheduledDates: (year: number, quarter: number) => void;
   saturdaySchedules: object[];
@@ -65,6 +66,8 @@ const initialProfile = (user: UserCredential['user'], name?: string | undefined)
 };
 
 export const useStore = create<StoreState>((set) => ({
+  currentNav: 'schedules',
+  setCurrentNav: (nav: string) => set(() => ({ currentNav: nav })),
   user: {},
   userRef: undefined,
   kids: [],
@@ -142,14 +145,6 @@ export const useStore = create<StoreState>((set) => ({
       return profile;
     }
   },
-  // getKidsProfile: async (kidsRef) => {
-  //   const kids: KidType[] = [];
-  //   for (const kidRef of kidsRef) {
-  //     const kid = await firestore.getDocByRef(kidRef);
-  //     if (kid) kids.push(kid as KidType);
-  //   }
-  //   set(() => ({ kids: kids }));
-  // },
   scheduledDates: [],
   getScheduledDates: async (year, quarter) => {
     const schedule = await firestore.getDoc('schedule', `${year}Q${quarter}`);

@@ -7,7 +7,7 @@ html {
 }
 
 .custom-main-container {
-  @apply ml-60 w-[cal(100%-240px)];
+  @apply ml-60 w-[cal(100%-240px)] bg-slate-100;
 }
 
 .custom-signin-input {

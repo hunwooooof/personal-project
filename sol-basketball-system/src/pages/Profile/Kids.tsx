@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { PlusCircle } from '../../components/icon';
+import { PlusCircle } from '../../components/Icon';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { db, doc, firestore } from '../../utils/firestore';

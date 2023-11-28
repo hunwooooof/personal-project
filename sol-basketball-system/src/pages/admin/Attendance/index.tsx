@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Reset } from '../../../components/icon';
+import { Reset } from '../../../components/Icon';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
 

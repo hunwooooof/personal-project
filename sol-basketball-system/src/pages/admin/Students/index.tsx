@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Age, Cake, School } from '../../../components/icon';
+import { Age, Cake, School } from '../../../components/Icon';
 import { firestore } from '../../../utils/firestore';
 
 interface StudentProfile {
