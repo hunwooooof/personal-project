@@ -1,16 +1,6 @@
 import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { create } from 'zustand';
-import {
-  UserCredential,
-  auth,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  provider,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  updateProfile,
-} from '../utils/firebaseAuth';
+import { UserCredential, firebaseAuth } from '../utils/firebaseAuth';
 import { db, doc, firestore } from '../utils/firestore';
 
 interface UserType {
@@ -18,7 +8,7 @@ interface UserType {
   email?: string;
   kids?: DocumentReference<DocumentData, DocumentData>[];
   ordersRef?: DocumentReference<DocumentData, DocumentData>[];
-  displayName?: string;
+  displayName?: string | undefined;
   phoneNumber?: string;
   registrationDate?: string;
   role?: string;
@@ -43,14 +33,11 @@ interface AccountType {
 
 interface StoreState {
   user: UserType;
-  setUser: (data: object) => void;
   userRef: undefined | DocumentReference<DocumentData, DocumentData>;
   kids: KidType[] | [];
-  kidsRef: undefined | DocumentReference<DocumentData, DocumentData>[];
   isLogin: boolean;
   nativeSignup: (account: AccountType) => void;
   nativeLogin: (account: AccountType) => void;
-  googleSignup: () => void;
   googleLogin: () => void;
   checkLogIn: () => void;
   setLogOut: () => void;
@@ -62,129 +49,72 @@ interface StoreState {
   getSaturdaySchedules: (year: number, quarter: number) => void;
 }
 
+const solBasketballLogo =
+  'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496';
+
+const initialProfile = (user: UserCredential['user'], name?: string | undefined) => {
+  return {
+    photoURL: user.photoURL || solBasketballLogo,
+    email: user.email,
+    kids: [],
+    displayName: name || user.displayName || undefined,
+    phoneNumber: user.phoneNumber,
+    registrationDate: user.metadata.creationTime,
+    role: 'user',
+  };
+};
+
 export const useStore = create<StoreState>((set) => ({
   user: {},
-  setUser: (data: object) => set(() => ({ user: data })),
   userRef: undefined,
   kids: [],
-  kidsRef: undefined,
   nativeSignup: (account: AccountType) => {
-    const photo =
-      'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496';
     const { name, email, password } = account;
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential: UserCredential) => {
-        const { user } = userCredential;
-        set(() => ({ isLogin: true }));
-        if (auth.currentUser)
-          updateProfile(auth.currentUser, {
-            displayName: name,
-            photoURL: photo,
-          })
-            .then(() => {
-              console.log('Profile updated!');
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        return user;
-      })
+    firebaseAuth
+      .createUserWithEmailAndPassword(email, password)
       .then((user) => {
-        const initialProfile = {
-          photoURL: photo,
-          email: user.email,
-          kids: [],
-          displayName: name,
-          phoneNumber: user.phoneNumber,
-          registrationDate: user.metadata.creationTime,
-          role: 'user',
-        };
-        firestore.setDoc('users', user.uid, initialProfile);
+        firebaseAuth.updateProfile(name as string, solBasketballLogo);
+        firestore.setDoc('users', user.uid, initialProfile(user, name));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ isLogin: true }));
       })
       .catch((error: { code: number; message: string }) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(errorCode, errorMessage);
+        console.error(error.code, error.message);
       });
   },
   nativeLogin: (account: AccountType) => {
     const { email, password } = account;
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential: UserCredential) => {
-        const { user } = userCredential;
-        set(() => ({ user: user as UserType }));
-        set(() => ({ isLogin: true }));
-        set(() => ({ userRef: doc(db, 'users', user.uid) }));
-        return user;
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(errorCode, errorMessage);
-      });
-  },
-  googleSignup: () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        set(() => ({ isLogin: true }));
-        const { user } = result;
-        return user;
-      })
+    firebaseAuth
+      .signInWithEmailAndPassword(email, password)
       .then((user) => {
-        console.log(user);
         set(() => ({ user: user as UserType }));
-        const initialProfile = {
-          photoURL: user.photoURL,
-          email: user.email,
-          kids: [],
-          displayName: user.displayName,
-          phoneNumber: user.phoneNumber,
-          registrationDate: user.metadata.creationTime,
-          role: 'user',
-        };
-        firestore.setDoc('users', user.uid, initialProfile);
+        set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })
-      .catch((error) => {
-        console.error(error);
-      });
+      .catch((error) => console.error(error.code, error.message));
   },
   googleLogin: () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const { user } = result;
-        return user;
-      })
+    firebaseAuth
+      .signInWithPopup()
       .then((user) => {
-        firestore.getDoc('users', user.uid).then((userDoc) => {
-          if (userDoc) {
-            set(() => ({ userRef: doc(db, 'users', user.uid) }));
-            set(() => ({ isLogin: true }));
-          } else {
-            const initialProfile = {
-              photoURL: user.photoURL,
-              email: user.email,
-              kids: [],
-              displayName: user.displayName,
-              phoneNumber: user.phoneNumber,
-              registrationDate: user.metadata.creationTime,
-              role: 'user',
-            };
-            set(() => ({ user: initialProfile as UserType }));
-            set(() => ({ isLogin: true }));
-            firestore.setDoc('users', user.uid, initialProfile);
-            set(() => ({ userRef: doc(db, 'users', user.uid) }));
-          }
-        });
+        set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        firestore
+          .getDoc('users', user.uid)
+          .then((userDoc) => {
+            if (userDoc) {
+              set(() => ({ user: userDoc }));
+            } else {
+              firestore.setDoc('users', user.uid, initialProfile(user));
+              set(() => ({ user: initialProfile(user) as UserType }));
+            }
+          })
+          .then(() => set(() => ({ isLogin: true })));
       })
-      .catch((error) => {
-        console.error(error);
-      });
+      .catch((error) => console.error(error));
   },
   isLogin: false,
   checkLogIn: () => {
-    onAuthStateChanged(auth, (user) => {
+    firebaseAuth.onAuthStateChanged((user) => {
       if (user) {
         set(() => ({ user: user as UserType }));
         set(() => ({ isLogin: true }));
@@ -193,16 +123,11 @@ export const useStore = create<StoreState>((set) => ({
     });
   },
   setLogOut: () => {
-    signOut(auth)
-      .then(() => {
-        console.log('Sign-out successful');
-        set(() => ({ isLogin: false }));
-        set(() => ({ user: {} }));
-        set(() => ({ userRef: undefined }));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    firebaseAuth.signOut(() => {
+      set(() => ({ isLogin: false }));
+      set(() => ({ user: {} }));
+      set(() => ({ userRef: undefined }));
+    });
   },
   getUserProfile: async (userRef) => {
     if (userRef) {
