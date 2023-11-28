@@ -11,7 +11,7 @@ html {
 }
 
 .custom-signin-input {
-  @apply w-full p-4 border border-[#00000060] rounded-sm;
+  @apply w-full p-4 rounded-3xl bg-slate-100 font-bold text-gray-700 tracking-wide;
 }
 
 .custom-page-title {
