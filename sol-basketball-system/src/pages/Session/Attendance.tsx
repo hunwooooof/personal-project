@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ArrowLeft, ArrowRight, Reset } from '../../components/Icon';
 import { firestore } from '../../utils/firestore';
 
 interface PropsType {
@@ -40,54 +41,19 @@ function Attendance({ currentKidId }: PropsType) {
   const months = () => {
     switch (quarter) {
       case 1:
-        return 'Jan － Mar';
+        return 'M1 － M3';
       case 2:
-        return 'Apr － Jun';
+        return 'M4 － M6';
       case 3:
-        return 'Jul － Sep';
+        return 'M7 － M9';
       case 4:
-        return 'Oct － Dec';
+        return 'M10 － M12';
       default:
-        return 'Jan － Mar';
+        return 'M1 － M3';
     }
   };
 
-  const arrowClass = 'w-6 h-6 p-1 bg-amber-200 ml-2 rounded-md cursor-pointer shadow-md hover:bg-amber-300 select-none';
-  const renderArrowLeft = () => {
-    return (
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className={arrowClass}>
-        <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
-      </svg>
-    );
-  };
-  const renderArrowRight = () => {
-    return (
-      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className={arrowClass}>
-        <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
-      </svg>
-    );
-  };
-  const renderResetIcon = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        fill='none'
-        viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
-        className='w-6 h-6'
-        onClick={() => {
-          setQuarter(currentQuarter);
-          setYear(currentYear);
-        }}>
-        <path
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          d='M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99'
-        />
-      </svg>
-    );
-  };
+  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-slate-400 cursor-pointer hover:text-black select-none';
 
   const renderUncheck = () => {
     return (
@@ -125,38 +91,39 @@ function Attendance({ currentKidId }: PropsType) {
 
   return (
     <div>
-      <div className='mt-6  px-3 py-2 text-xl border-b border-gray-200'>Attendance</div>
-      <div className='flex justify-end gap-5 mb-8 pr-16'>
-        <div className='flex px-3 py-2 rounded-lg'>
-          <div className='mr-2 text-gray-800 font-medium select-none'>{months()}</div>
-          <span
-            onClick={() => {
+      <div className='flex justify-between items-center mb-6 mt-14'>
+        <div className='custom-page-title'>Attendance</div>
+        <div className='flex items-center gap-2 bg-white rounded-full py-2 px-2'>
+          <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
+            <div className='text-gray-800 font-medium select-none text-center w-24'>{months()}</div>
+            {ArrowLeft(arrowClass, () => {
               if (quarter > 1) setQuarter((n) => n - 1);
               else setQuarter(4);
-            }}>
-            {renderArrowLeft()}
-          </span>
-          <span
-            onClick={() => {
+            })}
+            {ArrowRight(arrowClass, () => {
               if (quarter < 4) setQuarter((n) => n + 1);
               else setQuarter(1);
-            }}>
-            {renderArrowRight()}
-          </span>
+            })}
+          </div>
+          <div className='flex bg-slate-100 pr-2 pl-4 py-1 rounded-full'>
+            <div className='text-gray-800 font-medium select-none'>{year}</div>
+            {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
+            {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
+          </div>
+          <div className=' rounded-full cursor-pointer text-slate-400 hover:text-black'>
+            {Reset('w-5 h-5', () => {
+              setQuarter(currentQuarter);
+              setYear(currentYear);
+            })}
+          </div>
         </div>
-        <div className='flex px-3 py-2 rounded-lg'>
-          <div className='mr-2 text-gray-800 font-medium select-none'>{year}</div>
-          <span onClick={() => setYear((n) => n - 1)}>{renderArrowLeft()}</span>
-          <span onClick={() => setYear((n) => n + 1)}>{renderArrowRight()}</span>
-        </div>
-        <div className='m-2 rounded-lg cursor-pointer hover:bg-gray-100'>{renderResetIcon()}</div>
       </div>
-      {dates.length === 0 && (
-        <div className='text-2xl text-center mt-20 text-gray-400'>No data available for this section.</div>
-      )}
-      {dates.length > 0 && (
-        <>
-          <div className='w-10/12 mt-5 mx-16 overflow-x-auto p-2 pb-4 rounded-lg shadow-inner'>
+      <div className='bg-white rounded-3xl py-5 px-8'>
+        {dates.length === 0 && (
+          <div className='text-2xl text-center text-gray-400'>No data available for this section.</div>
+        )}
+        {dates.length > 0 && (
+          <div className='overflow-x-auto pb-4 rounded-lg'>
             <div className='flex mb-4'>
               {dates.map((date: string) => {
                 const formateDate = date.substring(5).replace('-', '/');
@@ -181,8 +148,8 @@ function Attendance({ currentKidId }: PropsType) {
               </div>
             )}
           </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 }

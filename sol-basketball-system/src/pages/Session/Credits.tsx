@@ -38,8 +38,8 @@ function Credits({ currentKidId }: PropsType) {
 
   return (
     <div>
-      <div className='mt-6  px-3 py-2 text-xl border-b border-gray-200'>Credits</div>
-      <div className='flex justify-center gap-11 py-8'>
+      <div className='custom-page-title mt-14'>Credits</div>
+      <div className='flex justify-center gap-11 py-8 mt-6 bg-white rounded-3xl'>
         <div className='flex flex-col w-52 justify-center items-center'>
           <div className='text-5xl mb-3'>{credit.all}</div>
           <div className='text-gray-600'>Session Credits Purchased</div>
