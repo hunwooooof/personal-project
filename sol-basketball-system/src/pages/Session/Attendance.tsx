@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { db, doc, getDoc } from '../../utils/firebase';
+import { firestore } from '../../utils/firestore';
 
 interface PropsType {
   currentKidId: string;
@@ -20,24 +20,18 @@ function Attendance({ currentKidId }: PropsType) {
   const [dates, setDates] = useState([]);
   useEffect(() => {
     async function getDates() {
-      const scheduleSnap = await getDoc(doc(db, 'schedule', `${year}Q${quarter}`));
-      if (scheduleSnap) {
-        const schedule = scheduleSnap.data();
-        if (schedule) {
-          setDates(schedule.all.sort());
-        } else setDates([]);
-      }
+      const schedule = await firestore.getDoc('schedule', `${year}Q${quarter}`);
+      if (schedule) {
+        setDates(schedule.all.sort());
+      } else setDates([]);
     }
     getDates();
   }, [quarter, year]);
 
   const [showUpDates, setShowUpDates] = useState(['']);
   async function getAttendanceDoc() {
-    const kidAttendanceSnapshot = await getDoc(doc(db, 'attendance', currentKidId));
-    if (kidAttendanceSnapshot) {
-      const kidAttendance = kidAttendanceSnapshot.data();
-      if (kidAttendance) setShowUpDates(kidAttendance.showUpDate);
-    }
+    const kidAttendance = await firestore.getDoc('attendance', currentKidId);
+    if (kidAttendance) setShowUpDates(kidAttendance.showUpDate);
   }
   useEffect(() => {
     getAttendanceDoc();

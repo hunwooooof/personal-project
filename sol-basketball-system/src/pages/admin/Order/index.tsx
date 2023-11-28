@@ -2,7 +2,7 @@ import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../../store/store';
-import { collection, db, doc, getDocs, increment, updateDoc } from '../../../utils/firebase';
+import { firestore } from '../../../utils/firestore';
 
 interface OrderType {
   id: string;
@@ -33,10 +33,12 @@ function AdminOrder() {
   const [tag, setTag] = useState('all');
   const [orders, setOrders] = useState<OrderType[]>([]);
   async function getOrders() {
-    const ordersSnapshot = await getDocs(collection(db, 'orders'));
-    const ordersArray: OrderType[] = [];
-    ordersSnapshot.forEach((doc) => ordersArray.push(doc.data() as OrderType));
-    setOrders(ordersArray);
+    const ordersArray = (await firestore.getDocs('orders')) as OrderType[];
+    const sortByTimestamp = (a: OrderType, b: OrderType) => b.timestamp.seconds - a.timestamp.seconds;
+    if (ordersArray) {
+      ordersArray.sort(sortByTimestamp);
+      setOrders(ordersArray as OrderType[]);
+    }
   }
   useEffect(() => {
     getOrders();
@@ -48,12 +50,11 @@ function AdminOrder() {
       <svg
         id={orderId}
         onClick={() => {
-          updateDoc(doc(db, 'orders', orderId), {
-            status: 'SUCCESS',
-          }).then(() => getOrders());
-          updateDoc(doc(db, 'credits', docId), {
-            all: increment(credit),
-          });
+          const userConfirm = confirm('Set the order to SUCCESS?');
+          if (userConfirm) {
+            firestore.updateDoc('orders', orderId, { status: 'SUCCESS' }).then(() => getOrders());
+            firestore.updateDocIncrement('credits', docId, 'all', credit);
+          }
         }}
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
@@ -70,32 +71,6 @@ function AdminOrder() {
     );
   };
 
-  const renderChecked = (orderId: string, docId: string, plan: string) => {
-    const credit = parseInt(plan);
-    return (
-      <svg
-        id={orderId}
-        onClick={() => {
-          updateDoc(doc(db, 'orders', orderId), {
-            status: 'IN_PROCESS',
-          }).then(() => getOrders());
-          updateDoc(doc(db, 'credits', docId), {
-            all: increment(-credit),
-          });
-        }}
-        xmlns='http://www.w3.org/2000/svg'
-        viewBox='0 0 24 24'
-        fill='currentColor'
-        className='h-6 text-green-500 rounded-md cursor-pointer hover:bg-gray-100'>
-        <path
-          fillRule='evenodd'
-          d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z'
-          clipRule='evenodd'
-        />
-      </svg>
-    );
-  };
-
   const renderRemoveIcon = (orderId: string) => {
     return (
       <svg
@@ -106,9 +81,7 @@ function AdminOrder() {
         stroke='currentColor'
         fill='none'
         onClick={() => {
-          updateDoc(doc(db, 'orders', orderId), {
-            status: 'FAILED',
-          }).then(() => getOrders());
+          firestore.updateDoc('orders', orderId, { status: 'FAILED' }).then(() => getOrders());
         }}
         className='w-6 cursor-pointer hover:text-red-400'>
         <path
@@ -130,9 +103,7 @@ function AdminOrder() {
         strokeWidth={1.5}
         stroke='currentColor'
         onClick={() => {
-          updateDoc(doc(db, 'orders', orderId), {
-            status: 'IN_PROCESS',
-          }).then(() => getOrders());
+          firestore.updateDoc('orders', orderId, { status: 'IN_PROCESS' }).then(() => getOrders());
         }}
         className='h-6 p-1 cursor-pointer hover:text-blue-400'>
         <path
@@ -215,7 +186,7 @@ function AdminOrder() {
                       {order.status === 'IN_PROCESS'
                         ? renderUncheck(order.id, order.kid.docId, order.plan)
                         : order.status === 'SUCCESS'
-                          ? renderChecked(order.id, order.kid.docId, order.plan)
+                          ? ''
                           : renderReset(order.id)}
                       {order.status === 'IN_PROCESS' && renderRemoveIcon(order.id)}
                     </div>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Reset } from '../../../components/icon';
 import { useStore } from '../../../store/store';
-import { arrayRemove, arrayUnion, collection, db, doc, getDoc, getDocs, updateDoc } from '../../../utils/firebase';
+import { firestore } from '../../../utils/firestore';
 
 interface AttendanceType {
   docId: string;
@@ -39,24 +40,17 @@ function Attendance() {
   const [dates, setDates] = useState([]);
   useEffect(() => {
     async function getDates() {
-      const scheduleSnap = await getDoc(doc(db, 'schedule', `${year}Q${quarter}`));
-      if (scheduleSnap) {
-        const schedule = scheduleSnap.data();
-        if (schedule) {
-          setDates(schedule.all.sort());
-        } else setDates([]);
-      }
+      const schedule = await firestore.getDoc('schedule', `${year}Q${quarter}`);
+      if (schedule) {
+        setDates(schedule.all.sort());
+      } else setDates([]);
     }
     getDates();
   }, [quarter, year]);
 
   const [attendances, setAttendances] = useState<AttendanceType[]>([]);
   async function getAttendances() {
-    const attendanceSnapshot = await getDocs(collection(db, 'attendance'));
-    const attendanceArray: object[] = [];
-    attendanceSnapshot.forEach((doc) => {
-      attendanceArray.push(doc.data());
-    });
+    const attendanceArray = await firestore.getDocs('attendance');
     setAttendances(attendanceArray as AttendanceType[]);
   }
   useEffect(() => {
@@ -80,11 +74,7 @@ function Attendance() {
 
   const [allCredits, setAllCredits] = useState<CreditDocType[]>();
   async function getCredits() {
-    const creditsSnapshot = await getDocs(collection(db, 'credits'));
-    const creditsArray: object[] = [];
-    creditsSnapshot.forEach((doc) => {
-      creditsArray.push(doc.data());
-    });
+    const creditsArray = await firestore.getDocs('credits');
     setAllCredits(creditsArray as CreditDocType[]);
   }
   useEffect(() => {
@@ -107,45 +97,19 @@ function Attendance() {
     );
   };
 
-  const renderResetIcon = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        fill='none'
-        viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
-        className='w-6 h-6'
-        onClick={() => {
-          setQuarter(currentQuarter);
-          setYear(currentYear);
-        }}>
-        <path
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          d='M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99'
-        />
-      </svg>
-    );
-  };
-
   const renderUncheck = (date: string, docId: string) => {
     return (
       <svg
         id={date}
         onClick={(e) => {
-          updateDoc(doc(db, 'attendance', docId), {
-            showUpDate: arrayUnion(e.currentTarget.id),
-          })
+          firestore
+            .updateDocArrayUnion('attendance', docId, 'showUpDate', e.currentTarget.id)
             .then(() => getAttendances())
             .then(() => {
-              getDoc(doc(db, 'attendance', docId)).then((attendanceSnap) => {
-                const attendance = attendanceSnap.data();
+              firestore.getDoc('attendance', docId).then((attendance) => {
                 if (attendance) {
                   const countShowUp = attendance.showUpDate.length;
-                  updateDoc(doc(db, 'credits', docId), {
-                    used: countShowUp,
-                  }).then(() => getCredits());
+                  firestore.updateDoc('credits', docId, { used: countShowUp }).then(() => getCredits());
                 }
               });
             });
@@ -170,18 +134,14 @@ function Attendance() {
       <svg
         id={date}
         onClick={(e) => {
-          updateDoc(doc(db, 'attendance', docId), {
-            showUpDate: arrayRemove(e.currentTarget.id),
-          })
+          firestore
+            .updateDocArrayRemove('attendance', docId, 'showUpDate', e.currentTarget.id)
             .then(() => getAttendances())
             .then(() => {
-              getDoc(doc(db, 'attendance', docId)).then((attendanceSnap) => {
-                const attendance = attendanceSnap.data();
+              firestore.getDoc('attendance', docId).then((attendance) => {
                 if (attendance) {
                   const countShowUp = attendance.showUpDate.length;
-                  updateDoc(doc(db, 'credits', docId), {
-                    used: countShowUp,
-                  }).then(() => getCredits());
+                  firestore.updateDoc('credits', docId, { used: countShowUp }).then(() => getCredits());
                 }
               });
             });
@@ -226,7 +186,12 @@ function Attendance() {
             <span onClick={() => setYear((n) => n - 1)}>{renderArrowLeft()}</span>
             <span onClick={() => setYear((n) => n + 1)}>{renderArrowRight()}</span>
           </div>
-          <div className='p-2 rounded-lg shadow-inner cursor-pointer hover:bg-gray-100'>{renderResetIcon()}</div>
+          <div className='p-2 rounded-lg shadow-inner cursor-pointer hover:bg-gray-100'>
+            {Reset('w-6 h-6', () => {
+              setQuarter(currentQuarter);
+              setYear(currentYear);
+            })}
+          </div>
         </div>
         {dates.length === 0 && (
           <div className='text-3xl text-center mt-40 text-gray-400'>No data available for this section.</div>

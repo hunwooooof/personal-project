@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PlusCircle } from '../../components/icon';
 import { useStore } from '../../store/store';
 import email from '../../utils/emailJS';
-import { arrayUnion, db, doc, getDoc, serverTimestamp, setDoc, updateDoc } from '../../utils/firebase';
+import { db, doc, firestore, serverTimestamp } from '../../utils/firestore';
 
 function Purchase() {
   const navigate = useNavigate();
@@ -46,11 +47,10 @@ function Purchase() {
       const min = today.getMinutes();
       const ms = today.getMilliseconds();
       const orderId = `${yyyy}${mm}${dd}${hour}${ms}${order.method}${order.plan}`;
-      setDoc(doc(db, 'orders', orderId), { ...order, timestamp: serverTimestamp(), id: orderId });
-      getDoc(doc(db, 'credits', order.kid.docId)).then((user) => {
-        const data = user.data();
-        if (!data) {
-          setDoc(doc(db, 'credits', order.kid.docId), {
+      firestore.setDoc('orders', orderId, { ...order, timestamp: serverTimestamp(), id: orderId });
+      firestore.getDoc('credits', order.kid.docId).then((user) => {
+        if (!user) {
+          firestore.setDoc('credits', order.kid.docId, {
             all: 0,
             used: 0,
             docId: order.kid.docId,
@@ -58,9 +58,7 @@ function Purchase() {
           });
         }
       });
-      updateDoc(userRef, {
-        ordersRef: arrayUnion(doc(db, 'orders', orderId)),
-      }).then(() => {
+      firestore.updateDocArrayUnionByRef(userRef, 'ordersRef', doc(db, 'orders', orderId)).then(() => {
         setOrder(initialOrder);
         getUserProfile(userRef);
         navigate('/order');
@@ -78,22 +76,22 @@ function Purchase() {
     }
   };
 
-  const renderPlusCircle = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        viewBox='0 0 20 20'
-        fill='currentColor'
-        className='w-6 h-6 cursor-pointer text-gray-600 ml-3'
-        onClick={() => navigate('/profile')}>
-        <path
-          fillRule='evenodd'
-          d='M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z'
-          clipRule='evenodd'
-        />
-      </svg>
-    );
-  };
+  // const renderPlusCircle = () => {
+  //   return (
+  //     <svg
+  //       xmlns='http://www.w3.org/2000/svg'
+  //       viewBox='0 0 20 20'
+  //       fill='currentColor'
+  //       className='w-6 h-6 cursor-pointer text-gray-600 ml-3'
+  //       onClick={() => navigate('/profile')}>
+  //       <path
+  //         fillRule='evenodd'
+  //         d='M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z'
+  //         clipRule='evenodd'
+  //       />
+  //     </svg>
+  //   );
+  // };
 
   return (
     <div className='custom-main-container mt-28'>
@@ -137,7 +135,7 @@ function Purchase() {
             </select>
           )}
           {kids.length === 0 && <div className='text-gray-600 mx-2'>Add a kid</div>}
-          {renderPlusCircle()}
+          {PlusCircle('w-6 h-6 cursor-pointer text-gray-500 ml-3', () => navigate('/profile'))}
         </div>
         <div className='flex mb-16'>
           <h4 className='px-8'>Plan</h4>

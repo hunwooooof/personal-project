@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import AgeIcon from '../../../components/AgeIcon';
-import CakeIcon from '../../../components/CakeIcon';
-import SchoolIcon from '../../../components/SchoolIcon';
-import { collection, db, getDocs } from '../../../utils/firebase';
+import { Age, Cake, School } from '../../../components/icon';
+import { firestore } from '../../../utils/firestore';
 
 interface StudentProfile {
   birthday: string;
@@ -18,11 +16,7 @@ interface StudentProfile {
 function Student() {
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const getStudentsProfile = async () => {
-    const studentsSnapshot = await getDocs(collection(db, 'students'));
-    const studentsProfiles: StudentProfile[] = [];
-    studentsSnapshot.forEach((docSnap) => {
-      studentsProfiles.push(docSnap.data() as StudentProfile);
-    });
+    const studentsProfiles = await firestore.getDocs('students');
     setStudents(studentsProfiles as StudentProfile[]);
   };
 
@@ -53,15 +47,15 @@ function Student() {
                   </div>
                   <div className=' text-black mb-5'>{student.chineseName}</div>
                   <div className='flex w-8/12 gap-1 mb-2 items-center'>
-                    <CakeIcon />
+                    {Cake()}
                     {student.birthday}
                   </div>
                   <div className='flex w-8/12 gap-1 mb-2 items-center'>
-                    <SchoolIcon />
+                    {School()}
                     {student.school}
                   </div>
                   <div className='flex w-8/12 gap-1 items-center'>
-                    <AgeIcon />
+                    {Age()}
                     {calculate_age(student.birthday)} y
                   </div>
                 </div>

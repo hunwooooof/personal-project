@@ -1,5 +1,5 @@
 import { useStore } from '../../store/store';
-import { db, deleteDoc, doc } from '../../utils/firebase';
+import { firestore } from '../../utils/firestore';
 
 interface PropsType {
   video: {
@@ -24,7 +24,7 @@ function Video({ video, type, getVideo }: PropsType) {
 
   const handleDelete = (video: VideoType, type: string, getVideo: () => void) => {
     const userConfirm = confirm('Are you sure you want to delete this video?');
-    if (userConfirm) deleteDoc(doc(db, 'videos', 'roadrunners', type, video.youtubeId)).then(() => getVideo());
+    if (userConfirm) firestore.deleteDoc('videos', 'roadrunners', type, video.youtubeId).then(() => getVideo());
   };
 
   return (

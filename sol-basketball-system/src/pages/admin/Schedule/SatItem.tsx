@@ -1,5 +1,5 @@
 import { useStore } from '../../../store/store';
-import { arrayRemove, db, doc, updateDoc } from '../../../utils/firebase';
+import { firestore } from '../../../utils/firestore';
 
 interface DetailType {
   address: string;
@@ -63,9 +63,9 @@ function SatItem({ schedule, quarter, year }: PropsType) {
         fill='currentColor'
         onClick={() => {
           const { date } = schedule;
-          updateDoc(doc(db, 'schedule', `${year}Q${quarter}`, 'saturday', date), {
-            [date]: arrayRemove({ ...schedule }),
-          }).then(() => getSaturdaySchedules(year, quarter));
+          firestore
+            .updateDocArrayRemove('schedule', `${year}Q${quarter}`, date, { ...schedule }, 'saturday', date)
+            .then(() => getSaturdaySchedules(year, quarter));
         }}
         className='w-6 h-6 inline-block text-gray-300 cursor-pointer hover:text-red-400'>
         <path

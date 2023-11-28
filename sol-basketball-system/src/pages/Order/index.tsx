@@ -2,7 +2,7 @@ import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
-import { getDoc } from '../../utils/firebase';
+import { firestore } from '../../utils/firestore';
 
 interface OrderType {
   id?: string;
@@ -30,11 +30,8 @@ function Order() {
   const getOrders = async (ordersRef: DocumentReference<DocumentData, DocumentData>[]) => {
     const orders = [];
     for (const orderRef of ordersRef) {
-      const orderSnap = await getDoc(orderRef);
-      if (orderSnap.exists()) {
-        const order = orderSnap.data();
-        orders.push(order);
-      }
+      const order = await firestore.getDocByRef(orderRef);
+      if (order) orders.push(order);
     }
     setOrders(orders as OrderType[]);
   };

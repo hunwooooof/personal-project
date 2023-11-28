@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
-import { collection, db, doc, getDocs, setDoc } from '../../utils/firebase';
+import { firestore } from '../../utils/firestore';
 import Video from './Video';
 
 interface VideoType {
@@ -24,32 +24,22 @@ function GameVideos() {
     type: '',
   });
 
+  const sortVideoByDate = (a: VideoType, b: VideoType) => {
+    const videoA = new Date(a.date).getTime();
+    const videoB = new Date(b.date).getTime();
+    return videoA - videoB;
+  };
+
   const getTopLeagueVideos = async () => {
-    const videosSnap = await getDocs(collection(db, 'videos', 'roadrunners', 'top-league'));
-    const videos: VideoType[] = [];
-    videosSnap.forEach((videoSnap) => {
-      videos.push(videoSnap.data() as VideoType);
-    });
-    videos.sort((a, b) => {
-      const videoA = new Date(a.date).getTime();
-      const videoB = new Date(b.date).getTime();
-      return videoA - videoB;
-    });
+    const videos = (await firestore.getDocs('videos', 'roadrunners', 'top-league')) as VideoType[];
+    videos.sort(sortVideoByDate);
     setTopLeague(videos);
     setFilteredTopLeague(videos);
   };
 
   const getFriendlyGameVideos = async () => {
-    const videosSnap = await getDocs(collection(db, 'videos', 'roadrunners', 'friendly-game'));
-    const videos: VideoType[] = [];
-    videosSnap.forEach((videoSnap) => {
-      videos.push(videoSnap.data() as VideoType);
-    });
-    videos.sort((a, b) => {
-      const videoA = new Date(a.date).getTime();
-      const videoB = new Date(b.date).getTime();
-      return videoA - videoB;
-    });
+    const videos = (await firestore.getDocs('videos', 'roadrunners', 'friendly-game')) as VideoType[];
+    videos.sort(sortVideoByDate);
     setFriendlyGame(videos);
     setFilteredFriendlyGame(videos);
   };
@@ -66,14 +56,11 @@ function GameVideos() {
 
   const handleSubmit = () => {
     const { tag, date, title, youtubeId, type } = newVideo;
-    setDoc(doc(db, 'videos', 'roadrunners', `${newVideo.type}`, newVideo.youtubeId), {
-      tag,
-      date,
-      title,
-      youtubeId,
-    }).then(() => {
-      type === 'top-league' ? getTopLeagueVideos() : getFriendlyGameVideos();
-    });
+    firestore
+      .setDoc('videos', 'roadrunners', { tag, date, title, youtubeId }, `${newVideo.type}`, newVideo.youtubeId)
+      .then(() => {
+        type === 'top-league' ? getTopLeagueVideos() : getFriendlyGameVideos();
+      });
     setNewVideo({
       tag: '',
       date: '',
