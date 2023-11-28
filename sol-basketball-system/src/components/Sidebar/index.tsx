@@ -80,11 +80,17 @@ function Sidebar() {
             </Link>
           </>
         )}
-        {!isLogin && <Link to='/login'>Log In</Link>}
+        {!isLogin && (
+          <Link
+            to='/login'
+            className='mt-auto text-slate-100 text-center bg-slate-700 w-24 rounded-2xl fixed bottom-5 py-1 shadow-md hover:shadow-none'>
+            Log In
+          </Link>
+        )}
         {isLogin && (
           <button
             onClick={setLogOut}
-            className='mt-auto bg-slate-100 w-24 rounded-2xl fixed bottom-5 py-1 shadow-md hover:shadow-inner'>
+            className='mt-auto text-slate-100 bg-slate-700 w-24 rounded-2xl fixed bottom-5 py-1 shadow-md hover:shadow-none'>
             Log out
           </button>
         )}

@@ -39,7 +39,7 @@ function Video({ video, type, getVideo }: PropsType) {
       <div className='flex flex-col'>
         <div className='flex justify-between mt-2 px-2 items-center'>
           <div className='font-bold text-gray-500 tracking-wider'>{video.date}</div>
-          <div className='px-2 bg-green-200 rounded-2xl'>{video.tag === 'u10' ? 'U10' : 'U12'}</div>
+          <div className='px-2 bg-gray-200 rounded-2xl'>{video.tag === 'u10' ? 'U10' : 'U12'}</div>
         </div>
         <div className='flex justify-between mt-2 px-2 items-center'>
           <div className='font-bold'>{video.title}</div>

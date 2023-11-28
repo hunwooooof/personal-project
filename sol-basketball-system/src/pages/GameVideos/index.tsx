@@ -70,39 +70,43 @@ function GameVideos() {
     });
   };
 
+  const labelClass = 'inline-block w-32 text-gray-400';
+  const inputClassSm = 'bg-slate-100 py-1 rounded-3xl w-36 px-2 placeholder:text-gray-300';
+  const inputClassLg = 'bg-slate-100 py-1 rounded-3xl w-56 px-2 placeholder:text-gray-300';
+
   return (
-    <div className='custom-main-container mt-28'>
+    <div className='custom-main-container pt-16'>
       <div className='w-10/12 mx-auto pb-20'>
         {user.role === 'admin' && (
-          <div>
-            <div className='flex mt-6  px-3 py-2 text-xl border-b border-gray-200 mb-8'>
+          <div className='mb-8'>
+            <div className='custom-page-title mb-4'>
               <div>Add Video</div>
             </div>
-            <div className='flex justify-between items-center w-11/12 mx-auto'>
-              <div className='flex flex-col gap-2'>
+            <div className='flex justify-between items-center w-full bg-white rounded-3xl p-10'>
+              <div className='flex flex-col gap-3 font-bold'>
                 <div>
-                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='date'>
+                  <label className={labelClass} htmlFor='date'>
                     Date
                   </label>
                   <input
                     type='date'
                     name='date'
                     id='date'
-                    className='border border-gray-800 py-1 rounded-lg px-2 w-36'
+                    className={inputClassSm}
                     value={newVideo.date}
                     onChange={handleChangeInput}
                     required
                   />
                 </div>
                 <div>
-                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='title'>
+                  <label className={labelClass} htmlFor='title'>
                     Title
                   </label>
                   <input
                     type='text'
                     name='title'
                     id='title'
-                    className='border border-gray-800 py-1 rounded-lg w-56 px-2'
+                    className={inputClassLg}
                     value={newVideo.title}
                     placeholder='Roadrunners vs TOP'
                     onChange={handleChangeInput}
@@ -111,13 +115,13 @@ function GameVideos() {
                 </div>
 
                 <div>
-                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='tag'>
+                  <label className={labelClass} htmlFor='tag'>
                     Age
                   </label>
                   <select
                     name='tag'
                     id='tag'
-                    className='border border-gray-800 py-1 rounded-lg w-56 px-2'
+                    className={inputClassLg}
                     onChange={(e) => {
                       const value = e.target.value;
                       setNewVideo({
@@ -133,14 +137,14 @@ function GameVideos() {
                   </select>
                 </div>
                 <div>
-                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='tag'>
+                  <label className={labelClass} htmlFor='tag'>
                     Type
                   </label>
 
                   <select
                     name='type'
                     id='type'
-                    className='border border-gray-800 py-1 rounded-lg w-56 px-2'
+                    className={inputClassLg}
                     onChange={(e) => {
                       const value = e.target.value;
                       setNewVideo({
@@ -156,22 +160,22 @@ function GameVideos() {
                   </select>
                 </div>
                 <div>
-                  <label className='inline-block w-32 text-gray-800 text-center' htmlFor='link'>
+                  <label className={labelClass} htmlFor='link'>
                     YouTube Link
                   </label>
-                  <span className='text-gray-500 text-sm font-serif'>https://www.youtube.com/watch?v=</span>
+                  <span className='text-gray-500 text-xs font-normal mr-1'>https://www.youtube.com/watch?v=</span>
                   <input
                     type='text'
                     name='youtubeId'
                     id='youtubeId'
-                    className='border border-gray-800 py-1 rounded-lg w-36 px-2'
+                    className={inputClassSm}
                     value={newVideo.youtubeId}
                     onChange={handleChangeInput}
                     placeholder='07NkJZ2N94M'
                   />
                 </div>
                 <button
-                  className='w-32 mx-auto rounded-md text-white bg-green-800 mt-4 py-1 shadow-lg hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none'
+                  className='w-32 mx-auto rounded-full text-white bg-slate-800 mt-4 py-1 hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none'
                   onClick={handleSubmit}
                   disabled={
                     Object.values(newVideo).some((item) => item.length === 0) || newVideo.youtubeId.length !== 11
@@ -191,7 +195,7 @@ function GameVideos() {
                 <div className='flex flex-col gap-2 mt-2'>
                   <div className='flex justify-between items-center'>
                     <div className='font-bold text-gray-500 tracking-wider'>{newVideo.date}</div>
-                    <div className='px-2 bg-green-200 rounded-2xl'>
+                    <div className='px-2 bg-gray-200 rounded-2xl'>
                       {newVideo.tag === 'u10' ? 'U10' : newVideo.tag === 'u12' ? 'U12' : ''}
                     </div>
                   </div>
@@ -201,49 +205,53 @@ function GameVideos() {
             </div>
           </div>
         )}
-        <div className='flex px-3 py-2 text-xl border-b border-gray-200 mb-8 mt-16'>
-          <div>Top League</div>
-          <div className='ml-auto'>
-            <select
-              name='tag'
-              id='tag'
-              className='text-md px-2'
-              onChange={(e) => {
-                if (e.target.value === 'u10') {
-                  setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u10'));
-                  setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u10'));
-                } else if (e.target.value === 'u12') {
-                  setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u12'));
-                  setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u12'));
-                } else {
-                  setFilteredTopLeague(topLeague);
-                  setFilteredFriendlyGame(friendlyGame);
-                }
-              }}>
-              <option value='all'>All</option>
-              <option value='u10'>U10</option>
-              <option value='u12'>U12</option>
-            </select>
+        <div className='flex gap-5 items-center mb-6'>
+          <div className='custom-page-title'>Top League</div>
+          <select
+            name='tag'
+            id='tag'
+            className='px-4 rounded-full py-1 bg-white mt-1'
+            onChange={(e) => {
+              if (e.target.value === 'u10') {
+                setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u10'));
+                setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u10'));
+              } else if (e.target.value === 'u12') {
+                setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u12'));
+                setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u12'));
+              } else {
+                setFilteredTopLeague(topLeague);
+                setFilteredFriendlyGame(friendlyGame);
+              }
+            }}>
+            <option value='all'>All</option>
+            <option value='u10'>U10</option>
+            <option value='u12'>U12</option>
+          </select>
+        </div>
+        <div className='mb-5 w-full bg-white rounded-3xl px-10 pt-10 pb-4'>
+          <div className='overflow-x-auto flex gap-6 pb-8 px-2 w-full bg-white rounded-md'>
+            {filteredTopLeague.map((video) => {
+              return <Video key={video.youtubeId} video={video} type='top-league' getVideo={getTopLeagueVideos} />;
+            })}
+            {filteredTopLeague.length === 0 && (
+              <div className='w-full text-center text-gray-400 text-2xl'>Currently no videos available</div>
+            )}
           </div>
         </div>
-        <div className='w-11/12 mx-auto overflow-x-auto flex gap-6 pb-5'>
-          {filteredTopLeague.map((video) => {
-            return <Video key={video.youtubeId} video={video} type='top-league' getVideo={getTopLeagueVideos} />;
-          })}
-          {filteredTopLeague.length === 0 && (
-            <div className='w-full text-center text-gray-400'>Currently no videos available</div>
-          )}
-        </div>
-        <div className='flex px-3 py-2 text-xl border-b border-gray-200 mb-8 mt-16'>
+        <div className='custom-page-title mb-6'>
           <div>Friendly Game</div>
         </div>
-        <div className='w-11/12 mx-auto overflow-x-auto flex gap-6 pb-5'>
-          {filteredFriendlyGame.map((video) => {
-            return <Video key={video.youtubeId} video={video} type='friendly-game' getVideo={getFriendlyGameVideos} />;
-          })}
-          {filteredFriendlyGame.length === 0 && (
-            <div className='w-full text-center text-gray-400'>Currently no videos available</div>
-          )}
+        <div className='mb-5 w-full bg-white rounded-3xl px-10 pt-10 pb-4'>
+          <div className='overflow-x-auto flex gap-6 pb-8 px-2 w-full bg-white rounded-md'>
+            {filteredFriendlyGame.map((video) => {
+              return (
+                <Video key={video.youtubeId} video={video} type='friendly-game' getVideo={getFriendlyGameVideos} />
+              );
+            })}
+            {filteredFriendlyGame.length === 0 && (
+              <div className='w-full text-center text-gray-400 text-2xl'>Currently no videos available</div>
+            )}
+          </div>
         </div>
       </div>
     </div>
