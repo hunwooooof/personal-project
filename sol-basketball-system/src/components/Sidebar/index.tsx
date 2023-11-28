@@ -14,7 +14,7 @@ function Sidebar() {
   return (
     <div className='w-60 h-full fixed border-r top-0 pl-3'>
       <Link to='/' className='block my-3'>
-        <img src={logoUrl} alt='sol-basketball-logo' className='w-24' />
+        <img src={logoUrl} alt='sol-basketball-logo' className='w-20 py-4' />
       </Link>
       <div className='flex flex-col gap-3 pl-2 font-bold'>
         <Link

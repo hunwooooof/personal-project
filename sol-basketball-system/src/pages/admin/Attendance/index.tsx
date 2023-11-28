@@ -148,7 +148,7 @@ function Attendance() {
   return (
     <div className='custom-main-container pt-16'>
       <div className='w-10/12 mx-auto'>
-        <div className='flex justify-between items-center mb-8'>
+        <div className='flex justify-between items-center mb-6'>
           <div className='custom-page-title'>Attendance</div>
           <div className='flex items-center gap-2 bg-white rounded-full p-2'>
             <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
@@ -181,7 +181,7 @@ function Attendance() {
           </div>
         )}
         {dates.length > 0 && (
-          <div className='w-full min-h-[70vh] bg-white rounded-3xl flex p-4'>
+          <div className='w-full min-h-[70vh] bg-white rounded-3xl flex p-6'>
             <div className='m-2 border-r'>
               <div className='font-bold text-slate-400 w-40 tracking-wider px-2 mb-5'>Name</div>
               {attendances.map((attendance: AttendanceType) => {
