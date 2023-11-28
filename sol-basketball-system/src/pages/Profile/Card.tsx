@@ -1,9 +1,8 @@
 import { useRef, useState } from 'react';
-import AgeIcon from '../../components/AgeIcon';
-import CakeIcon from '../../components/CakeIcon';
-import SchoolIcon from '../../components/SchoolIcon';
+import { Age, Cake, School } from '../../components/icon';
 import { useStore } from '../../store/store';
-import { db, doc, firestore, getDownloadURL, ref, storage, uploadBytes } from '../../utils/firestore';
+import { firebaseStorage } from '../../utils/firebaseStorage';
+import { db, doc, firestore } from '../../utils/firestore';
 
 interface PropsType {
   kid: {
@@ -41,11 +40,9 @@ function Card({ kid }: PropsType) {
     if (e.target.files) {
       const image = e.target.files[0];
       const unitTime = Date.now();
-      const storageRef = ref(storage, `temporary-folder/${unitTime}${image.name}`);
-      uploadBytes(storageRef, image).then(() => {
-        getDownloadURL(ref(storage, `temporary-folder/${unitTime}${image.name}`)).then((url) => {
-          setNewKid({ ...newKid, photoURL: url });
-        });
+      const storageReferenceRoot = `temporary-folder/${unitTime}${image.name}`;
+      firebaseStorage.uploadAndGetDownloadURL(storageReferenceRoot, image).then((url) => {
+        setNewKid({ ...newKid, photoURL: url });
       });
       setNewProfileImg(image);
     } else {
@@ -62,17 +59,11 @@ function Card({ kid }: PropsType) {
     const { docId } = kid;
     const unitTime = Date.now();
     if (newProfileImg && userRef) {
-      const storageRef = ref(storage, `users-photo/${unitTime}${newProfileImg.name}`);
-      uploadBytes(storageRef, newProfileImg)
-        .then(() => {
-          getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`)).then((url) => {
-            const kidWithPhoto = { ...newKid, photoURL: url };
-            firestore.updateDoc('students', docId, kidWithPhoto);
-          });
-        })
-        .then(() => {
-          getUserProfile(userRef);
-        });
+      const storageReferenceRoot = `users-photo/${unitTime}${newProfileImg.name}`;
+      firebaseStorage
+        .uploadAndGetDownloadURL(storageReferenceRoot, newProfileImg)
+        .then((url) => firestore.updateDoc('students', docId, { ...newKid, photoURL: url }))
+        .then(() => getUserProfile(userRef));
       setNewProfileImg(undefined);
     } else if (userRef) {
       firestore.updateDoc('students', docId, newKid).then(() => getUserProfile(userRef));
@@ -143,15 +134,15 @@ function Card({ kid }: PropsType) {
           </div>
           <div className=' text-black mb-5'>{kid.chineseName}</div>
           <div className='flex w-8/12 gap-1 mb-2 items-center'>
-            <CakeIcon />
+            <Cake />
             {kid.birthday}
           </div>
           <div className='flex w-8/12 gap-1 mb-2 items-center'>
-            <SchoolIcon />
+            <School />
             {kid.school}
           </div>
           <div className='flex w-8/12 gap-1 items-center'>
-            <AgeIcon />
+            <Age />
             {calculate_age(kid.birthday)} y
           </div>
         </div>

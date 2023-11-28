@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
+import { PlusCircle } from '../../components/icon';
 import { useStore } from '../../store/store';
-import { db, doc, firestore, getDownloadURL, ref, storage, uploadBytes } from '../../utils/firestore';
+import { firebaseStorage } from '../../utils/firebaseStorage';
+import { db, doc, firestore } from '../../utils/firestore';
 import Card from './Card';
 
 interface KidType {
@@ -37,11 +39,9 @@ function Kids() {
     if (e.target.files) {
       const image = e.target.files[0];
       const unitTime = Date.now();
-      const storageRef = ref(storage, `temporary-folder/${unitTime}${image.name}`);
-      uploadBytes(storageRef, image).then(() => {
-        getDownloadURL(ref(storage, `temporary-folder/${unitTime}${image.name}`)).then((url) => {
-          setNewKid({ ...newKid, photoURL: url });
-        });
+      const storageReferenceRoot = `temporary-folder/${unitTime}${image.name}`;
+      firebaseStorage.uploadAndGetDownloadURL(storageReferenceRoot, image).then((url) => {
+        setNewKid({ ...newKid, photoURL: url });
       });
       setNewProfileImg(image);
     } else {
@@ -59,20 +59,18 @@ function Kids() {
     const docId = `${birthday}${id}`;
     const unitTime = Date.now();
     if (newProfileImg && userRef) {
-      const storageRef = ref(storage, `users-photo/${unitTime}${newProfileImg.name}`);
-      uploadBytes(storageRef, newProfileImg).then(() => {
-        getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`)).then((url) => {
-          const newKidWithDocId = { ...newKid, docId, photoURL: url };
-          firestore.setDoc('students', docId, newKidWithDocId);
-          firestore.setDoc('attendance', docId, {
-            name: `${newKidWithDocId.firstName}-${newKidWithDocId.lastName}`,
-            showUpDate: [],
-            docId,
-          });
-          firestore
-            .updateDocArrayUnionByRef(userRef, ' kids', doc(db, 'students', docId))
-            .then(() => getUserProfile(userRef));
+      const storageReferenceRoot = `users-photo/${unitTime}${newProfileImg.name}`;
+      firebaseStorage.uploadAndGetDownloadURL(storageReferenceRoot, newProfileImg).then((url) => {
+        const newKidWithDocId = { ...newKid, docId, photoURL: url };
+        firestore.setDoc('students', docId, newKidWithDocId);
+        firestore.setDoc('attendance', docId, {
+          name: `${newKidWithDocId.firstName}-${newKidWithDocId.lastName}`,
+          showUpDate: [],
+          docId,
         });
+        firestore
+          .updateDocArrayUnionByRef(userRef, 'kids', doc(db, 'students', docId))
+          .then(() => getUserProfile(userRef));
       });
       setNewProfileImg(undefined);
     } else if (userRef) {
@@ -90,23 +88,6 @@ function Kids() {
     setNewKid(emptyNewKid);
   };
 
-  const renderPlusCircle = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        viewBox='0 0 20 20'
-        fill='currentColor'
-        className='w-16 h-16 cursor-pointer'
-        onClick={() => setAddingKid(true)}>
-        <path
-          fillRule='evenodd'
-          d='M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v2.5h-2.5a.75.75 0 000 1.5h2.5v2.5a.75.75 0 001.5 0v-2.5h2.5a.75.75 0 000-1.5h-2.5v-2.5z'
-          clipRule='evenodd'
-        />
-      </svg>
-    );
-  };
-
   return (
     <div className='w-8/12 mx-auto mt-16 flex gap-12 items-center overflow-x-auto py-4'>
       {kids.length === 0 && !isAddingKid && (
@@ -116,7 +97,7 @@ function Kids() {
         kids.map((kid) => {
           return <Card kid={kid as KidType} key={kid.docId} />;
         })}
-      {!isAddingKid && <span>{renderPlusCircle()}</span>}
+      {!isAddingKid && <span>{PlusCircle('w-16 h-16 cursor-pointer', () => setAddingKid(true))}</span>}
       {isAddingKid && (
         <div className='flex flex-col gap-3 items-center w-56 h-96 shrink-0 bg-gray-100 p-3 rounded-md'>
           <div className='relative w-full flex flex-col items-center'>

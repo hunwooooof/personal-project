@@ -16,7 +16,6 @@ import {
   setDoc,
   updateDoc,
 } from 'firebase/firestore';
-import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBw9iJkTFrgb3C3dVGcAUDRnzs8Afa7Ydc',
@@ -30,7 +29,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 const firestore = {
   setDoc: async (collection1: string, document1: string, content: object, collection2?: string, document2?: string) => {
@@ -161,16 +159,4 @@ const firestore = {
   },
 };
 
-export {
-  addDoc,
-  db,
-  deleteObject,
-  doc,
-  firestore,
-  getDownloadURL,
-  increment,
-  ref,
-  serverTimestamp,
-  storage,
-  uploadBytes,
-};
+export { addDoc, db, doc, firestore, increment, serverTimestamp };

@@ -42,7 +42,7 @@ interface StoreState {
   checkLogIn: () => void;
   setLogOut: () => void;
   getUserProfile: (userRef: undefined | DocumentReference<DocumentData, DocumentData>) => object;
-  getKidsProfile: (kidsRef: DocumentReference<DocumentData, DocumentData>[]) => void;
+  // getKidsProfile: (kidsRef: DocumentReference<DocumentData, DocumentData>[]) => void;
   scheduledDates: string[];
   getScheduledDates: (year: number, quarter: number) => void;
   saturdaySchedules: object[];
@@ -130,28 +130,26 @@ export const useStore = create<StoreState>((set) => ({
     });
   },
   getUserProfile: async (userRef) => {
-    if (userRef) {
-      const profile = await firestore.getDocByRef(userRef);
-      if (profile) {
-        set(() => ({ user: profile }));
-        const kids: KidType[] = [];
-        for (const kidRef of profile.kids) {
-          const kid = await firestore.getDocByRef(kidRef);
-          if (kid) kids.push(kid as KidType);
-        }
-        set(() => ({ kids: kids }));
-        return profile;
+    const profile = await firestore.getDocByRef(userRef as DocumentReference<DocumentData, DocumentData>);
+    if (profile) {
+      set(() => ({ user: profile }));
+      const kids: KidType[] = [];
+      for (const kidRef of profile.kids) {
+        const kid = await firestore.getDocByRef(kidRef);
+        if (kid) kids.push(kid as KidType);
       }
+      set(() => ({ kids: kids }));
+      return profile;
     }
   },
-  getKidsProfile: async (kidsRef) => {
-    const kids: KidType[] = [];
-    for (const kidRef of kidsRef) {
-      const kid = await firestore.getDocByRef(kidRef);
-      if (kid) kids.push(kid as KidType);
-    }
-    set(() => ({ kids: kids }));
-  },
+  // getKidsProfile: async (kidsRef) => {
+  //   const kids: KidType[] = [];
+  //   for (const kidRef of kidsRef) {
+  //     const kid = await firestore.getDocByRef(kidRef);
+  //     if (kid) kids.push(kid as KidType);
+  //   }
+  //   set(() => ({ kids: kids }));
+  // },
   scheduledDates: [],
   getScheduledDates: async (year, quarter) => {
     const schedule = await firestore.getDoc('schedule', `${year}Q${quarter}`);
