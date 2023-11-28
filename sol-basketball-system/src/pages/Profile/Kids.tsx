@@ -20,7 +20,7 @@ function Kids() {
   const { userRef, kids, getUserProfile } = useStore();
   const [isAddingKid, setAddingKid] = useState(false);
   const inputFileRef = useRef(null);
-  const inputFieldClass = 'rounded-md px-2 w-full';
+  const inputFieldClass = 'rounded-full px-2 w-full bg-slate-100';
   const defaultPhotoURL =
     'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/default-avatar-profile.png?alt=media&token=2ca8bd76-a025-4b94-a2f6-d5d39210289c';
   const emptyNewKid = {
@@ -89,7 +89,7 @@ function Kids() {
   };
 
   return (
-    <div className='w-8/12 mx-auto mt-16 flex gap-12 items-center overflow-x-auto py-4'>
+    <div className='flex gap-8 items-center overflow-x-auto py-4'>
       {kids.length === 0 && !isAddingKid && (
         <div className='h-80 flex items-center text-gray-400'>Click to add student information!</div>
       )}
@@ -99,7 +99,7 @@ function Kids() {
         })}
       {!isAddingKid && <span>{PlusCircle('w-16 h-16 cursor-pointer', () => setAddingKid(true))}</span>}
       {isAddingKid && (
-        <div className='flex flex-col gap-3 items-center w-56 h-96 shrink-0 bg-gray-100 p-3 rounded-md'>
+        <div className='flex flex-col gap-3 items-center w-56 h-96 shrink-0 bg-white px-5 py-3 rounded-3xl'>
           <div className='relative w-full flex flex-col items-center'>
             <img src={newKid.photoURL} className='w-16 h-16 object-cover rounded-full mb-1' />
             <input
@@ -112,7 +112,7 @@ function Kids() {
             />
             <label
               htmlFor='fileInput'
-              className='absolute right-12 bottom-0 p-1 bg-zinc-300 text-white rounded-md cursor-pointer text-sm hover:bg-orange-500'>
+              className='absolute right-12 bottom-0 p-1 bg-zinc-300 text-white rounded-md cursor-pointer text-sm hover:bg-slate-700'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
@@ -153,7 +153,7 @@ function Kids() {
             className={inputFieldClass}
           />
           <div>
-            <label htmlFor='birthday' className='text-gray-600 text-sm self-start'>
+            <label htmlFor='birthday' className='text-gray-400 text-sm self-start'>
               Birthday
             </label>
             <input
@@ -182,7 +182,7 @@ function Kids() {
           />
           <div className='flex gap-2 items-center mt-1 text-white'>
             <button
-              className='px-1 rounded-sm bg-green-600 text-md w-20 text-center hover:bg-green-500 disabled:bg-gray-300 disabled:cursor-not-allowed'
+              className='px-1 rounded-full bg-green-600 text-md w-20 text-center hover:bg-slate-700 disabled:bg-gray-300 disabled:cursor-not-allowed'
               disabled={Object.values(newKid).some((item) => item.length === 0)}
               onClick={() => {
                 setAddingKid(false);
@@ -191,7 +191,7 @@ function Kids() {
               Save
             </button>
             <button
-              className='px-1 rounded-sm bg-red-500 text-md w-20 text-center hover:bg-red-400'
+              className='px-1 rounded-full bg-red-500 text-md w-20 text-center hover:bg-slate-700'
               onClick={() => {
                 setAddingKid(false);
                 setNewKid({ ...emptyNewKid });

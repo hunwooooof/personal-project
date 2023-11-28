@@ -33,19 +33,36 @@ function Sidebar() {
         </Link>
         {isLogin && user && user.role === 'user' && (
           <>
-            <div>Member</div>
-            <Link to='/profile' className='pl-3 text-lg'>
+            <Link
+              to='/profile'
+              id='profile'
+              onClick={handleClickNav}
+              className={currentNav === 'profile' ? activeNavClass : normalNavClass}>
               Profile
             </Link>
             {kids.length > 0 && (
-              <Link to='/session' className='pl-3 text-lg'>
+              <Link
+                to='/session'
+                id='session'
+                onClick={handleClickNav}
+                className={currentNav === 'session' ? activeNavClass : normalNavClass}>
                 Session
               </Link>
             )}
-            <Link to='/order' className='pl-3 text-lg'>
+            <Link
+              to='/order'
+              id='order'
+              onClick={handleClickNav}
+              className={currentNav === 'order' ? activeNavClass : normalNavClass}>
               Order
             </Link>
-            <Link to='/purchase'>Purchase</Link>
+            <Link
+              to='/purchase'
+              id='purchase'
+              onClick={handleClickNav}
+              className={currentNav === 'purchase' ? activeNavClass : normalNavClass}>
+              Purchase
+            </Link>
           </>
         )}
         {isLogin && user && user.role === 'admin' && (
