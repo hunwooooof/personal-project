@@ -50,18 +50,18 @@ function Sidebar() {
               </Link>
             )}
             <Link
-              to='/order'
-              id='order'
-              onClick={handleClickNav}
-              className={currentNav === 'order' ? activeNavClass : normalNavClass}>
-              Order
-            </Link>
-            <Link
               to='/purchase'
               id='purchase'
               onClick={handleClickNav}
               className={currentNav === 'purchase' ? activeNavClass : normalNavClass}>
               Purchase
+            </Link>
+            <Link
+              to='/order'
+              id='order'
+              onClick={handleClickNav}
+              className={currentNav === 'order' ? activeNavClass : normalNavClass}>
+              Order
             </Link>
           </>
         )}
@@ -73,6 +73,13 @@ function Sidebar() {
               onClick={handleClickNav}
               className={currentNav === 'admin-schedules' ? activeNavClass : normalNavClass}>
               Manage Schedules
+            </Link>
+            <Link
+              to='/admin/students'
+              id='admin-students'
+              onClick={handleClickNav}
+              className={currentNav === 'admin-students' ? activeNavClass : normalNavClass}>
+              Students
             </Link>
             <Link
               to='/admin/attendance'
@@ -87,13 +94,6 @@ function Sidebar() {
               onClick={handleClickNav}
               className={currentNav === 'admin-order' ? activeNavClass : normalNavClass}>
               Orders
-            </Link>
-            <Link
-              to='/admin/students'
-              id='admin-students'
-              onClick={handleClickNav}
-              className={currentNav === 'admin-students' ? activeNavClass : normalNavClass}>
-              Students
             </Link>
           </>
         )}
