@@ -80,6 +80,7 @@ export const useStore = create<StoreState>((set) => ({
         firestore.setDoc('users', user.uid, initialProfile(user, name));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
         set(() => ({ isLogin: true }));
+        set(() => ({ currentNav: 'schedules' }));
       })
       .catch((error: { code: number; message: string }) => {
         console.error(error.code, error.message);
@@ -93,6 +94,7 @@ export const useStore = create<StoreState>((set) => ({
         set(() => ({ user: user as UserType }));
         set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ currentNav: 'schedules' }));
       })
       .catch((error) => {
         window.alert('Wrong email or password');
@@ -112,6 +114,7 @@ export const useStore = create<StoreState>((set) => ({
             } else {
               firestore.setDoc('users', user.uid, initialProfile(user));
               set(() => ({ user: initialProfile(user) as UserType }));
+              set(() => ({ currentNav: 'schedules' }));
             }
           })
           .then(() => set(() => ({ isLogin: true })));

@@ -81,7 +81,7 @@ function Order() {
             <div className='w-28'>Status</div>
           </div>
           <div className='flex flex-col gap-4 h-[60vh] overflow-y-auto'>
-            {orders.length === 0 && <div>No Orders</div>}
+            {orders.length === 0 && <div className='pt-10 text-2xl text-center text-gray-400'>No Orders</div>}
             {orders.length > 0 &&
               orders.map((order) => {
                 const { seconds } = order.timestamp;

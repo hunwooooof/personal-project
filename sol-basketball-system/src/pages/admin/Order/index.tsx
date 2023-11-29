@@ -152,7 +152,7 @@ function AdminOrder() {
             <div className='w-16 pl-2'>Confirm</div>
           </div>
           <div className='flex flex-col gap-4 h-[60vh] overflow-y-auto'>
-            {orders.length === 0 && <div>No Orders</div>}
+            {orders.length === 0 && <div className='pt-10 text-2xl text-center text-gray-400'>No Orders</div>}
             {orders.length > 0 &&
               orders.map((order) => {
                 const { seconds } = order.timestamp;
