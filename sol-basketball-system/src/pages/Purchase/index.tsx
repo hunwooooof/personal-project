@@ -63,6 +63,7 @@ function Purchase() {
         setOrder(initialOrder);
         getUserProfile(userRef);
         navigate('/order');
+        setCurrentNav('order');
       });
       email.notifyNewOrder(
         { ...order, time: `${yyyy}/${mm}/${dd} ${hour}:${min}` },
