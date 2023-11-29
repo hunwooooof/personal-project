@@ -14,7 +14,7 @@ interface NewProfileType {
 
 function Profile() {
   const navigate = useNavigate();
-  const { user, userRef, isLogin, getUserProfile } = useStore();
+  const { setCurrentNav, user, userRef, isLogin, getUserProfile } = useStore();
   const [isEditProfile, setEditProfile] = useState(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -26,6 +26,7 @@ function Profile() {
 
   useEffect(() => {
     if (!isLogin) navigate('/');
+    setCurrentNav('schedules');
   }, [isLogin]);
 
   const [newProfileImg, setNewProfileImg] = useState<File>();

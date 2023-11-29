@@ -42,7 +42,7 @@ interface EventType {
 function Schedule() {
   const { getScheduledDates, getSaturdaySchedules } = useStore();
   const getCurrentQuarter = (currentDate: Date) => {
-    const currentMonth = currentDate.getMonth() + 1; // JavaScript 中月份是從 0 開始的
+    const currentMonth = currentDate.getMonth() + 1;
     const currentQuarter = Math.ceil(currentMonth / 3);
     return currentQuarter;
   };

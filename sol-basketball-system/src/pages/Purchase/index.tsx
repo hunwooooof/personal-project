@@ -7,7 +7,7 @@ import { db, doc, firestore, serverTimestamp } from '../../utils/firestore';
 
 function Purchase() {
   const navigate = useNavigate();
-  const { user, userRef, kids, isLogin, getUserProfile } = useStore();
+  const { setCurrentNav, user, userRef, kids, isLogin, getUserProfile } = useStore();
   const [selectPlanId, setSelectPlanId] = useState('01');
   const plans = [
     { id: '01', title: 'Single Session', price: 1000, priceText: '$ 1,000' },
@@ -33,6 +33,7 @@ function Purchase() {
   useEffect(() => {
     if (!isLogin) {
       navigate('/login');
+      setCurrentNav('');
     }
   }, [kids, isLogin]);
 

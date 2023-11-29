@@ -12,19 +12,20 @@ const emptyAccount = {
 
 function Signup() {
   const navigate = useNavigate();
-  const { nativeSignup, googleLogin, isLogin, userRef, getUserProfile } = useStore();
+  const { setCurrentNav, nativeSignup, googleLogin, isLogin, userRef, getUserProfile } = useStore();
 
   const [account, setAccount] = useState(emptyAccount);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
-    setAccount({ ...account, [id]: e.target.value });
+    setAccount({ ...account, [id]: e.target.value.trim() });
   };
 
   useEffect(() => {
     if (isLogin) {
       getUserProfile(userRef);
-      navigate('/schedule');
+      navigate('/');
+      setCurrentNav('/schedules');
     }
   }, [isLogin]);
 
@@ -64,7 +65,8 @@ function Signup() {
           <div className='flex flex-col'>
             <button
               type='submit'
-              className='text-white bg-slate-500 text-center p-2 rounded-3xl hover:bg-slate-800'
+              className='text-white bg-slate-500 text-center p-2 rounded-3xl hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-gray-300'
+              disabled={Object.values(account).some((item) => item.length === 0)}
               onClick={() => nativeSignup(account)}>
               SIGN UP
             </button>

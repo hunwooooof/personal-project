@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Reset } from '../../../components/Icon';
 import { useStore } from '../../../store/store';
 import Friday from './Friday';
@@ -11,7 +12,16 @@ interface AllDatesType {
   sunday: string[];
 }
 function AdminSchedule() {
-  const { getScheduledDates, getSaturdaySchedules } = useStore();
+  const { setCurrentNav, isLogin, getScheduledDates, getSaturdaySchedules } = useStore();
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isLogin) {
+      navigate('/login');
+      setCurrentNav('');
+    }
+  }, [isLogin]);
+
   const getCurrentQuarter = (currentDate: Date) => {
     const currentMonth = currentDate.getMonth() + 1; // JavaScript 中月份是從 0 開始的
     const currentQuarter = Math.ceil(currentMonth / 3);
