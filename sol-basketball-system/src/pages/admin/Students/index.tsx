@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Age, Cake, School } from '../../../components/Icon';
+import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
 
 interface StudentProfile {
@@ -14,7 +16,17 @@ interface StudentProfile {
 }
 
 function Student() {
+  const { setCurrentNav, isLogin } = useStore();
   const [students, setStudents] = useState<StudentProfile[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLogin) {
+      navigate('/login');
+      setCurrentNav('');
+    }
+  }, [isLogin]);
+
   const getStudentsProfile = async () => {
     const studentsProfiles = await firestore.getDocs('students');
     setStudents(studentsProfiles as StudentProfile[]);

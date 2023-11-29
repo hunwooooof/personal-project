@@ -210,7 +210,7 @@ function GameVideos() {
           <select
             name='tag'
             id='tag'
-            className='px-4 rounded-full py-1 bg-white mt-1'
+            className='px-4 rounded-full py-1 bg-slate-400 font-bold text-white tracking-wide mt-1'
             onChange={(e) => {
               if (e.target.value === 'u10') {
                 setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u10'));

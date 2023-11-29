@@ -23,7 +23,7 @@ interface OrderType {
 
 function Order() {
   const navigate = useNavigate();
-  const { user, isLogin } = useStore();
+  const { setCurrentNav, user, isLogin } = useStore();
   const [tag, setTag] = useState('all');
   const [orders, setOrders] = useState<OrderType[]>([]);
 
@@ -41,6 +41,7 @@ function Order() {
       getOrders(user.ordersRef);
     } else if (!isLogin) {
       navigate('/login');
+      setCurrentNav('');
     }
   }, [isLogin, user]);
 

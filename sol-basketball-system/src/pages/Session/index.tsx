@@ -6,11 +6,14 @@ import Credits from './Credits';
 
 function Session() {
   const navigate = useNavigate();
-  const { kids, isLogin } = useStore();
+  const { setCurrentNav, kids, isLogin } = useStore();
   const [currentKidIndex, setCurrentKidIndex] = useState(0);
 
   useEffect(() => {
-    if (!isLogin || kids.length === 0) navigate('/');
+    if (!isLogin || kids.length === 0) {
+      navigate('/');
+      setCurrentNav('schedules');
+    }
   }, [isLogin]);
 
   const calculate_age = (birthday: string) => {
@@ -21,7 +24,7 @@ function Session() {
   };
 
   return (
-    <div className='custom-main-container pt-16'>
+    <div className='custom-main-container py-14'>
       <div className='w-10/12 mx-auto'>
         <div className='flex justify-between items-center mb-6'>
           <div className='custom-page-title'>Session</div>

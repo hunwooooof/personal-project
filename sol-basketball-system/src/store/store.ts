@@ -94,7 +94,10 @@ export const useStore = create<StoreState>((set) => ({
         set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
       })
-      .catch((error) => console.error(error.code, error.message));
+      .catch((error) => {
+        window.alert('Wrong email or password');
+        console.error(error.code, error.message);
+      });
   },
   googleLogin: () => {
     firebaseAuth

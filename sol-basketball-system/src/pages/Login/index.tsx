@@ -54,7 +54,8 @@ function Login() {
           <div className='flex flex-col'>
             <button
               type='submit'
-              className='text-white bg-slate-500 text-center p-2 rounded-3xl hover:bg-slate-800'
+              className='text-white bg-slate-500 text-center p-2 rounded-3xl hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-gray-300'
+              disabled={Object.values(account).some((item) => item.length === 0)}
               onClick={() => nativeLogin(account)}>
               SIGN IN
             </button>
