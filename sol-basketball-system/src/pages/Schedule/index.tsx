@@ -212,7 +212,6 @@ function Schedule() {
   // ==========
 
   const handleClickGoogleCalendar = (item: DetailType) => {
-    console.log(item);
     const userConfirm = confirm('To add an event to your Google Calendar, press "OK" to select an account.');
     if (userConfirm) {
       apiCalendar.handleAuthClick().then(() => {
@@ -241,7 +240,7 @@ function Schedule() {
       <div className='w-10/12 mx-auto'>
         <div className='flex justify-between items-center mb-6'>
           <div className='custom-page-title'>Schedule</div>
-          <div className='flex items-center gap-2 bg-white rounded-full p-2'>
+          <div className='flex items-center gap-2 bg-white shadow-lg rounded-full p-2'>
             <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
               <div className='text-gray-800 font-medium select-none text-center w-24'>{months()}</div>
               {ArrowLeft(arrowClass, () => {
@@ -268,7 +267,7 @@ function Schedule() {
         </div>
 
         <div className='flex'>
-          <div className='w-full flex flex-col min-h-[75vh] bg-white rounded-3xl p-6'>
+          <div className='w-full flex flex-col min-h-[75vh] bg-white shadow-lg rounded-3xl p-6'>
             <div className='flex text-slate-500 text-lg font-bold tracking-wider mb-4'>
               <div className='flex flex-col justify-center items-center w-4/12'>
                 <div>Friday</div>

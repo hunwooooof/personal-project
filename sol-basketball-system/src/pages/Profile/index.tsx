@@ -25,8 +25,10 @@ function Profile() {
   });
 
   useEffect(() => {
-    if (!isLogin) navigate('/');
-    setCurrentNav('schedules');
+    if (!isLogin) {
+      navigate('/');
+      setCurrentNav('schedules');
+    }
   }, [isLogin]);
 
   const [newProfileImg, setNewProfileImg] = useState<File>();
