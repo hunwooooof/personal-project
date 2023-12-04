@@ -36,6 +36,7 @@ interface StoreState {
   setCurrentNav: (nav: string) => void;
   user: UserType;
   userRef: undefined | DocumentReference<DocumentData, DocumentData>;
+  userID: undefined | string;
   kids: KidType[] | [];
   isLogin: boolean;
   nativeSignup: (account: AccountType) => void;
@@ -70,6 +71,7 @@ export const useStore = create<StoreState>((set) => ({
   setCurrentNav: (nav: string) => set(() => ({ currentNav: nav })),
   user: {},
   userRef: undefined,
+  userID: undefined,
   kids: [],
   nativeSignup: (account: AccountType) => {
     const { name, email, password } = account;
@@ -79,6 +81,7 @@ export const useStore = create<StoreState>((set) => ({
         firebaseAuth.updateProfile(name as string, solBasketballLogo);
         firestore.setDoc('users', user.uid, initialProfile(user, name));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ userID: user.uid }));
         set(() => ({ isLogin: true }));
         set(() => ({ currentNav: 'schedules' }));
       })
@@ -94,6 +97,7 @@ export const useStore = create<StoreState>((set) => ({
         set(() => ({ user: user as UserType }));
         set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ userID: user.uid }));
         set(() => ({ currentNav: 'schedules' }));
       })
       .catch((error) => {
@@ -106,6 +110,7 @@ export const useStore = create<StoreState>((set) => ({
       .signInWithPopup()
       .then((user) => {
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ userID: user.uid }));
         firestore
           .getDoc('users', user.uid)
           .then((userDoc) => {
@@ -128,6 +133,7 @@ export const useStore = create<StoreState>((set) => ({
         set(() => ({ user: user as UserType }));
         set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ userID: user.uid }));
       }
     });
   },
@@ -136,6 +142,7 @@ export const useStore = create<StoreState>((set) => ({
       set(() => ({ isLogin: false }));
       set(() => ({ user: {} }));
       set(() => ({ userRef: undefined }));
+      set(() => ({ userID: undefined }));
     });
   },
   getUserProfile: async (userRef) => {

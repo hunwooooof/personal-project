@@ -5,6 +5,7 @@ import App from './App.tsx';
 import './index.css';
 import GameVideos from './pages/GameVideos/index.tsx';
 import Login from './pages/Login/index.tsx';
+import Message from './pages/Message/index.tsx';
 import Order from './pages/Order/index.tsx';
 import Profile from './pages/Profile/index.tsx';
 import Purchase from './pages/Purchase/index.tsx';
@@ -34,7 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path='admin/schedule' element={<AdminSchedule />} />
         <Route path='admin/students' element={<Student />} />
         <Route path='messages/:id' element={<Messages />} />
-        <Route path='message/' />
+        <Route path='message/' element={<Message />} />
         <Route path='*' element={<Navigate to='/' replace />} />
       </Route>
     </Routes>

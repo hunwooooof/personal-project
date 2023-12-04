@@ -63,6 +63,13 @@ function Sidebar() {
               className={currentNav === 'order' ? activeNavClass : normalNavClass}>
               Order
             </Link>
+            <Link
+              to='/message'
+              id='message'
+              onClick={handleClickNav}
+              className={currentNav === 'message' ? activeNavClass : normalNavClass}>
+              Message
+            </Link>
           </>
         )}
         {isLogin && user && user.role === 'admin' && (
@@ -95,15 +102,15 @@ function Sidebar() {
               className={currentNav === 'admin-order' ? activeNavClass : normalNavClass}>
               Orders
             </Link>
+            <Link
+              to='/messages/inbox'
+              id='messages'
+              onClick={handleClickNav}
+              className={currentNav === 'messages' ? activeNavClass : normalNavClass}>
+              Messages
+            </Link>
           </>
         )}
-        <Link
-          to='/messages/inbox'
-          id='messages'
-          onClick={handleClickNav}
-          className={currentNav === 'messages' ? activeNavClass : normalNavClass}>
-          Messages
-        </Link>
         {!isLogin && (
           <Link
             to='/login'

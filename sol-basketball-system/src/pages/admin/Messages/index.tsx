@@ -90,7 +90,7 @@ function Messages() {
   };
   const sortByTimestamp = (a: MessageType, b: MessageType) => a.timestamp - b.timestamp;
 
-  const handleClickList = (id: string) => {
+  const setUnreadFalse = (id: string) => {
     if (id) {
       updateDoc(doc(db, 'messages', id), { unread: false });
     }
@@ -146,8 +146,8 @@ function Messages() {
   return (
     <div className='custom-main-container'>
       <div className='flex bg-slate-800 text-white'>
-        <div className='w-4/12 flex flex-col border-r border-gray-700'>
-          <div className='font-bold px-5 py-4'>Messages</div>
+        <div className='min-w-20 lg:w-4/12 flex flex-col border-r border-gray-700'>
+          <div className='hidden lg:block font-bold px-5 py-4'>Messages</div>
           <div className='overflow-y-auto h-[calc(100vh-56px)]'>
             {chats &&
               chats.map((chat) => {
@@ -156,16 +156,16 @@ function Messages() {
                   <Link
                     to={`/messages/${chat.userID}`}
                     key={chat.userID}
-                    onClick={() => handleClickList(chat.userID)}
+                    onClick={() => setUnreadFalse(chat.userID)}
                     className={`flex items-center px-5 py-2 cursor-pointer ${
                       id === chat.userID ? 'bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
                     }`}>
                     <img src={chat.userPhoto} alt='' className='h-14 w-14 rounded-full' />
-                    <div className='flex-1 px-4'>
-                      <div className={`${chat.unread && 'font-extrabold'}`}>{chat.userName}</div>
+                    <div className='hidden lg:block px-4 w-[calc(100%-56px)]'>
+                      <div className={`${chat.unread && 'font-extrabold'} w-full`}>{chat.userName}</div>
                       {chat.lastMessage && (
-                        <div className='flex text-sm text-gray-400'>
-                          <div className={`${chat.unread && 'text-white font-semibold'}`}>
+                        <div className='flex text-sm text-gray-400 w-full'>
+                          <div className={`${chat.unread && 'text-white font-semibold'} max-w-[91%] h-5 truncate`}>
                             {chat.lastMessage.sender === 'admin' && 'You: '}
                             {chat.lastMessage.content}
                           </div>
@@ -175,7 +175,7 @@ function Messages() {
                       )}
                     </div>
                     <div className={`items-center justify-center ${chat.unread ? 'flex' : 'hidden'}`}>
-                      <div className='w-2 h-2 bg-cyan-400 rounded-full' />
+                      <div className='hidden lg:block w-2 h-2 bg-cyan-400 rounded-full' />
                     </div>
                   </Link>
                 );
@@ -196,7 +196,7 @@ function Messages() {
           </div>
         )}
         {id !== 'inbox' && (
-          <div className='w-8/12 flex'>
+          <div className='w-8/12 flex' onClick={() => setUnreadFalse(id as string)}>
             <div className='flex-1'>
               {chats &&
                 chats
