@@ -12,6 +12,7 @@ import {
   getDocs,
   getFirestore,
   increment,
+  onSnapshot,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -159,4 +160,4 @@ const firestore = {
   },
 };
 
-export { addDoc, db, doc, firestore, increment, serverTimestamp };
+export { addDoc, collection, db, doc, firestore, increment, onSnapshot, serverTimestamp };

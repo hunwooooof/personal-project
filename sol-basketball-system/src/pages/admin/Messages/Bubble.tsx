@@ -1,9 +1,8 @@
-import { Timestamp } from 'firebase/firestore';
 import { useState } from 'react';
 
 interface MessageType {
-  timestamp: Timestamp;
-  text: string;
+  timestamp: number;
+  content: string;
   sender: string;
 }
 
@@ -14,8 +13,8 @@ interface PropsType {
 function Bubble({ message }: PropsType) {
   const [isTimeShow, setTimeShow] = useState<boolean>(false);
 
-  const { seconds } = message.timestamp;
-  const timestamp = new Date(seconds * 1000);
+  const time = message.timestamp;
+  const timestamp = new Date(time);
   const yyyy = timestamp.getFullYear();
   const mm = timestamp.getMonth() + 1;
   const formattedMm = mm < 10 ? `0${mm}` : String(mm);
@@ -33,7 +32,7 @@ function Bubble({ message }: PropsType) {
         message.sender === 'user' ? 'bg-slate-600 self-start' : 'bg-blue-500 self-end'
       }`}
       onClick={() => setTimeShow(!isTimeShow)}>
-      {message.text}
+      {message.content}
       {isTimeShow && (
         <div
           className={`absolute w-32 text-gray-500 text-sm scale-75 top-1 ${

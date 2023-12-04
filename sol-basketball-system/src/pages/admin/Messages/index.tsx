@@ -1,17 +1,16 @@
-import { Timestamp } from 'firebase/firestore';
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { firestore } from '../../../utils/firestore';
+import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
 import Bubble from './Bubble';
 
 interface MessageType {
-  timestamp: Timestamp;
-  text: string;
+  timestamp: number;
+  content: string;
   sender: string;
 }
 interface ChatType {
-  adminMessage: MessageType[];
-  userMessage: MessageType[];
+  messages: MessageType[];
   unread: boolean;
   userID: string;
   userNickname: string;
@@ -20,20 +19,47 @@ interface ChatType {
   lastMessage: {
     content: string;
     sender: string;
-    timestamp: Timestamp;
+    timestamp: number;
   };
 }
 
+interface UserType {
+  photoURL?: string;
+  email?: string;
+  // kids?: DocumentReference<DocumentData, DocumentData>[];
+  // ordersRef?: DocumentReference<DocumentData, DocumentData>[];
+  displayName?: string | undefined;
+  phoneNumber?: string;
+  registrationDate?: string;
+  role?: string;
+}
+
 function Messages() {
+  // const chatRoomRef = useRef<HTMLDivElement>(null);
   const [chats, setChats] = useState<ChatType[]>();
-  const [isInfoShow, setInfoShow] = useState<boolean>(true);
+  const [newMessage, setNewMessage] = useState<string>('');
+  const [userDetail, setUserDetail] = useState<UserType>();
+  const [isInfoShow, setInfoShow] = useState<boolean>(false);
   const { id } = useParams();
 
   useEffect(() => {
-    firestore.getDocs('chatroom').then((result) => {
-      setChats(result as ChatType[]);
+    const unsubscribe = onSnapshot(collection(db, 'messages'), (docSnaps) => {
+      const docArray: ChatType[] = [];
+      docSnaps.forEach((docSnap) => {
+        docArray.push(docSnap.data() as ChatType);
+      });
+      setChats(docArray);
     });
+    return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const chatBox = document.getElementById('chatBox');
+    chatBox?.scrollTo({
+      behavior: 'smooth',
+      top: chatBox.clientHeight * 30,
+    });
+  }, [chats]);
 
   const calculateTimeToNow = (second: number) => {
     const now = new Date().getTime();
@@ -62,8 +88,61 @@ function Messages() {
       return `${years}y`;
     }
   };
-  const sortByTimestamp = (a: MessageType, b: MessageType) => a.timestamp.seconds - b.timestamp.seconds;
+  const sortByTimestamp = (a: MessageType, b: MessageType) => a.timestamp - b.timestamp;
 
+  const handleClickList = (id: string) => {
+    if (id) {
+      updateDoc(doc(db, 'messages', id), { unread: false });
+    }
+  };
+
+  const handleSendMessage = () => {
+    const currentTimestamp = new Date().getTime();
+    if (id) {
+      updateDoc(doc(db, 'messages', id), {
+        messages: arrayUnion({
+          sender: 'admin',
+          timestamp: currentTimestamp,
+          content: newMessage.trim(),
+        }),
+      });
+      updateDoc(doc(db, 'messages', id), {
+        lastMessage: {
+          sender: 'admin',
+          timestamp: currentTimestamp,
+          content: newMessage.trim(),
+        },
+      });
+      setNewMessage('');
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      firestore.getDoc('users', id).then((result) => setUserDetail(result));
+    }
+  }, [id]);
+
+  /*
+  const handleEnterDown = (e) => {
+    const pressedKey = e.key.toUpperCase();
+    if (pressedKey === 'ENTER') {
+      if (e.isComposing) {
+        e.preventDefault();
+      }
+      if (!e.isComposing && newMessage.trim()) {
+        handleSendMessage();
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleEnterDown);
+    return () => {
+      window.removeEventListener('keydown', handleEnterDown);
+    };
+  }, []);
+*/
   return (
     <div className='custom-main-container'>
       <div className='flex bg-slate-800 text-white'>
@@ -72,24 +151,28 @@ function Messages() {
           <div className='overflow-y-auto h-[calc(100vh-56px)]'>
             {chats &&
               chats.map((chat) => {
+                // if (chat.lastMessage)
                 return (
                   <Link
                     to={`/messages/${chat.userID}`}
                     key={chat.userID}
+                    onClick={() => handleClickList(chat.userID)}
                     className={`flex items-center px-5 py-2 cursor-pointer ${
                       id === chat.userID ? 'bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
                     }`}>
                     <img src={chat.userPhoto} alt='' className='h-14 w-14 rounded-full' />
                     <div className='flex-1 px-4'>
                       <div className={`${chat.unread && 'font-extrabold'}`}>{chat.userName}</div>
-                      <div className='flex text-sm text-gray-400'>
-                        <div className={`${chat.unread && 'text-white font-semibold'}`}>
-                          {chat.lastMessage.sender === 'admin' && 'You: '}
-                          {chat.lastMessage.content}
+                      {chat.lastMessage && (
+                        <div className='flex text-sm text-gray-400'>
+                          <div className={`${chat.unread && 'text-white font-semibold'}`}>
+                            {chat.lastMessage.sender === 'admin' && 'You: '}
+                            {chat.lastMessage.content}
+                          </div>
+                          <div>・</div>
+                          <div>{calculateTimeToNow(chat.lastMessage.timestamp)}</div>
                         </div>
-                        <div>・</div>
-                        <div>{calculateTimeToNow(chat.lastMessage.timestamp.seconds)}</div>
-                      </div>
+                      )}
                     </div>
                     <div className={`items-center justify-center ${chat.unread ? 'flex' : 'hidden'}`}>
                       <div className='w-2 h-2 bg-cyan-400 rounded-full' />
@@ -119,9 +202,8 @@ function Messages() {
                 chats
                   .filter((chat) => chat.userID === id)
                   .map((currentChat) => {
-                    console.log(currentChat);
                     return (
-                      <div className='flex flex-col'>
+                      <div className='flex flex-col' key={currentChat.userID}>
                         <div className='flex justify-between items-center px-4 py-4 border-b border-gray-700'>
                           <img src={currentChat.userPhoto} alt='user photo' className='h-10 w-10 rounded-full' />
                           <div className='ml-3 mr-auto font-bold'>{currentChat.userName}</div>
@@ -156,25 +238,70 @@ function Messages() {
                             </svg>
                           )}
                         </div>
-                        <div className='flex flex-col w-full px-4 h-[calc(100vh-139px)] overflow-y-auto'>
-                          {currentChat.adminMessage.sort(sortByTimestamp).map((message) => {
-                            return <Bubble message={message} />;
-                          })}
+                        <div id='chatBox' className='flex flex-col w-full px-4 h-[calc(100vh-139px)] overflow-y-auto'>
+                          <div className='self-center pt-6 pb-4'>
+                            <img src={currentChat.userPhoto} alt='user photo' className='h-20 w-20 rounded-full' />
+                            <div className='text-center mt-2 font-bold'>{currentChat.userName}</div>
+                          </div>
+                          {currentChat.messages.length > 0 &&
+                            currentChat.messages.sort(sortByTimestamp).map((message) => {
+                              return <Bubble message={message} key={message.timestamp} />;
+                            })}
                         </div>
-                        <div className='w-full px-4 py-4'>
+                        <div className='w-full px-4 py-4 relative'>
                           <input
                             type='text'
-                            name=''
-                            id=''
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            value={newMessage}
                             placeholder='Message...'
-                            className='w-full px-5 py-1 bg-slate-800 border border-gray-700 rounded-full'
+                            className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full'
                           />
+                          {newMessage.trim() && (
+                            <button
+                              className='absolute top-5 right-8 text-blue-500 hover:text-white'
+                              onClick={handleSendMessage}>
+                              Send
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
                   })}
             </div>
-            <div className={`${isInfoShow ? 'flex' : 'hidden'} w-4/12 border-l border-gray-700`}>Info</div>
+            <div className={`${isInfoShow ? 'flex' : 'hidden'} flex-col w-4/12 border-l border-gray-700`}>
+              <div className='w-full py-5 pl-5 text-lg font-semibold'>User details</div>
+              {userDetail && (
+                <div className='py-4 w-full'>
+                  <div className='flex items-center px-4 gap-4'>
+                    <img src={userDetail.photoURL} alt='user photo' className='h-10 w-10 rounded-full' />
+                    <div className='flex flex-col'>
+                      <div className='font-bold text-md text-gray-200'>{userDetail.displayName}</div>
+                      <div className='text-sm text-gray-400'>{userDetail.email}</div>
+                    </div>
+                  </div>
+                  <div className='w-full text-sm mt-6 px-4 text-gray-200'>
+                    Registration Date
+                    <br />
+                    <span className='text-gray-400'>{userDetail.registrationDate?.slice(0, 16)}</span>
+                  </div>
+                </div>
+              )}
+              <div
+                className='mt-auto w-full border-t border-gray-700'
+                onClick={() => {
+                  const userConfirm = confirm('Permanently delete chat?');
+                  if (userConfirm && id) {
+                    updateDoc(doc(db, 'messages', id), {
+                      messages: [],
+                    });
+                    updateDoc(doc(db, 'messages', id), {
+                      lastMessage: null,
+                    });
+                  }
+                }}>
+                <div className='w-full my-4 pl-4 text-red-500 cursor-pointer'>Delete chat</div>
+              </div>
+            </div>
           </div>
         )}
       </div>
