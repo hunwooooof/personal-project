@@ -97,6 +97,13 @@ function Sidebar() {
             </Link>
           </>
         )}
+        <Link
+          to='/messages/inbox'
+          id='messages'
+          onClick={handleClickNav}
+          className={currentNav === 'messages' ? activeNavClass : normalNavClass}>
+          Messages
+        </Link>
         {!isLogin && (
           <Link
             to='/login'
