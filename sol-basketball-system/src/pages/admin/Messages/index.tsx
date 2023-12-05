@@ -1,6 +1,7 @@
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useStore } from '../../../store/store';
 import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
 import Bubble from './Bubble';
 
@@ -35,12 +36,20 @@ interface UserType {
 }
 
 function Messages() {
+  const navigate = useNavigate();
+  const { isLogin, user, setCurrentNav } = useStore();
   // const chatRoomRef = useRef<HTMLDivElement>(null);
   const [chats, setChats] = useState<ChatType[]>();
   const [newMessage, setNewMessage] = useState<string>('');
   const [userDetail, setUserDetail] = useState<UserType>();
   const [isInfoShow, setInfoShow] = useState<boolean>(false);
   const { id } = useParams();
+  useEffect(() => {
+    if (!isLogin || user.role !== 'admin') {
+      navigate('/login');
+      setCurrentNav('');
+    }
+  }, [isLogin, user]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'messages'), (docSnaps) => {
@@ -151,7 +160,6 @@ function Messages() {
           <div className='overflow-y-auto h-[calc(100vh-56px)]'>
             {chats &&
               chats.map((chat) => {
-                // if (chat.lastMessage)
                 return (
                   <Link
                     to={`/messages/${chat.userID}`}

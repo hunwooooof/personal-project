@@ -1,7 +1,8 @@
 import { arrayUnion, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
-import { db, doc, onSnapshot } from '../../utils/firestore';
+import { db, doc, firestore, onSnapshot } from '../../utils/firestore';
 import Bubble from './Bubble';
 
 interface MessageType {
@@ -24,7 +25,8 @@ interface ChatType {
 }
 
 function Message() {
-  const { userID } = useStore();
+  const navigate = useNavigate();
+  const { isLogin, user, userID, setCurrentNav } = useStore();
   // const chatRoomRef = useRef<HTMLDivElement>(null);
   const [chat, setChat] = useState<ChatType>();
   const [newMessage, setNewMessage] = useState<string>('');
@@ -32,7 +34,6 @@ function Message() {
     'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496';
   useEffect(() => {
     if (userID) {
-      console.log(userID);
       const unsubscribe = onSnapshot(doc(db, 'messages', userID), (docSnap) => {
         setChat(docSnap.data() as ChatType);
         console.log(docSnap.data());
@@ -40,6 +41,13 @@ function Message() {
       return () => unsubscribe();
     }
   }, []);
+
+  useEffect(() => {
+    if (!isLogin || user.role !== 'user') {
+      navigate('/login');
+      setCurrentNav('');
+    }
+  }, [isLogin, user]);
 
   useEffect(() => {
     const chatBox = document.getElementById('chatBox');
@@ -104,22 +112,40 @@ function Message() {
   return (
     <div className='custom-main-container'>
       <div className='w-full bg-slate-800 text-white'>
-        {chat && (
-          <div className='max-w-[700px] mx-auto lg:border-r lg:border-l flex flex-col'>
-            <div className='flex justify-between items-center px-4 py-4 border-b border-gray-700'>
-              <img src={adminPhoto} alt='user photo' className='h-10 w-10 rounded-full' />
-              <div className='ml-3 mr-auto font-bold'>{chat.userName}</div>
+        <div className='max-w-[700px] mx-auto lg:border-r lg:border-l flex flex-col'>
+          <div className='flex justify-between items-center px-4 py-4 border-b border-gray-700'>
+            <img src={adminPhoto} alt='user photo' className='h-10 w-10 rounded-full' />
+            <div className='ml-3 mr-auto font-bold'>admin</div>
+          </div>
+          <div id='chatBox' className='flex flex-col w-full px-4 h-[calc(100vh-139px)] overflow-y-auto'>
+            <div className='self-center pt-6 pb-4'>
+              <img src={adminPhoto} alt='user photo' className='h-20 w-20 rounded-full' />
+              <div className='text-center mt-2 font-bold'>admin</div>
             </div>
-            <div id='chatBox' className='flex flex-col w-full px-4 h-[calc(100vh-139px)] overflow-y-auto'>
-              <div className='self-center pt-6 pb-4'>
-                <img src={adminPhoto} alt='user photo' className='h-20 w-20 rounded-full' />
-                <div className='text-center mt-2 font-bold'>admin</div>
-              </div>
-              {chat.messages.length > 0 &&
-                chat.messages.sort(sortByTimestamp).map((message) => {
-                  return <Bubble message={message} key={message.timestamp} />;
-                })}
+            {chat &&
+              chat.messages.sort(sortByTimestamp).map((message) => {
+                return <Bubble message={message} key={message.timestamp} />;
+              })}
+          </div>
+          {!chat && (
+            <div className='w-full px-4 py-4 relative'>
+              <button
+                className='px-4 py-1 text-center border rounded-full hover:bg-slate-600'
+                onClick={() => {
+                  const newDoc = {
+                    messages: [],
+                    unread: false,
+                    userID,
+                    userName: user.displayName,
+                    userPhoto: user.photoURL,
+                  };
+                  firestore.setDoc('messages', userID as string, newDoc);
+                }}>
+                Start a conversation
+              </button>
             </div>
+          )}
+          {chat && (
             <div className='w-full px-4 py-4 relative'>
               <input
                 type='text'
@@ -134,8 +160,8 @@ function Message() {
                 </button>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
