@@ -8,10 +8,6 @@ function Sidebar() {
   const normalNavClass =
     'flex items-center gap-2 text-lg text-slate-500 rounded-xl hover:bg-slate-800 px-2 md:px-0 md:pl-3 py-2';
 
-  const handleClickNav = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    setCurrentNav((e.target as Element).id);
-  };
-
   return (
     <div className='md:w-60 h-full fixed border-r border-gray-600 top-0 bg-slate-900 px-1'>
       <Link to='/' className='block my-3' onClick={() => setCurrentNav('schedules')}>
@@ -270,14 +266,15 @@ function Sidebar() {
         {!isLogin && (
           <Link
             to='/login'
-            className='mt-auto text-slate-100 text-center bg-slate-700 w-24 rounded-2xl fixed left-5 bottom-5 py-1 shadow-md hover:shadow-none'>
+            onClick={() => setCurrentNav('')}
+            className='mt-auto text-gray-500 text-center border border-gray-600 w-24 rounded-2xl fixed left-5 bottom-5 py-1 shadow-md hover:text-white'>
             Log In
           </Link>
         )}
         {isLogin && (
           <button
             onClick={setLogOut}
-            className='mt-auto text-slate-100 bg-slate-700 w-24 rounded-2xl fixed left-5 bottom-5 py-1 shadow-md hover:shadow-none'>
+            className='mt-auto text-gray-500 border border-gray-600 w-24 rounded-2xl fixed left-5 bottom-5 py-1 shadow-md hover:text-white'>
             Log out
           </button>
         )}

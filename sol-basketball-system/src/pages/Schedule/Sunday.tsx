@@ -24,15 +24,12 @@ function Sunday({ date, setInfoShow, setInfo }: PropsType) {
     title: 'team-practice',
   };
 
-  const unScheduledClass = `px-12 py-5 rounded-3xl mt-4 font-bold text-gray-400 tracking-wider relative`;
-  const isScheduledClass = `px-12 py-5 rounded-3xl mt-4 font-bold tracking-wider cursor-pointer bg-slate-500 text-white relative hover:bg-slate-400`;
-
   return (
     <div>
-      {!scheduledDates.includes(date) && <div className={unScheduledClass}>{showDate}</div>}
+      {!scheduledDates.includes(date) && <div className='unScheduledClass'>{showDate}</div>}
       {scheduledDates.includes(date) && (
         <div
-          className={isScheduledClass}
+          className='isScheduledClass'
           onClick={() => {
             setInfoShow(true);
             setInfo(detail);
