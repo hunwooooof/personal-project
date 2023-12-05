@@ -72,7 +72,7 @@ function Messages() {
 
   const calculateTimeToNow = (second: number) => {
     const now = new Date().getTime();
-    const diff = now - second * 1000;
+    const diff = now - second;
     const minute = 60 * 1000;
     const hour = 60 * minute;
     const day = 24 * hour;
@@ -159,35 +159,37 @@ function Messages() {
           <div className='hidden lg:block font-bold px-5 py-4'>Messages</div>
           <div className='overflow-y-auto h-[calc(100vh-56px)]'>
             {chats &&
-              chats.map((chat) => {
-                return (
-                  <Link
-                    to={`/messages/${chat.userID}`}
-                    key={chat.userID}
-                    onClick={() => setUnreadFalse(chat.userID)}
-                    className={`flex items-center px-5 py-2 cursor-pointer ${
-                      id === chat.userID ? 'bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
-                    }`}>
-                    <img src={chat.userPhoto} alt='' className='h-14 w-14 rounded-full' />
-                    <div className='hidden lg:block px-4 w-[calc(100%-56px)]'>
-                      <div className={`${chat.unread && 'font-extrabold'} w-full`}>{chat.userName}</div>
-                      {chat.lastMessage && (
-                        <div className='flex text-sm text-gray-400 w-full'>
-                          <div className={`${chat.unread && 'text-white font-semibold'} max-w-[91%] h-5 truncate`}>
-                            {chat.lastMessage.sender === 'admin' && 'You: '}
-                            {chat.lastMessage.content}
+              chats
+                .sort((a, b) => b.lastMessage.timestamp - a.lastMessage.timestamp)
+                .map((chat) => {
+                  return (
+                    <Link
+                      to={`/messages/${chat.userID}`}
+                      key={chat.userID}
+                      onClick={() => setUnreadFalse(chat.userID)}
+                      className={`flex items-center px-5 py-2 cursor-pointer ${
+                        id === chat.userID ? 'bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
+                      }`}>
+                      <img src={chat.userPhoto} alt='' className='h-14 w-14 rounded-full' />
+                      <div className='hidden lg:block px-4 w-[calc(100%-56px)]'>
+                        <div className={`${chat.unread && 'font-extrabold'} w-full`}>{chat.userName}</div>
+                        {chat.lastMessage.timestamp !== 0 && (
+                          <div className='flex text-sm text-gray-400 w-full'>
+                            <div className={`${chat.unread && 'text-white font-semibold'} max-w-[91%] h-5 truncate`}>
+                              {chat.lastMessage.sender === 'admin' && 'You: '}
+                              {chat.lastMessage.content}
+                            </div>
+                            <div>・</div>
+                            <div>{calculateTimeToNow(chat.lastMessage.timestamp)}</div>
                           </div>
-                          <div>・</div>
-                          <div>{calculateTimeToNow(chat.lastMessage.timestamp)}</div>
-                        </div>
-                      )}
-                    </div>
-                    <div className={`items-center justify-center ${chat.unread ? 'flex' : 'hidden'}`}>
-                      <div className='hidden lg:block w-2 h-2 bg-cyan-400 rounded-full' />
-                    </div>
-                  </Link>
-                );
-              })}
+                        )}
+                      </div>
+                      <div className={`items-center justify-center ${chat.unread ? 'flex' : 'hidden'}`}>
+                        <div className='hidden lg:block w-2 h-2 bg-cyan-400 rounded-full' />
+                      </div>
+                    </Link>
+                  );
+                })}
           </div>
         </div>
         {id === 'inbox' && (
@@ -303,7 +305,7 @@ function Messages() {
                       messages: [],
                     });
                     updateDoc(doc(db, 'messages', id), {
-                      lastMessage: null,
+                      lastMessage: { timestamp: 0 },
                     });
                   }
                 }}>
