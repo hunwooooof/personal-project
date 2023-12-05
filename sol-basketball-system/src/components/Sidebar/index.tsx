@@ -13,7 +13,7 @@ function Sidebar() {
 
   return (
     <div className='w-60 h-full fixed border-r top-0 pl-3'>
-      <Link to='/' className='block my-3'>
+      <Link to='/' className='block my-3' onClick={() => setCurrentNav('schedules')}>
         <img src={logoUrl} alt='sol-basketball-logo' className='w-20 py-4' />
       </Link>
       <div className='flex flex-col gap-3 pl-2 font-bold'>
@@ -63,6 +63,13 @@ function Sidebar() {
               className={currentNav === 'order' ? activeNavClass : normalNavClass}>
               Order
             </Link>
+            <Link
+              to='/message'
+              id='message'
+              onClick={handleClickNav}
+              className={currentNav === 'message' ? activeNavClass : normalNavClass}>
+              Message
+            </Link>
           </>
         )}
         {isLogin && user && user.role === 'admin' && (
@@ -94,6 +101,13 @@ function Sidebar() {
               onClick={handleClickNav}
               className={currentNav === 'admin-order' ? activeNavClass : normalNavClass}>
               Orders
+            </Link>
+            <Link
+              to='/messages/inbox'
+              id='messages'
+              onClick={handleClickNav}
+              className={currentNav === 'messages' ? activeNavClass : normalNavClass}>
+              Messages
             </Link>
           </>
         )}
