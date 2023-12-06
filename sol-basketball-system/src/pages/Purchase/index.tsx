@@ -124,7 +124,7 @@ function Purchase() {
         </div>
         <div className='flex mb-16'>
           <h4 className='px-8'>Plan</h4>
-          <div className='flex justify-center gap-8'>
+          <div className='w-[736px] overflow-x-auto flex flex-wrap justify-center gap-8'>
             {plans.map((plan) => {
               return (
                 <div
@@ -148,7 +148,7 @@ function Purchase() {
       </div>
       <div className='border-t border-gray-600'>
         <div className='text-xl font-bold my-8 w-10/12 mx-auto'>Payment Method</div>
-        <div className='w-10/12 mx-auto'>
+        <div className='w-10/12 mx-auto pb-20'>
           <div id='payment-selection' className='pl-8 flex flex-col gap-3'>
             <div className='flex items-center'>
               <input

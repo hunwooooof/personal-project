@@ -238,7 +238,7 @@ function Schedule() {
   return (
     <div className='custom-main-container pt-14'>
       <div className='w-10/12 mx-auto'>
-        <div className='flex justify-between items-center'>
+        <div className='flex flex-col md:flex-row justify-between items-center'>
           <div className='custom-page-title'>Schedule</div>
           <div className='flex items-center rounded-sm border border-gray-600'>
             <div className='flex px-2 py-1 w-44 justify-end border-r border-gray-600'>
@@ -267,7 +267,7 @@ function Schedule() {
         </div>
 
         <div className='flex'>
-          <div className='w-full flex flex-col p-6 pb-0'>
+          <div className='w-full flex flex-col md:p-6 pb-0'>
             <div className='flex text-lg font-bold tracking-wider mb-4 pt-6'>
               <div className='flex flex-col justify-center items-center w-4/12'>
                 <div>Friday</div>
@@ -305,7 +305,7 @@ function Schedule() {
             )}
           </div>
           {isInfoShow && info && (
-            <div className='w-5/12 relative max-h-[75vh] overflow-y-auto border-l border-gray-600'>
+            <div className='w-5/12 relative max-h-[calc(100vh-100px)] overflow-y-auto border-l border-gray-600'>
               <button
                 onClick={() => setInfoShow(false)}
                 className='hover:scale-125 duration-150 text-gray-300 px-2 py-1 rounded-full cursor-pointer absolute font-bold right-2 top-10'>

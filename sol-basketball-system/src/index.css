@@ -7,7 +7,7 @@ html {
 }
 
 .custom-main-container {
-  @apply ml-[73px] md:ml-60 w-[calc(100%-73px)] md:w-[calc(100%-240px)] bg-slate-800 text-white min-h-screen;
+  @apply ml-[73px] lg:ml-60 w-[calc(100%-73px)] lg:w-[calc(100%-240px)] bg-slate-800 text-white min-h-screen;
 }
 
 .custom-signin-input {

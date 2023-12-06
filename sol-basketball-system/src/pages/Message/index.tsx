@@ -112,8 +112,8 @@ function Message() {
   return (
     <div className='custom-main-container'>
       <div className='w-full bg-slate-800 text-white'>
-        <div className='max-w-[700px] mx-auto lg:border-r lg:border-l flex flex-col'>
-          <div className='flex justify-between items-center px-4 py-4 border-b border-gray-700'>
+        <div className='lg:max-w-[700px] mx-auto lg:border-r lg:border-l border-gray-600 flex flex-col'>
+          <div className='flex justify-between items-center px-4 py-4 border-b border-gray-600'>
             <img src={adminPhoto} alt='user photo' className='h-10 w-10 rounded-full' />
             <div className='ml-3 mr-auto font-bold'>admin</div>
           </div>
@@ -128,7 +128,7 @@ function Message() {
               })}
           </div>
           {!chat && (
-            <div className='w-full px-4 py-4 relative'>
+            <div className='w-full flex justify-center py-4'>
               <button
                 className='px-4 py-1 text-center border rounded-full hover:bg-slate-600'
                 onClick={() => {
