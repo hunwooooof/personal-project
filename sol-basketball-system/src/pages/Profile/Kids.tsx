@@ -20,7 +20,7 @@ function Kids() {
   const { userRef, kids, getUserProfile } = useStore();
   const [isAddingKid, setAddingKid] = useState(false);
   const inputFileRef = useRef(null);
-  const inputFieldClass = 'rounded-full px-2 w-full bg-slate-100';
+  const inputFieldClass = 'rounded-sm px-2 w-full bg-slate-700';
   const defaultPhotoURL =
     'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/default-avatar-profile.png?alt=media&token=2ca8bd76-a025-4b94-a2f6-d5d39210289c';
   const emptyNewKid = {
@@ -99,7 +99,7 @@ function Kids() {
         })}
       {!isAddingKid && <span>{PlusCircle('w-16 h-16 cursor-pointer', () => setAddingKid(true))}</span>}
       {isAddingKid && (
-        <div className='flex flex-col gap-3 items-center w-56 h-96 shrink-0 bg-white px-5 py-3 rounded-3xl'>
+        <div className='flex flex-col gap-3 items-center w-56 h-96 shrink-0 px-5 py-3 border border-gray-600 rounded-sm'>
           <div className='relative w-full flex flex-col items-center'>
             <img src={newKid.photoURL} className='w-16 h-16 object-cover rounded-full mb-1' />
             <input
@@ -112,7 +112,7 @@ function Kids() {
             />
             <label
               htmlFor='fileInput'
-              className='absolute right-12 bottom-0 p-1 bg-zinc-300 text-white rounded-md cursor-pointer text-sm hover:bg-slate-700'>
+              className='absolute right-12 bottom-0 p-1 text-white cursor-pointer text-sm hover:scale-125 duration-150'>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'

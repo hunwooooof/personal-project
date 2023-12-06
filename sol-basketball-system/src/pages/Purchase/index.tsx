@@ -82,69 +82,73 @@ function Purchase() {
     <div className='custom-main-container pt-16'>
       <div className='w-10/12 mx-auto'>
         <div className='custom-page-title mb-6'>Purchase</div>
-        <div className='bg-white rounded-3xl p-10'>
-          <div className='flex mb-8 items-center'>
-            <label className='px-8'>Kid</label>
-            {kids.length > 0 && (
-              <select
-                name='kid'
-                id='kid'
-                className='ml-2 w-40 px-2 py-1 bg-slate-100 rounded-full'
-                onChange={(e) => {
-                  if (e.target.value === '-1') {
-                    setOrder({
-                      ...order,
-                      kid: {
-                        docId: '',
-                        firstName: '',
-                        lastName: '',
-                      },
-                    });
-                  } else {
-                    const id = parseInt(e.target.value);
-                    setOrder({
-                      ...order,
-                      kid: {
-                        docId: kids[id].docId,
-                        firstName: kids[id].firstName,
-                        lastName: kids[id].lastName,
-                      },
-                    });
-                  }
-                }}>
-                <option value='-1'>Select a kid</option>
-                {kids.map((kid, index) => (
-                  <option value={index} key={kid.docId}>
-                    {kid.firstName}
-                  </option>
-                ))}
-              </select>
-            )}
-            {kids.length === 0 && <div className='text-gray-600 mx-2'>Add a kid</div>}
-            {PlusCircle('w-6 h-6 cursor-pointer text-gray-500 ml-3', () => navigate('/profile'))}
+        <div className='flex mb-8 items-center'>
+          <label className='px-8'>Kid</label>
+          {kids.length > 0 && (
+            <select
+              name='kid'
+              id='kid'
+              className='ml-2 w-40 px-2 py-1 bg-slate-700 rounded-sm'
+              onChange={(e) => {
+                if (e.target.value === '-1') {
+                  setOrder({
+                    ...order,
+                    kid: {
+                      docId: '',
+                      firstName: '',
+                      lastName: '',
+                    },
+                  });
+                } else {
+                  const id = parseInt(e.target.value);
+                  setOrder({
+                    ...order,
+                    kid: {
+                      docId: kids[id].docId,
+                      firstName: kids[id].firstName,
+                      lastName: kids[id].lastName,
+                    },
+                  });
+                }
+              }}>
+              <option value='-1'>Select a kid</option>
+              {kids.map((kid, index) => (
+                <option value={index} key={kid.docId}>
+                  {kid.firstName}
+                </option>
+              ))}
+            </select>
+          )}
+          {kids.length === 0 && <div className='text-gray-600 mx-2'>Add a kid</div>}
+          {PlusCircle('w-6 h-6 cursor-pointer text-gray-400 ml-3', () => navigate('/profile'))}
+        </div>
+        <div className='flex mb-16'>
+          <h4 className='px-8'>Plan</h4>
+          <div className='flex justify-center gap-8'>
+            {plans.map((plan) => {
+              return (
+                <div
+                  onClick={() => {
+                    setSelectPlanId(plan.id);
+                    setOrder({ ...order, price: plan.price, plan: plan.id });
+                  }}
+                  className={`w-40 rounded-sm border border-gray-600 cursor-pointer ${
+                    selectPlanId === plan.id
+                      ? 'bg-slate-500 border-slate-400 hover:bg-slate-500 hover:border-slate-400'
+                      : 'bg-slate-700 hover:bg-slate-600 hover:border-slate-500'
+                  }`}
+                  key={plan.id}>
+                  <div className='text-center py-3 font-bold'>{plan.title}</div>
+                  <div className='text-center py-5 rounded-b-sm bg-slate-800 text-3xl'>{plan.priceText}</div>
+                </div>
+              );
+            })}
           </div>
-          <div className='flex mb-16'>
-            <h4 className='px-8'>Plan</h4>
-            <div className='flex justify-center gap-8'>
-              {plans.map((plan) => {
-                return (
-                  <div
-                    onClick={() => {
-                      setSelectPlanId(plan.id);
-                      setOrder({ ...order, price: plan.price, plan: plan.id });
-                    }}
-                    className={`w-40 border rounded-xl cursor-pointer bg-slate-100 hover:border-slate-400 hover:bg-slate-400 ${
-                      selectPlanId === plan.id ? 'bg-slate-400' : ''
-                    }`}
-                    key={plan.id}>
-                    <div className='text-center py-3 font-bold'>{plan.title}</div>
-                    <div className='text-center py-5 rounded-b-xl bg-white text-3xl'>{plan.priceText}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className='text-xl text-gray-600 font-bold mb-8'>Payment Method</div>
+        </div>
+      </div>
+      <div className='border-t border-gray-600'>
+        <div className='text-xl font-bold my-8 w-10/12 mx-auto'>Payment Method</div>
+        <div className='w-10/12 mx-auto'>
           <div id='payment-selection' className='pl-8 flex flex-col gap-3'>
             <div className='flex items-center'>
               <input
@@ -169,7 +173,7 @@ function Purchase() {
           </div>
           <button
             type='submit'
-            className='ml-8 mt-8 bg-slate-500 text-white rounded-full w-28 text-center py-1 hover:bg-slate-800 disabled:bg-gray-200'
+            className='ml-8 mt-8 border border-gray-600 rounded-sm text-white w-28 text-center py-1 hover:bg-slate-700 disabled:text-gray-700'
             disabled={order.kid.docId.length === 0}
             onClick={handleSubmitOrder}>
             Confirm

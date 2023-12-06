@@ -37,20 +37,20 @@ function Credits({ currentKidId }: PropsType) {
   }, [currentKidId]);
 
   return (
-    <div>
-      <div className='custom-page-title mt-14'>Credits</div>
-      <div className='flex justify-center gap-11 py-8 mt-6 bg-white rounded-3xl'>
+    <div className='border-b border-gray-600'>
+      <div className='w-10/12 mx-auto custom-page-title mt-8'>Credits</div>
+      <div className='w-10/12 mx-auto flex justify-center gap-11 py-6 mb-6'>
         <div className='flex flex-col w-52 justify-center items-center'>
           <div className='text-5xl mb-3'>{credit.all}</div>
-          <div className='text-gray-600'>Session Credits Purchased</div>
+          <div className='text-gray-500'>Session Credits Purchased</div>
         </div>
         <div className='flex flex-col w-52 justify-center items-center'>
           <div className='text-5xl mb-3'>{credit.used}</div>
-          <div className='text-gray-600'>Credits Used</div>
+          <div className='text-gray-500'>Credits Used</div>
         </div>
         <div className='flex flex-col w-52 justify-center items-center'>
           <div className='text-5xl mb-3'>{credit.left}</div>
-          <div className='text-gray-600'>Credits Remaining</div>
+          <div className='text-gray-500'>Credits Remaining</div>
         </div>
       </div>
     </div>

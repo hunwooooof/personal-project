@@ -7,13 +7,21 @@ html {
 }
 
 .custom-main-container {
-  @apply ml-60 w-[cal(100%-240px)] bg-slate-100 min-h-screen;
+  @apply ml-[73px] md:ml-60 w-[calc(100%-73px)] md:w-[calc(100%-240px)] bg-slate-800 text-white min-h-screen;
 }
 
 .custom-signin-input {
-  @apply w-full p-4 rounded-3xl bg-slate-100 font-bold text-gray-700 tracking-wide;
+  @apply w-full p-4 rounded-md bg-slate-700 font-bold text-gray-300 tracking-wide;
 }
 
 .custom-page-title {
   @apply font-bold px-3 py-2 text-3xl;
+}
+
+.unScheduledClass {
+  @apply px-12 py-5 rounded-md mt-4 font-bold text-gray-400 tracking-wider relative;
+}
+
+.isScheduledClass {
+  @apply px-12 py-5 rounded-md mt-4 font-bold tracking-wider cursor-pointer bg-slate-700 text-white relative hover:bg-slate-600;
 }

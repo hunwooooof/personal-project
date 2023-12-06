@@ -30,9 +30,9 @@ function Login() {
   return (
     <div className='custom-main-container pt-14'>
       <div className='mt-20 mx-auto w-5/12 flex items-center flex-col'>
-        <img src={logoUrl} alt='sign-up-icon' className='w-20 mb-5' />
-        <div className='flex flex-col gap-5 w-full bg-white p-8 rounded-3xl mb-8'>
-          <div className='text-2xl text-gray-500 text-center'>Sign in</div>
+        <img src={logoUrl} alt='sign-up-icon' className='w-20 mb-5 rounded-full bg-white' />
+        <div className='flex flex-col gap-5 w-full p-8 rounded-3xl mb-8'>
+          <div className='text-2xl text-gray-300 text-center'>Sign in</div>
           <input
             type='email'
             name='email'
@@ -54,19 +54,19 @@ function Login() {
           <div className='flex flex-col'>
             <button
               type='submit'
-              className='text-white bg-slate-500 text-center p-2 rounded-3xl hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-gray-300'
+              className='text-white bg-blue-600 text-center p-2 rounded-md hover:scale-105 duration-150 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:scale-100'
               disabled={Object.values(account).some((item) => item.length === 0)}
               onClick={() => nativeLogin(account)}>
               SIGN IN
             </button>
-            <Link to='/signup' className='text-sm self-end underline mt-2 text-gray-400 hover:text-blue-500'>
+            <Link to='/signup' className='text-sm self-end underline mt-2 text-blue-600 hover:scale-105 duration-150'>
               Don't have an account? Sign Up
             </Link>
           </div>
         </div>
         <button
           onClick={googleLogin}
-          className='flex items-center gap-3 bg-white rounded-full px-5 py-3 text-gray-400 hover:text-black'>
+          className='flex items-center gap-3 rounded-md px-5 py-3 text-blue-400 hover:scale-105 duration-150 mb-10'>
           <img src={googleLogoUrl} alt='google logo' className='w-6' />
           使用 Google 帳戶登入
         </button>

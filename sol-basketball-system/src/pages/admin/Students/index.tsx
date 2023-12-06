@@ -40,8 +40,8 @@ function Student() {
     <div className='custom-main-container pt-16'>
       <div className='w-11/12 mx-auto'>
         <div className='custom-page-title mb-6'>Students</div>
-        <div className='w-full h-[77vh] bg-white rounded-3xl p-6'>
-          <div className='flex flex-wrap gap-4 justify-center max-h-[71vh] overflow-y-auto rounded-md'>
+        <div className='w-full h-[77vh] p-6'>
+          <div className='flex flex-wrap gap-4 justify-center max-h-[71vh] overflow-y-auto'>
             {students &&
               students.map((student) => {
                 const calculate_age = (birthday: string) => {
@@ -52,22 +52,22 @@ function Student() {
                 };
                 return (
                   <div
-                    className='flex flex-col items-center w-56 h-88 shrink-0 p-5 rounded-xl bg-slate-100 font-bold text-gray-500'
+                    className='flex flex-col items-center w-56 h-88 shrink-0 p-5 rounded-sm border border-gray-600'
                     key={student.id}>
                     <img src={student.photoURL} className='w-24 h-24 object-cover rounded-full mb-5' />
-                    <div className='text-xl text-black mb-2'>
+                    <div className='text-xl mb-2'>
                       {student.firstName} {student.lastName}
                     </div>
-                    <div className=' text-black mb-5'>{student.chineseName}</div>
-                    <div className='flex w-8/12 gap-1 mb-2 items-center'>
+                    <div className='mb-5'>{student.chineseName}</div>
+                    <div className='flex w-8/12 gap-1 mb-2 items-center text-gray-400'>
                       {Cake()}
                       {student.birthday}
                     </div>
-                    <div className='flex w-8/12 gap-1 mb-2 items-center'>
+                    <div className='flex w-8/12 gap-1 mb-2 items-center text-gray-400'>
                       {School()}
                       {student.school}
                     </div>
-                    <div className='flex w-8/12 gap-1 items-center'>
+                    <div className='flex w-8/12 gap-1 items-center text-gray-400'>
                       {Age()}
                       {calculate_age(student.birthday)} years old
                     </div>

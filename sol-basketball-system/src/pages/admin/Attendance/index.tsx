@@ -81,7 +81,7 @@ function Attendance() {
     getCredits();
   }, []);
 
-  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-slate-400 cursor-pointer hover:text-black select-none';
+  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-blue-400 cursor-pointer hover:scale-125 duration-150 select-none';
 
   const renderUncheck = (date: string, docId: string) => {
     return (
@@ -150,9 +150,9 @@ function Attendance() {
       <div className='w-10/12 mx-auto'>
         <div className='flex justify-between items-center mb-6'>
           <div className='custom-page-title'>Attendance</div>
-          <div className='flex items-center gap-2 bg-white rounded-full py-2 px-3'>
-            <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
-              <div className='text-gray-800 font-medium select-none text-center w-24'>{months()}</div>
+          <div className='flex items-center rounded-sm border border-gray-600'>
+            <div className='flex px-2 py-1 w-44 justify-end border-r border-gray-600'>
+              <div className='text-white font-medium select-none text-center w-24'>{months()}</div>
               {ArrowLeft(arrowClass, () => {
                 if (quarter > 1) setQuarter((n) => n - 1);
                 else setQuarter(4);
@@ -162,12 +162,12 @@ function Attendance() {
                 else setQuarter(1);
               })}
             </div>
-            <div className='flex bg-slate-100 pr-2 pl-4 py-1 rounded-full'>
-              <div className='text-gray-800 font-medium select-none'>{year}</div>
+            <div className='flex border-r border-gray-600 pr-2 pl-4 py-1 '>
+              <div className='text-white font-medium select-none'>{year}</div>
               {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
               {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
             </div>
-            <div className=' rounded-full cursor-pointer text-slate-400 hover:text-black'>
+            <div className='px-2 cursor-pointer text-blue-400 hover:scale-125 duration-150'>
               {Reset('w-5 h-5', () => {
                 setQuarter(currentQuarter);
                 setYear(currentYear);
@@ -176,14 +176,14 @@ function Attendance() {
           </div>
         </div>
         {dates.length === 0 && (
-          <div className='w-full h-[70vh] p-2 bg-white text-4xl text-center text-gray-400 rounded-3xl flex justify-center items-center'>
+          <div className='w-full h-[70vh] p-2 text-xl text-center text-gray-600 flex justify-center items-center'>
             No data available for this section.
           </div>
         )}
         {dates.length > 0 && (
-          <div className='w-full min-h-[70vh] bg-white rounded-3xl flex p-6'>
-            <div className='m-2 border-r'>
-              <div className='font-bold text-slate-400 w-40 tracking-wider px-2 mb-5'>Name</div>
+          <div className='w-full min-h-[70vh] border border-gray-600 rounded-sm flex px-6'>
+            <div className='px-2 py-6 border-r border-gray-600'>
+              <div className='text-gray-400 w-40 tracking-wider px-2 mb-5'>Name</div>
               {attendances.map((attendance: AttendanceType) => {
                 const { name } = attendance;
                 return (
@@ -193,14 +193,12 @@ function Attendance() {
                 );
               })}
             </div>
-            <div className='overflow-x-auto py-2 mx-4'>
+            <div className='overflow-x-auto py-6 mx-4'>
               <div className='flex mb-5'>
                 {dates.map((date: string) => {
                   const formateDate = date.substring(5).replace('-', '/');
                   return (
-                    <div
-                      key={date}
-                      className='font-bold text-slate-400 text-center w-16 tracking-wider shrink-0 select-none'>
+                    <div key={date} className='text-gray-400 text-center w-16 tracking-wider shrink-0 select-none'>
                       {formateDate}
                     </div>
                   );
@@ -227,14 +225,10 @@ function Attendance() {
                   );
                 })}
             </div>
-            <div className='m-2 border-l'>
+            <div className='px-2 py-6 border-l border-gray-600'>
               <div className='flex mb-5'>
-                <div className='font-bold text-slate-400 shrink-0 w-20 tracking-wider text-center select-none'>
-                  Used
-                </div>
-                <div className='font-bold text-slate-400 shrink-0 w-24 tracking-wider text-center select-none'>
-                  Purchased
-                </div>
+                <div className='text-gray-400 shrink-0 w-20 tracking-wider text-center select-none'>Used</div>
+                <div className='text-gray-400 shrink-0 w-24 tracking-wider text-center select-none'>Purchased</div>
               </div>
               {attendances.map((attendance: AttendanceType) => {
                 const { docId, name } = attendance;
