@@ -41,7 +41,7 @@ function Student() {
       <div className='w-11/12 mx-auto'>
         <div className='custom-page-title mb-6'>Students</div>
         <div className='w-full h-[77vh] p-6'>
-          <div className='flex flex-wrap gap-4 justify-center max-h-[71vh] overflow-y-auto rounded-md'>
+          <div className='flex flex-wrap gap-4 justify-center max-h-[71vh] overflow-y-auto'>
             {students &&
               students.map((student) => {
                 const calculate_age = (birthday: string) => {
@@ -52,7 +52,7 @@ function Student() {
                 };
                 return (
                   <div
-                    className='flex flex-col items-center w-56 h-88 shrink-0 p-5 rounded-md border border-gray-600'
+                    className='flex flex-col items-center w-56 h-88 shrink-0 p-5 rounded-sm border border-gray-600'
                     key={student.id}>
                     <img src={student.photoURL} className='w-24 h-24 object-cover rounded-full mb-5' />
                     <div className='text-xl mb-2'>

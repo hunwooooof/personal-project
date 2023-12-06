@@ -113,7 +113,7 @@ function Saturday({ date, quarter, year }: PropsType) {
                   e.stopPropagation();
                   setEdit(true);
                 }}>
-                {Edit('absolute right-8 w-6 h-6 inline-block text-gray-300 cursor-pointer hover:text-black')}
+                {Edit('absolute right-8 w-6 h-6 inline-block text-gray-600 cursor-pointer hover:text-gray-200')}
               </span>
             </>
           )}

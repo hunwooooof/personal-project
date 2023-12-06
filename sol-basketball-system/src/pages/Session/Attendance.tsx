@@ -53,7 +53,7 @@ function Attendance({ currentKidId }: PropsType) {
     }
   };
 
-  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-slate-400 cursor-pointer hover:text-black select-none';
+  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-blue-400 cursor-pointer hover:scale-125 duration-150 select-none';
 
   const renderUncheck = () => {
     return (
@@ -90,12 +90,12 @@ function Attendance({ currentKidId }: PropsType) {
   };
 
   return (
-    <div>
-      <div className='flex justify-between items-center mb-6 mt-14'>
+    <div className='w-10/12 mx-auto'>
+      <div className='flex justify-between items-center mb-6 mt-12'>
         <div className='custom-page-title'>Attendance</div>
-        <div className='flex items-center gap-2 bg-white rounded-full py-2 px-2'>
-          <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
-            <div className='text-gray-800 font-medium select-none text-center w-24'>{months()}</div>
+        <div className='flex items-center rounded-sm border border-gray-600'>
+          <div className='flex px-2 py-1 w-44 justify-end border-r border-gray-600'>
+            <div className='text-white font-medium select-none text-center w-24'>{months()}</div>
             {ArrowLeft(arrowClass, () => {
               if (quarter > 1) setQuarter((n) => n - 1);
               else setQuarter(4);
@@ -105,22 +105,22 @@ function Attendance({ currentKidId }: PropsType) {
               else setQuarter(1);
             })}
           </div>
-          <div className='flex bg-slate-100 pr-2 pl-4 py-1 rounded-full'>
-            <div className='text-gray-800 font-medium select-none'>{year}</div>
+          <div className='flex border-r border-gray-600 pr-2 pl-4 py-1 '>
+            <div className='text-white font-medium select-none'>{year}</div>
             {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
             {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
           </div>
-          <div className=' rounded-full cursor-pointer text-slate-400 hover:text-black'>
+          <div className='px-2 cursor-pointer text-blue-400 hover:scale-125 duration-150'>
             {Reset('w-5 h-5', () => {
               setQuarter(currentQuarter);
               setYear(currentYear);
             })}
           </div>
-        </div>
+        </div>{' '}
       </div>
-      <div className='bg-white rounded-3xl py-5 px-8'>
+      <div className='py-5 px-8'>
         {dates.length === 0 && (
-          <div className='text-2xl text-center text-gray-400'>No data available for this section.</div>
+          <div className='text-xl text-center text-gray-600'>No data available for this section.</div>
         )}
         {dates.length > 0 && (
           <div className='overflow-x-auto pb-4 rounded-lg'>
@@ -130,7 +130,7 @@ function Attendance({ currentKidId }: PropsType) {
                 return (
                   <div
                     key={date}
-                    className='shrink-0 w-16 bg-gray-200 font-bold text-sm tracking-wider text-center border-2 border-white rounded-md py-1 select-none'>
+                    className='shrink-0 w-16 font-bold text-sm tracking-wider text-center py-1 select-none'>
                     {formateDate}
                   </div>
                 );

@@ -240,8 +240,8 @@ function Schedule() {
       <div className='w-10/12 mx-auto'>
         <div className='flex justify-between items-center'>
           <div className='custom-page-title'>Schedule</div>
-          <div className='flex items-center gap-2 border border-gray-600 rounded-full p-2'>
-            <div className='flex px-2 py-1 rounded-full w-44 justify-end border border-gray-600'>
+          <div className='flex items-center rounded-sm border border-gray-600'>
+            <div className='flex px-2 py-1 w-44 justify-end border-r border-gray-600'>
               <div className='text-white font-medium select-none text-center w-24'>{months()}</div>
               {ArrowLeft(arrowClass, () => {
                 if (quarter > 1) setQuarter((n) => n - 1);
@@ -252,12 +252,12 @@ function Schedule() {
                 else setQuarter(1);
               })}
             </div>
-            <div className='flex border border-gray-600 pr-2 pl-4 py-1 rounded-full'>
+            <div className='flex border-r border-gray-600 pr-2 pl-4 py-1'>
               <div className='text-white font-medium select-none'>{year}</div>
               {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
               {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
             </div>
-            <div className='cursor-pointer text-blue-400 hover:scale-125 duration-150'>
+            <div className='px-2 cursor-pointer text-blue-400 hover:scale-125 duration-150'>
               {Reset('w-5 h-5', () => {
                 setQuarter(currentQuarter);
                 setYear(currentYear);
@@ -267,7 +267,7 @@ function Schedule() {
         </div>
 
         <div className='flex'>
-          <div className='w-full flex flex-col min-h-[75vh] p-6'>
+          <div className='w-full flex flex-col p-6 pb-0'>
             <div className='flex text-lg font-bold tracking-wider mb-4 pt-6'>
               <div className='flex flex-col justify-center items-center w-4/12'>
                 <div>Friday</div>
@@ -280,24 +280,27 @@ function Schedule() {
               </div>
             </div>
             {allDates && (
-              <div className='flex gap-3 h-[60vh] overflow-y-auto'>
-                <div id='friday-container' className='w-full text-center'>
-                  {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
-                  {allDates.friday.map((date) => {
-                    return <Friday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
-                  })}
+              <div className='h-[calc(100vh-228px)] overflow-y-auto'>
+                <div className='flex gap-3'>
+                  <div id='friday-container' className='w-full text-center'>
+                    {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
+                    {allDates.friday.map((date) => {
+                      return <Friday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
+                    })}
+                  </div>
+                  <div className='w-full text-center'>
+                    {allDates.saturday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
+                    {allDates.saturday.map((date) => {
+                      return <Saturday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
+                    })}
+                  </div>
+                  <div className='w-full text-center'>
+                    {allDates.sunday.map((date) => {
+                      return <Sunday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
+                    })}
+                  </div>
                 </div>
-                <div className='w-full text-center'>
-                  {allDates.saturday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
-                  {allDates.saturday.map((date) => {
-                    return <Saturday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
-                  })}
-                </div>
-                <div className='w-full text-center'>
-                  {allDates.sunday.map((date) => {
-                    return <Sunday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
-                  })}
-                </div>
+                <div className='h-20' />
               </div>
             )}
           </div>

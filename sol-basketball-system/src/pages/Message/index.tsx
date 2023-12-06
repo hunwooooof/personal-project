@@ -133,6 +133,7 @@ function Message() {
                 className='px-4 py-1 text-center border rounded-full hover:bg-slate-600'
                 onClick={() => {
                   const newDoc = {
+                    lastMessage: { timestamp: 0 },
                     messages: [],
                     unread: false,
                     userID,

@@ -120,10 +120,10 @@ function AdminOrder() {
       <div className='w-10/12 mx-auto'>
         <div className='flex justify-between items-center mb-6'>
           <div className='custom-page-title'>Orders</div>
-          <div className='flex gap-1 text-lg font-bold items-center text-gray-400 bg-white rounded-full p-2'>
+          <div className='flex border border-gray-600 rounded-sm text-lg font-bold items-center text-gray-400'>
             <div
-              className={`w-16 text-center rounded-full p-1 cursor-pointer hover:bg-gray-100 ${
-                tag === 'all' ? 'text-gray-800 bg-slate-100' : ''
+              className={`w-16 text-center p-1 cursor-pointer text-white ${
+                tag === 'all' ? ' bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
               }`}
               onClick={() => {
                 setTag('all');
@@ -131,8 +131,8 @@ function AdminOrder() {
               All
             </div>
             <div
-              className={`w-32 text-center rounded-full p-1 cursor-pointer hover:bg-gray-100 ${
-                tag === 'inProcess' ? 'text-gray-800 bg-slate-100' : ''
+              className={`w-32 text-center p-1 cursor-pointer text-white ${
+                tag === 'inProcess' ? ' bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
               }`}
               onClick={() => {
                 setTag('inProcess');
@@ -142,7 +142,7 @@ function AdminOrder() {
           </div>
         </div>
 
-        <div className='w-full min-h-[70vh] bg-white rounded-3xl p-8'>
+        <div className='w-full min-h-[70vh] p-8'>
           <div className='flex my-2 mb-8 font-bold text-slate-400 tracking-wider'>
             <div className='w-52 pl-4'>Time</div>
             <div className='w-40 pl-2'>Plan</div>
@@ -172,7 +172,7 @@ function AdminOrder() {
                 if (tag === 'all' || (tag === 'inProcess' && order.status === 'IN_PROCESS'))
                   return (
                     <div
-                      className={`flex bg-slate-100 items-center px-2 py-1 rounded-full font-bold text-sm ${
+                      className={`flex border border-gray-600 items-center px-2 py-1 rounded-sm font-bold text-sm ${
                         order.status === 'IN_PROCESS' ? '' : 'text-slate-400'
                       }`}
                       key={seconds}>

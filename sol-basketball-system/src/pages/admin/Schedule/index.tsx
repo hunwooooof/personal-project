@@ -119,17 +119,17 @@ function AdminSchedule() {
     getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
-  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-slate-400 cursor-pointer hover:text-black select-none';
+  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-blue-400 cursor-pointer hover:scale-125 duration-150 select-none';
   const boxClass = `px-12 py-5 rounded-3xl mt-4 font-bold `;
 
   return (
-    <div className='custom-main-container pt-16'>
+    <div className='custom-main-container pt-14'>
       <div className='w-10/12 flex flex-col mx-auto'>
-        <div className='flex justify-between items-center mb-6'>
+        <div className='flex justify-between items-center'>
           <div className='custom-page-title'>Manage Schedules</div>
-          <div className='flex items-center gap-2 bg-white rounded-full py-2 px-3'>
-            <div className='flex bg-slate-100 px-2 py-1 rounded-full w-44 justify-end'>
-              <div className='text-gray-800 font-medium select-none text-center w-24'>{months()}</div>
+          <div className='flex items-center rounded-sm border border-gray-600'>
+            <div className='flex px-2 py-1 w-44 justify-end border-r border-gray-600'>
+              <div className='text-white font-medium select-none text-center w-24'>{months()}</div>
               {ArrowLeft(arrowClass, () => {
                 if (quarter > 1) setQuarter((n) => n - 1);
                 else setQuarter(4);
@@ -139,12 +139,12 @@ function AdminSchedule() {
                 else setQuarter(1);
               })}
             </div>
-            <div className='flex bg-slate-100 pr-2 pl-4 py-1 rounded-full'>
-              <div className='text-gray-800 font-medium select-none'>{year}</div>
+            <div className='flex border-r border-gray-600 pr-2 pl-4 py-1'>
+              <div className='text-white font-medium select-none'>{year}</div>
               {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
               {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
             </div>
-            <div className=' rounded-full cursor-pointer text-slate-400 hover:text-black'>
+            <div className='px-2 cursor-pointer text-blue-400 hover:scale-125 duration-150'>
               {Reset('w-5 h-5', () => {
                 setQuarter(currentQuarter);
                 setYear(currentYear);
@@ -153,8 +153,8 @@ function AdminSchedule() {
           </div>
         </div>
 
-        <div className='w-full mr-5 flex flex-col min-h-[75vh] bg-white rounded-3xl p-6'>
-          <div className='flex text-slate-500 text-lg font-bold tracking-wider mb-4'>
+        <div className='w-full flex flex-col p-6 pb-0'>
+          <div className='flex text-lg font-bold tracking-wider mb-4 pt-6'>
             <div className='flex flex-col justify-center items-center w-4/12'>
               <div>Friday</div>
               <div>19:00-21:00</div>
@@ -166,23 +166,25 @@ function AdminSchedule() {
             </div>
           </div>
           {allDates && (
-            <div className='flex gap-3 h-[60vh] overflow-y-auto rounded-3xl rounded-r-md'>
-              <div className='w-full text-center'>
-                {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
-                {allDates.friday.map((date) => {
-                  return <Friday key={date} date={date} quarter={quarter} year={year} />;
-                })}
-              </div>
-              <div className='w-full text-center'>
-                {allDates.saturday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
-                {allDates.saturday.map((date) => {
-                  return <Saturday key={date} date={date} quarter={quarter} year={year} />;
-                })}
-              </div>
-              <div className='w-full text-center'>
-                {allDates.sunday.map((date) => {
-                  return <Sunday key={date} date={date} quarter={quarter} year={year} />;
-                })}
+            <div className='h-[calc(100vh-228px)] overflow-y-auto'>
+              <div className='flex gap-3'>
+                <div className='w-full text-center'>
+                  {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
+                  {allDates.friday.map((date) => {
+                    return <Friday key={date} date={date} quarter={quarter} year={year} />;
+                  })}
+                </div>
+                <div className='w-full text-center'>
+                  {allDates.saturday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
+                  {allDates.saturday.map((date) => {
+                    return <Saturday key={date} date={date} quarter={quarter} year={year} />;
+                  })}
+                </div>
+                <div className='w-full text-center'>
+                  {allDates.sunday.map((date) => {
+                    return <Sunday key={date} date={date} quarter={quarter} year={year} />;
+                  })}
+                </div>
               </div>
             </div>
           )}

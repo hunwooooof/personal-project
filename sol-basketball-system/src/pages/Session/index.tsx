@@ -28,14 +28,14 @@ function Session() {
       <div className='w-10/12 mx-auto'>
         <div className='flex justify-between items-center mb-6'>
           <div className='custom-page-title'>Session</div>
-          <div className='flex gap-1 text-lg font-bold items-center text-gray-400 bg-white rounded-full p-2'>
+          <div className='flex text-lg font-bold items-center border border-gray-600'>
             {kids.map((kid, index) => {
               return (
                 <div
                   key={kid.docId}
                   onClick={() => setCurrentKidIndex(index)}
-                  className={`text-center rounded-full py-1 px-3 cursor-pointer hover:bg-gray-100 ${
-                    index === currentKidIndex ? 'text-gray-800 bg-slate-100' : ''
+                  className={`text-center rounded-sm py-1 px-4 cursor-pointer hover:bg-gray-100 ${
+                    index === currentKidIndex ? 'bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
                   }`}>
                   {kid.firstName}
                 </div>
@@ -43,9 +43,11 @@ function Session() {
             })}
           </div>
         </div>
-        {kids[currentKidIndex] && (
-          <>
-            <div className='mt-6 flex gap-16 items-center pl-16 py-3 bg-white rounded-3xl'>
+      </div>
+      {kids[currentKidIndex] && (
+        <>
+          <div className='border-b border-gray-600 pb-8'>
+            <div className='w-10/12 mx-auto mt-6 flex gap-16 items-center pl-16 py-3'>
               <img src={kids[currentKidIndex]?.photoURL} className='w-20 h-20 object-cover bg-white rounded-full' />
               <div className='w-36'>
                 <div className='text-gray-400 font-bold mb-2'>Name</div>
@@ -66,11 +68,11 @@ function Session() {
                 <div className='text-lg'>{kids[currentKidIndex].id}</div>
               </div>
             </div>
-            <Credits currentKidId={kids[currentKidIndex].docId} />
-            <Attendance currentKidId={kids[currentKidIndex].docId} />
-          </>
-        )}
-      </div>
+          </div>
+          <Credits currentKidId={kids[currentKidIndex].docId} />
+          <Attendance currentKidId={kids[currentKidIndex].docId} />
+        </>
+      )}
     </div>
   );
 }
