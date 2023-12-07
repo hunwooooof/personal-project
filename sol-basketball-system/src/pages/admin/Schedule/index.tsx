@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Reset } from '../../../components/Icon';
+import CalendarButton from '../../../components/CalendarButton';
+import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
 import Friday from './Friday';
 import Saturday from './Saturday';
@@ -63,21 +64,6 @@ function AdminSchedule() {
     }
   };
 
-  const months = () => {
-    switch (quarter) {
-      case 1:
-        return 'M1 － M3';
-      case 2:
-        return 'M4 － M6';
-      case 3:
-        return 'M7 － M9';
-      case 4:
-        return 'M10 － M12';
-      default:
-        return 'M1 － M3';
-    }
-  };
-
   const startDate = new Date(`${year}${firstDate()}`);
   const endDate = new Date(`${year}${lastDate()}`);
 
@@ -119,42 +105,25 @@ function AdminSchedule() {
     getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
-  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-blue-400 cursor-pointer hover:scale-125 duration-150 select-none';
-  const boxClass = `px-12 py-5 rounded-3xl mt-4 font-bold `;
+  const boxClass = `text-gray-600 px-12 py-5 rounded-3xl mt-4 font-bold `;
 
   return (
-    <div className='custom-main-container pt-14'>
-      <div className='w-10/12 flex flex-col mx-auto'>
-        <div className='flex justify-between items-center'>
-          <div className='custom-page-title'>Manage Schedules</div>
-          <div className='flex items-center rounded-sm border border-gray-600'>
-            <div className='flex px-2 py-1 w-44 justify-end border-r border-gray-600'>
-              <div className='text-white font-medium select-none text-center w-24'>{months()}</div>
-              {ArrowLeft(arrowClass, () => {
-                if (quarter > 1) setQuarter((n) => n - 1);
-                else setQuarter(4);
-              })}
-              {ArrowRight(arrowClass, () => {
-                if (quarter < 4) setQuarter((n) => n + 1);
-                else setQuarter(1);
-              })}
-            </div>
-            <div className='flex border-r border-gray-600 pr-2 pl-4 py-1'>
-              <div className='text-white font-medium select-none'>{year}</div>
-              {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
-              {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
-            </div>
-            <div className='px-2 cursor-pointer text-blue-400 hover:scale-125 duration-150'>
-              {Reset('w-5 h-5', () => {
-                setQuarter(currentQuarter);
-                setYear(currentYear);
-              })}
-            </div>
-          </div>
-        </div>
+    <div className='custom-main-container'>
+      <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14'>
+        <PageTitle title='Manage Schedules' />
+        <CalendarButton
+          quarter={quarter}
+          setQuarter={setQuarter}
+          year={year}
+          setYear={setYear}
+          currentQuarter={currentQuarter}
+          currentYear={currentYear}
+        />
+      </div>
 
+      <div className='w-10/12 flex flex-col mx-auto'>
         <div className='w-full flex flex-col p-6 pb-0'>
-          <div className='flex text-lg font-bold tracking-wider mb-4 pt-6'>
+          <div className='flex text-sm sm:text-base lg:text-lg font-semibold tracking-wider mb-4 pt-3'>
             <div className='flex flex-col justify-center items-center w-4/12'>
               <div>Friday</div>
               <div>19:00-21:00</div>

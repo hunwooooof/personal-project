@@ -5,17 +5,18 @@ interface PropsType {
   date: string;
   setInfoShow: (arg0: boolean) => void;
   setInfo: (arg0: DetailType) => void;
+  info: DetailType[] | undefined;
 }
 
 interface DetailType {
   address: string;
   date: string;
-  tag: string;
+  tag?: string;
   time: string;
   title: string;
 }
 
-function Saturday({ date, setInfoShow, setInfo }: PropsType) {
+function Saturday({ date, setInfoShow, setInfo, info }: PropsType) {
   const { scheduledDates, saturdaySchedules } = useStore();
   const showDate = date.slice(5).replace('-', '/');
   const [todaySchedule, setTodaySchedule] = useState<object>({ [date]: [] });
@@ -35,8 +36,10 @@ function Saturday({ date, setInfoShow, setInfo }: PropsType) {
     }
   }, [saturdaySchedules]);
 
-  const unScheduledClass = `px-12 py-5 rounded-md mt-4 font-bold text-gray-400 tracking-wider relative`;
-  const isScheduledClass = `px-12 py-5 rounded-md mt-4 font-bold tracking-wider cursor-pointer bg-slate-700 text-white relative hover:bg-slate-600`;
+  const unScheduledClass = `px-12 py-5 rounded-md mt-4 font-bold text-gray-600 tracking-wider relative`;
+  const isScheduledClass = `px-12 py-5 rounded-md mt-4 font-bold tracking-wider cursor-pointer text-black relative ${
+    Array.isArray(info) && info[0].date === date ? 'bg-white hover:bg-white' : 'bg-slate-400 hover:bg-slate-200'
+  }`;
 
   return (
     <div>
