@@ -65,9 +65,9 @@ function Saturday({ date, quarter, year }: PropsType) {
 
   const [isEdit, setEdit] = useState<boolean>(false);
 
-  const unScheduledClass = `text-gray-600 relative px-12 py-5 rounded-md mt-4 font-bold text-gray-400 tracking-wider cursor-pointer ${
+  const unScheduledClass = `text-gray-600 relative px-12 py-5 rounded-md mt-4 font-bold text-gray-400 tracking-wider ${
     Object.values(todaySchedule)[0].length > 0
-      ? 'hover:[&:not(:has(*:hover))]:bg-slate-500'
+      ? 'hover:[&:not(:has(*:hover))]:bg-slate-500 hover:cursor-pointer'
       : 'hover:cursor-auto hover:bg-slate-800'
   }`;
   const isScheduledClass = `relative px-12 py-5 rounded-md mt-4 font-bold tracking-wider text-black cursor-pointer bg-slate-400 hover:bg-slate-400`;
@@ -109,7 +109,10 @@ function Saturday({ date, quarter, year }: PropsType) {
           }}>
           {!isEdit && (
             <>
-              {`${showDate} (${Object.values(todaySchedule)[0].length})`}
+              <span
+                className={
+                  Object.values(todaySchedule)[0].length > 0 ? 'text-gray-300' : 'text-gray-600'
+                }>{`${showDate} (${Object.values(todaySchedule)[0].length})`}</span>
               <span
                 onClick={(e) => {
                   e.stopPropagation();

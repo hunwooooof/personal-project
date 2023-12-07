@@ -105,6 +105,7 @@ function AdminSchedule() {
     getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
+  const tableHeadClass = 'flex justify-center items-center w-4/12 bg-gray-100 text-black py-2 rounded-t-2xl';
   const boxClass = `text-gray-600 px-12 py-5 rounded-3xl mt-4 font-bold `;
 
   return (
@@ -121,15 +122,15 @@ function AdminSchedule() {
         />
       </div>
 
-      <div className='w-10/12 flex flex-col mx-auto'>
-        <div className='w-full flex flex-col p-6 pb-0'>
-          <div className='flex text-sm sm:text-base lg:text-lg font-semibold tracking-wider mb-4 pt-3'>
-            <div className='flex flex-col justify-center items-center w-4/12'>
+      <div className='mx-0 md:mx-12 lg:mx-20 flex flex-col'>
+        <div className='w-full flex flex-col py-6 pb-0'>
+          <div className='flex gap-3 text-sm sm:text-base lg:text-lg font-semibold tracking-wider my-4'>
+            <div className={`flex-col ${tableHeadClass}`}>
               <div>Friday</div>
               <div>19:00-21:00</div>
             </div>
-            <div className='w-4/12 flex justify-center items-center'>Saturday</div>
-            <div className='flex flex-col justify-center items-center w-4/12'>
+            <div className={tableHeadClass}>Saturday</div>
+            <div className={`flex-col ${tableHeadClass}`}>
               <div>Sunday</div>
               <div>16:30-18:30</div>
             </div>
