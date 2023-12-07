@@ -267,8 +267,21 @@ function Sidebar() {
           <Link
             to='/login'
             onClick={() => setCurrentNav('')}
-            className='mt-auto text-gray-500 text-center border border-gray-600 w-24 rounded-2xl fixed left-5 bottom-5 py-1 shadow-md hover:text-white'>
-            Log In
+            className='mt-auto text-gray-500 text-center border border-gray-600 lg:w-24 rounded-2xl fixed lg:left-5 bottom-5 px-2 lg:px-0 py-1 shadow-md hover:text-white'>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={1.5}
+              stroke='currentColor'
+              className='w-6 h-6 lg:hidden'>
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75'
+              />
+            </svg>
+            <span className='hidden lg:inline'>Log In</span>
           </Link>
         )}
         {isLogin && (

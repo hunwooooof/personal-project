@@ -138,7 +138,8 @@ function Schedule() {
     getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
-  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-blue-400 cursor-pointer hover:scale-125 duration-150 select-none';
+  const arrowClass =
+    'w-5 sm:w-6 w-5 sm:h-6 ml-1 rounded-full text-blue-400 cursor-pointer hover:scale-125 duration-150 select-none';
   const boxClass = `px-12 py-5 rounded-3xl mt-4 font-bold`;
 
   // ==================
@@ -236,13 +237,13 @@ function Schedule() {
   };
 
   return (
-    <div className='custom-main-container pt-14'>
+    <div className='custom-main-container pt-6 lg:pt-14'>
       <div className='w-10/12 mx-auto'>
         <div className='flex flex-col md:flex-row justify-between items-center'>
           <div className='custom-page-title'>Schedule</div>
           <div className='flex items-center rounded-sm border border-gray-600'>
-            <div className='flex px-2 py-1 w-44 justify-end border-r border-gray-600'>
-              <div className='text-white font-medium select-none text-center w-24'>{months()}</div>
+            <div className='flex px-2 py-1 w-36 sm:w-44 justify-end border-r border-gray-600'>
+              <div className='text-white font-medium select-none text-center w-24 text-sm sm:text-base'>{months()}</div>
               {ArrowLeft(arrowClass, () => {
                 if (quarter > 1) setQuarter((n) => n - 1);
                 else setQuarter(4);
@@ -253,7 +254,7 @@ function Schedule() {
               })}
             </div>
             <div className='flex border-r border-gray-600 pr-2 pl-4 py-1'>
-              <div className='text-white font-medium select-none'>{year}</div>
+              <div className='text-white font-medium select-none text-sm sm:text-base'>{year}</div>
               {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
               {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
             </div>
@@ -265,143 +266,151 @@ function Schedule() {
             </div>
           </div>
         </div>
+      </div>
 
-        <div className='flex'>
-          <div className='w-full flex flex-col md:p-6 pb-0'>
-            <div className='flex text-lg font-bold tracking-wider mb-4 pt-6'>
-              <div className='flex flex-col justify-center items-center w-4/12'>
-                <div>Friday</div>
-                <div>19:00-21:00</div>
-              </div>
-              <div className='w-4/12 flex justify-center items-center'>Saturday</div>
-              <div className='flex flex-col justify-center items-center w-4/12'>
-                <div>Sunday</div>
-                <div>16:30-18:30</div>
-              </div>
+      <div className='flex flex-col lg:flex-row'>
+        <div className={`w-10/12 mx-auto flex flex-col lg:p-6 pb-0 ${isInfoShow ? 'h-[calc(100vh-530px)]' : 'h-auto'}`}>
+          <div className='flex text-sm sm:text-base lg:text-lg font-bold tracking-wider mb-4 pt-6'>
+            <div className='flex flex-col justify-center items-center w-4/12'>
+              <div>Friday</div>
+              <div>19:00-21:00</div>
             </div>
-            {allDates && (
-              <div className='h-[calc(100vh-228px)] overflow-y-auto'>
-                <div className='flex gap-3'>
-                  <div id='friday-container' className='w-full text-center'>
-                    {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
-                    {allDates.friday.map((date) => {
-                      return <Friday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
-                    })}
-                  </div>
-                  <div className='w-full text-center'>
-                    {allDates.saturday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
-                    {allDates.saturday.map((date) => {
-                      return <Saturday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
-                    })}
-                  </div>
-                  <div className='w-full text-center'>
-                    {allDates.sunday.map((date) => {
-                      return <Sunday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
-                    })}
-                  </div>
-                </div>
-                <div className='h-20' />
-              </div>
-            )}
+            <div className='w-4/12 flex justify-center items-center'>Saturday</div>
+            <div className='flex flex-col justify-center items-center w-4/12'>
+              <div>Sunday</div>
+              <div>16:30-18:30</div>
+            </div>
           </div>
-          {isInfoShow && info && (
-            <div className='w-5/12 relative max-h-[calc(100vh-100px)] overflow-y-auto border-l border-gray-600'>
-              <button
-                onClick={() => setInfoShow(false)}
-                className='hover:scale-125 duration-150 text-gray-300 px-2 py-1 rounded-full cursor-pointer absolute font-bold right-2 top-10'>
-                Ｘ
-              </button>
-              {!Array.isArray(info) && (
-                <div className='px-10 py-5'>
-                  <div className='font-serif font-bold text-xl mb-2 pb-2 pt-6'>{renderTitle(info.title)}</div>
+          {allDates && (
+            <div className='h-[calc(100vh-228px)] overflow-y-auto'>
+              <div className='flex gap-3'>
+                <div id='friday-container' className='w-full text-center'>
+                  {allDates.friday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
+                  {allDates.friday.map((date) => {
+                    return <Friday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
+                  })}
+                </div>
+                <div className='w-full text-center'>
+                  {allDates.saturday[0].slice(8) > allDates.sunday[0].slice(8) && <div className={boxClass}>-</div>}
+                  {allDates.saturday.map((date) => {
+                    return <Saturday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
+                  })}
+                </div>
+                <div className='w-full text-center'>
+                  {allDates.sunday.map((date) => {
+                    return <Sunday key={date} date={date} setInfoShow={setInfoShow} setInfo={setInfo} />;
+                  })}
+                </div>
+              </div>
+              <div className='h-20' />
+            </div>
+          )}
+        </div>
+        {isInfoShow && info && (
+          <div className='px-5 lg:px-0 lg:w-5/12 relative max-h-[calc(100vh-100px)] overflow-y-auto border-t lg:border-t-0 lg:border-l border-gray-600 pb-4'>
+            <button
+              onClick={() => setInfoShow(false)}
+              className='hover:scale-125 duration-150 text-gray-300 px-2 py-1 rounded-full cursor-pointer absolute font-bold right-12 lg:right-6 top-7'>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='w-6 h-6'>
+                <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+              </svg>
+            </button>
+            {!Array.isArray(info) && (
+              <div className='px-10 py-5'>
+                <div className='font-serif font-bold text-xl lg:mb-2 py-2'>
+                  {renderTitle(info.title)}
+                  <img
+                    src={googleCalendarIco}
+                    alt='google-calendar-icon'
+                    className='lg:hidden ml-5 inline w-7 h-7 cursor-pointer'
+                    onClick={() => {
+                      handleClickGoogleCalendar(info);
+                    }}
+                  />
+                </div>
+                <div className='text-sm lg:text-md flex flex-col sm:flex-row gap-0 sm:gap-5 lg:gap-3 lg:flex-col'>
                   <div className='mt-4 flex gap-2 items-center tracking-wider'>
                     <img className='rounded-sm opacity-80 inline w-5 h-5' src={calendarIcon} alt='' />
                     {info.date.replace('-', '/').replace('-', '/')}
                   </div>
-                  <div className='mt-4 flex gap-2'>
-                    <img className='rounded-sm opacity-80 inline w-5 h-5 mt-1' src={locationIcon} alt='' />
+                  <div className='mt-4 flex gap-2 items-center'>
+                    <img className='rounded-sm opacity-80 inline w-5 h-5' src={locationIcon} alt='' />
                     {renderAddress(info.address)}
                   </div>
                   <div className='mt-4 flex gap-2 items-center'>
                     <img className='rounded-sm opacity-80 inline w-5 h-5' src={timeIcon} alt='' />
                     {info.time}
                   </div>
-                  <iframe
-                    src={`https://www.google.com/maps/embed${getGoogleMapIframe(info.address)}`}
-                    className='w-full h-80 mt-4 border'
-                    loading='lazy'></iframe>
-                  <div className='flex gap-5 justify-center items-center mt-4'>
-                    <span className='tracking-wider font-semibold'>Add to calendar</span>
-                    <img
-                      src={googleCalendarIco}
-                      alt='google-calendar-icon'
-                      className='w-8 h-8 cursor-pointer'
-                      onClick={() => {
-                        handleClickGoogleCalendar(info);
-                      }}
-                    />
-                  </div>
                 </div>
-              )}
-              {Array.isArray(info) &&
-                info.map((item, index) => {
-                  return (
-                    <div>
-                      {index > 0 && <div className='w-full border border-gray-600 my-8' />}
-                      <div key={index} className='px-10 py-5'>
-                        <div className='font-serif font-bold text-xl mb-2 pb-2 pt-6'>{renderTitle(item.title)}</div>
-                        <div className='mt-4 flex gap-2 items-center tracking-wider'>
-                          <img
-                            className='rounded-sm opacity-80 inline w-5 h-5'
-                            src={calendarIcon}
-                            alt='calendar-icon'
-                          />
-                          {item.date.replace('-', '/').replace('-', '/')}
+                <iframe
+                  src={`https://www.google.com/maps/embed${getGoogleMapIframe(info.address)}`}
+                  className='w-full h-56 sm:h-72 lg:h-80 mt-6 lg:mt-8 border'
+                  loading='lazy'></iframe>
+                <div className='hidden lg:flex gap-5 justify-center items-center mt-4'>
+                  <span className='tracking-wider font-semibold'>Add to calendar</span>
+                  <img
+                    src={googleCalendarIco}
+                    alt='google-calendar-icon'
+                    className='w-8 h-8 cursor-pointer'
+                    onClick={() => {
+                      handleClickGoogleCalendar(info);
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            {Array.isArray(info) &&
+              info.map((item, index) => {
+                return (
+                  <div>
+                    {index > 0 && <div className='w-full border border-gray-600 my-8' />}
+                    <div key={index} className='px-10 py-5'>
+                      <div className='font-serif font-bold text-xl mb-2 pb-2 pt-6'>{renderTitle(item.title)}</div>
+                      <div className='mt-4 flex gap-2 items-center tracking-wider'>
+                        <img className='rounded-sm opacity-80 inline w-5 h-5' src={calendarIcon} alt='calendar-icon' />
+                        {item.date.replace('-', '/').replace('-', '/')}
+                      </div>
+                      {item.tag && (
+                        <div className='mt-4 flex gap-2 tracking-wider'>
+                          <img className='rounded-sm opacity-80 inline w-5 h-5' src={personIcon} alt='team-icon' />
+                          {renderTeam(item.tag)}
                         </div>
-                        {item.tag && (
-                          <div className='mt-4 flex gap-2 tracking-wider'>
-                            <img
-                              className='rounded-sm opacity-80 inline w-5 h-5 mt-1'
-                              src={personIcon}
-                              alt='team-icon'
-                            />
-                            {renderTeam(item.tag)}
-                          </div>
-                        )}
-                        <div className='mt-4 flex gap-2'>
-                          <img
-                            className='rounded-sm opacity-80 inline w-5 h-5 mt-1'
-                            src={locationIcon}
-                            alt='address-icon'
-                          />
-                          {renderAddress(item.address)}
-                        </div>
-                        <div className='mt-4 flex gap-2 items-center'>
-                          <img className='rounded-sm opacity-80 inline w-5 h-5' src={timeIcon} alt='time-icon' />
-                          {item.time}
-                        </div>
-                        <iframe
-                          src={`https://www.google.com/maps/embed${getGoogleMapIframe(item.address)}`}
-                          className='w-full h-80 mt-4 border'
-                          loading='lazy'></iframe>
-                        <div className='flex gap-5 justify-center items-center mt-4'>
-                          <span className='tracking-wider font-semibold'>Add to calendar</span>
-                          <img
-                            src={googleCalendarIco}
-                            alt='google-calendar-icon'
-                            className='w-8 h-8 cursor-pointer'
-                            onClick={() => {
-                              handleClickGoogleCalendar(item);
-                            }}
-                          />
-                        </div>
+                      )}
+                      <div className='mt-4 flex gap-2'>
+                        <img className='rounded-sm opacity-80 inline w-5 h-5' src={locationIcon} alt='address-icon' />
+                        {renderAddress(item.address)}
+                      </div>
+                      <div className='mt-4 flex gap-2 items-center'>
+                        <img className='rounded-sm opacity-80 inline w-5 h-5' src={timeIcon} alt='time-icon' />
+                        {item.time}
+                      </div>
+                      <iframe
+                        src={`https://www.google.com/maps/embed${getGoogleMapIframe(item.address)}`}
+                        className='w-full h-80 mt-4 border'
+                        loading='lazy'></iframe>
+                      <div className='flex gap-5 justify-center items-center mt-4'>
+                        <span className='tracking-wider font-semibold'>Add to calendar</span>
+                        <img
+                          src={googleCalendarIco}
+                          alt='google-calendar-icon'
+                          className='w-8 h-8 cursor-pointer'
+                          onClick={() => {
+                            handleClickGoogleCalendar(item);
+                          }}
+                        />
                       </div>
                     </div>
-                  );
-                })}
-            </div>
-          )}
-        </div>
+                  </div>
+                );
+              })}
+          </div>
+        )}
       </div>
     </div>
   );
