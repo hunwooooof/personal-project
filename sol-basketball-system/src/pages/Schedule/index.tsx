@@ -120,7 +120,7 @@ function Schedule() {
     getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
-  const boxClass = `text-gray-600 px-12 py-5 rounded-3xl mt-4 font-bold`;
+  const boxClass = `text-gray-600 px-12 py-5 rounded-3xl mt-4 font-bold border border-slate-800`;
   const tableHeadClass = 'flex justify-center items-center w-4/12 bg-gray-100 text-black py-2 rounded-t-2xl';
 
   // ==================

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Age, Cake, School } from '../../../components/Icon';
+import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
 
@@ -37,45 +38,48 @@ function Student() {
   }, []);
 
   return (
-    <div className='custom-main-container pt-16'>
-      <div className='w-11/12 mx-auto'>
-        <div className='custom-page-title mb-6'>Students</div>
-        <div className='w-full h-[77vh] p-6'>
-          <div className='flex flex-wrap gap-4 justify-center max-h-[71vh] overflow-y-auto'>
-            {students &&
-              students.map((student) => {
-                const calculate_age = (birthday: string) => {
-                  const dateOfBirth = new Date(birthday);
-                  const diff = Date.now() - dateOfBirth.getTime();
-                  const age = new Date(diff);
-                  return Math.abs(age.getUTCFullYear() - 1970);
-                };
-                return (
-                  <div
-                    className='flex flex-col items-center w-56 h-88 shrink-0 p-5 rounded-sm border border-gray-600'
-                    key={student.id}>
-                    <img src={student.photoURL} className='w-24 h-24 object-cover rounded-full mb-5' />
-                    <div className='text-xl mb-2'>
-                      {student.firstName} {student.lastName}
-                    </div>
-                    <div className='mb-5'>{student.chineseName}</div>
-                    <div className='flex w-8/12 gap-1 mb-2 items-center text-gray-400'>
-                      {Cake()}
-                      {student.birthday}
-                    </div>
-                    <div className='flex w-8/12 gap-1 mb-2 items-center text-gray-400'>
-                      {School()}
-                      {student.school}
-                    </div>
-                    <div className='flex w-8/12 gap-1 items-center text-gray-400'>
-                      {Age()}
-                      {calculate_age(student.birthday)} years old
-                    </div>
+    <div className='custom-main-container'>
+      <div className='pt-6 lg:pt-14 pb-14'>
+        <PageTitle title='Students' />
+      </div>
+      <div className='mx-0 md:mx-12 lg:mx-20 flex flex-wrap gap-6 justify-center h-[calc(100vh-150px)] overflow-y-auto'>
+        {students &&
+          students.map((student) => {
+            const calculate_age = (birthday: string) => {
+              const dateOfBirth = new Date(birthday);
+              const diff = Date.now() - dateOfBirth.getTime();
+              const age = new Date(diff);
+              return Math.abs(age.getUTCFullYear() - 1970);
+            };
+            return (
+              <div className='flex flex-col items-center w-56 h-88 shrink-0 rounded-2xl bg-gray-100' key={student.id}>
+                <div className='w-full h-24 bg-slate-900 rounded-t-2xl relative'>
+                  <img
+                    src={student.photoURL}
+                    className='absolute left-[64px] top-10 bg-white w-24 h-24 object-cover rounded-full mb-5 border-2 border-gray-100'
+                  />
+                </div>
+                <div className='flex flex-col items-center w-full px-5 pt-12 pb-8 text-black'>
+                  <div className='text-xl mb-2'>
+                    {student.firstName} {student.lastName}
                   </div>
-                );
-              })}
-          </div>
-        </div>
+                  <div className='mb-5'>{student.chineseName}</div>
+                  <div className='flex w-8/12 gap-1 mb-2 items-center text-gray-500'>
+                    {Cake()}
+                    {student.birthday}
+                  </div>
+                  <div className='flex w-8/12 gap-1 mb-2 items-center text-gray-500'>
+                    {School()}
+                    {student.school}
+                  </div>
+                  <div className='flex w-8/12 gap-1 items-center text-gray-500'>
+                    {Age()}
+                    {calculate_age(student.birthday)} years old
+                  </div>
+                </div>
+              </div>
+            );
+          })}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Reset } from '../../../components/Icon';
+import CalendarButton from '../../../components/CalendarButton';
+import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
 
@@ -57,21 +58,6 @@ function Attendance() {
     getAttendances();
   }, [quarter, year]);
 
-  const months = () => {
-    switch (quarter) {
-      case 1:
-        return 'M1 － M3';
-      case 2:
-        return 'M4 － M6';
-      case 3:
-        return 'M7 － M9';
-      case 4:
-        return 'M10 － M12';
-      default:
-        return 'M1 － M3';
-    }
-  };
-
   const [allCredits, setAllCredits] = useState<CreditDocType[]>();
   async function getCredits() {
     const creditsArray = await firestore.getDocs('credits');
@@ -80,8 +66,6 @@ function Attendance() {
   useEffect(() => {
     getCredits();
   }, []);
-
-  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-blue-400 cursor-pointer hover:scale-125 duration-150 select-none';
 
   const renderUncheck = (date: string, docId: string) => {
     return (
@@ -146,35 +130,19 @@ function Attendance() {
   };
 
   return (
-    <div className='custom-main-container pt-16'>
-      <div className='w-10/12 mx-auto'>
-        <div className='flex justify-between items-center mb-6'>
-          <div className='custom-page-title'>Attendance</div>
-          <div className='flex items-center rounded-sm border border-gray-600'>
-            <div className='flex px-2 py-1 w-44 justify-end border-r border-gray-600'>
-              <div className='text-white font-medium select-none text-center w-24'>{months()}</div>
-              {ArrowLeft(arrowClass, () => {
-                if (quarter > 1) setQuarter((n) => n - 1);
-                else setQuarter(4);
-              })}
-              {ArrowRight(arrowClass, () => {
-                if (quarter < 4) setQuarter((n) => n + 1);
-                else setQuarter(1);
-              })}
-            </div>
-            <div className='flex border-r border-gray-600 pr-2 pl-4 py-1 '>
-              <div className='text-white font-medium select-none'>{year}</div>
-              {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
-              {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
-            </div>
-            <div className='px-2 cursor-pointer text-blue-400 hover:scale-125 duration-150'>
-              {Reset('w-5 h-5', () => {
-                setQuarter(currentQuarter);
-                setYear(currentYear);
-              })}
-            </div>
-          </div>
-        </div>
+    <div className='custom-main-container'>
+      <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14 pb-14'>
+        <PageTitle title='Attendance' />
+        <CalendarButton
+          quarter={quarter}
+          setQuarter={setQuarter}
+          year={year}
+          setYear={setYear}
+          currentQuarter={currentQuarter}
+          currentYear={currentYear}
+        />
+      </div>
+      <div className='mx-0 md:mx-12 lg:mx-20 '>
         {dates.length === 0 && (
           <div className='w-full h-[70vh] p-2 text-xl text-center text-gray-600 flex justify-center items-center'>
             No data available for this section.

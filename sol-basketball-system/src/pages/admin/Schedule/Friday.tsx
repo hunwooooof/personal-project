@@ -25,8 +25,8 @@ function Friday({ date, quarter, year }: PropsType) {
     title: 'skills-training',
   };
 
-  const unScheduledClass = `px-12 py-5 rounded-md mt-4 font-bold text-gray-600 tracking-wider cursor-pointer hover:bg-slate-500`;
-  const isScheduledClass = `px-12 py-5 rounded-md mt-4 font-bold tracking-wider cursor-pointer bg-slate-400 hover:bg-slate-400 text-black`;
+  const unScheduledClass = `px-12 py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-600 tracking-wider cursor-pointer hover:bg-slate-500`;
+  const isScheduledClass = `px-12 py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider cursor-pointer bg-slate-400 hover:bg-slate-400 text-black`;
 
   return (
     <div>

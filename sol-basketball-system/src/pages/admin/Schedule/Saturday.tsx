@@ -65,12 +65,12 @@ function Saturday({ date, quarter, year }: PropsType) {
 
   const [isEdit, setEdit] = useState<boolean>(false);
 
-  const unScheduledClass = `text-gray-600 relative px-12 py-5 rounded-md mt-4 font-bold text-gray-400 tracking-wider ${
+  const unScheduledClass = `text-gray-600 relative px-12 py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-400 tracking-wider ${
     Object.values(todaySchedule)[0].length > 0
       ? 'hover:[&:not(:has(*:hover))]:bg-slate-500 hover:cursor-pointer'
       : 'hover:cursor-auto hover:bg-slate-800'
   }`;
-  const isScheduledClass = `relative px-12 py-5 rounded-md mt-4 font-bold tracking-wider text-black cursor-pointer bg-slate-400 hover:bg-slate-400`;
+  const isScheduledClass = `relative px-12 py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider text-black cursor-pointer bg-slate-400 hover:bg-slate-400`;
 
   const handleClickAdd = () => {
     firestore.getDoc('schedule', `${year}Q${quarter}`, 'saturday', date).then((schedule) => {
