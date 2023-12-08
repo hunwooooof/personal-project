@@ -48,7 +48,7 @@ function Login() {
             id='password'
             placeholder='Password *'
             className='custom-signin-input'
-            value={account.password}
+            value={account.password.replace(/./g, '*')}
             onChange={handleInputChange}
           />
           <div className='flex flex-col'>

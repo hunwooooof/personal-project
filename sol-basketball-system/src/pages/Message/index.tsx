@@ -83,32 +83,25 @@ function Message() {
     }
   };
 
-  // useEffect(() => {
-  //   if (id) {
-  //     firestore.getDoc('users', id).then((result) => setUserDetail(result));
-  //   }
-  // }, [id]);
-
-  /*
-  const handleEnterDown = (e) => {
+  const handleEnterDown = (e: {
+    key: string;
+    nativeEvent: { isComposing: boolean };
+    preventDefault: () => void;
+    stopPropagation: () => void;
+  }) => {
     const pressedKey = e.key.toUpperCase();
     if (pressedKey === 'ENTER') {
-      if (e.isComposing) {
+      if (e.nativeEvent.isComposing) {
         e.preventDefault();
+        e.stopPropagation();
       }
-      if (!e.isComposing && newMessage.trim()) {
+      if (!e.nativeEvent.isComposing && newMessage.trim()) {
         handleSendMessage();
+        e.preventDefault();
       }
     }
   };
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleEnterDown);
-    return () => {
-      window.removeEventListener('keydown', handleEnterDown);
-    };
-  }, []);
-*/
   return (
     <div className='custom-main-container'>
       <div className='w-full bg-slate-800 text-white'>
@@ -150,10 +143,11 @@ function Message() {
             <div className='w-full px-4 py-4 relative'>
               <input
                 type='text'
-                onChange={(e) => setNewMessage(e.target.value)}
                 value={newMessage}
                 placeholder='Message...'
                 className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full'
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={handleEnterDown}
               />
               {newMessage.trim() && (
                 <button className='absolute top-5 right-8 text-blue-500 hover:text-white' onClick={handleSendMessage}>

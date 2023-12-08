@@ -1,9 +1,10 @@
-import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import { DocumentData, DocumentReference, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStore } from '../../../store/store';
 import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
 import Bubble from './Bubble';
+import KidInfo from './KidInfo';
 
 interface MessageType {
   timestamp: number;
@@ -24,10 +25,20 @@ interface ChatType {
   };
 }
 
+interface KidType {
+  docId: string;
+  birthday: string;
+  chineseName: string;
+  firstName: string;
+  id: string;
+  lastName: string;
+  school: string;
+  photoURL?: string;
+}
 interface UserType {
   photoURL?: string;
   email?: string;
-  // kids?: DocumentReference<DocumentData, DocumentData>[];
+  kids?: DocumentReference<DocumentData, DocumentData>[];
   // ordersRef?: DocumentReference<DocumentData, DocumentData>[];
   displayName?: string | undefined;
   phoneNumber?: string;
@@ -38,10 +49,8 @@ interface UserType {
 function Messages() {
   const navigate = useNavigate();
   const { isLogin, user, setCurrentNav } = useStore();
-  // const chatRoomRef = useRef<HTMLDivElement>(null);
   const [chats, setChats] = useState<ChatType[]>();
   const [newMessage, setNewMessage] = useState<string>('');
-  const [userDetail, setUserDetail] = useState<UserType>();
   const [isInfoShow, setInfoShow] = useState<boolean>(false);
   const { id } = useParams();
   useEffect(() => {
@@ -68,7 +77,7 @@ function Messages() {
       behavior: 'smooth',
       top: chatBox.clientHeight * 30,
     });
-  }, [chats]);
+  }, [chats, id]);
 
   const calculateTimeToNow = (second: number) => {
     const now = new Date().getTime();
@@ -126,32 +135,48 @@ function Messages() {
     }
   };
 
+  const [userDetail, setUserDetail] = useState<UserType>();
+  const [userKids, setUserKids] = useState<KidType[]>();
+
   useEffect(() => {
     if (id) {
-      firestore.getDoc('users', id).then((result) => setUserDetail(result));
+      firestore
+        .getDoc('users', id)
+        .then((result) => {
+          if (result) {
+            setUserDetail(result);
+            return result.kids;
+          }
+        })
+        .then((kidsRefs) => {
+          const emptyArray: KidType[] = [];
+          kidsRefs.forEach((kidRef: DocumentReference<DocumentData, DocumentData>) => {
+            firestore.getDocByRef(kidRef).then((result) => emptyArray.push(result as KidType));
+          });
+          setTimeout(() => setUserKids(emptyArray), 200);
+        });
     }
   }, [id]);
 
-  /*
-  const handleEnterDown = (e) => {
+  const handleEnterDown = (e: {
+    key: string;
+    nativeEvent: { isComposing: boolean };
+    preventDefault: () => void;
+    stopPropagation: () => void;
+  }) => {
     const pressedKey = e.key.toUpperCase();
     if (pressedKey === 'ENTER') {
-      if (e.isComposing) {
+      if (e.nativeEvent.isComposing) {
         e.preventDefault();
+        e.stopPropagation();
       }
-      if (!e.isComposing && newMessage.trim()) {
+      if (!e.nativeEvent.isComposing && newMessage.trim()) {
         handleSendMessage();
+        e.preventDefault();
       }
     }
   };
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleEnterDown);
-    return () => {
-      window.removeEventListener('keydown', handleEnterDown);
-    };
-  }, []);
-*/
   return (
     <div className='custom-main-container'>
       <div className='flex bg-slate-800 text-white'>
@@ -166,7 +191,10 @@ function Messages() {
                     <Link
                       to={`/messages/${chat.userID}`}
                       key={chat.userID}
-                      onClick={() => setUnreadFalse(chat.userID)}
+                      onClick={() => {
+                        setUnreadFalse(chat.userID);
+                        setInfoShow(false);
+                      }}
                       className={`flex items-center px-5 py-2 cursor-pointer ${
                         id === chat.userID ? 'bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
                       }`}>
@@ -259,20 +287,23 @@ function Messages() {
                             })}
                         </div>
                         <div className='w-full px-4 py-4 relative'>
-                          <input
-                            type='text'
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            value={newMessage}
-                            placeholder='Message...'
-                            className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full'
-                          />
-                          {newMessage.trim() && (
-                            <button
-                              className='absolute top-5 right-8 text-blue-500 hover:text-white'
-                              onClick={handleSendMessage}>
-                              Send
-                            </button>
-                          )}
+                          <form action=''>
+                            <input
+                              type='text'
+                              value={newMessage}
+                              placeholder='Message...'
+                              className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full'
+                              onChange={(e) => setNewMessage(e.target.value)}
+                              onKeyDown={handleEnterDown}
+                            />
+                            {newMessage.trim() && (
+                              <button
+                                className='absolute top-5 right-8 text-blue-500 hover:text-white'
+                                onClick={handleSendMessage}>
+                                Send
+                              </button>
+                            )}
+                          </form>
                         </div>
                       </div>
                     );
@@ -291,8 +322,17 @@ function Messages() {
                   </div>
                   <div className='w-full text-sm mt-6 px-4 text-gray-200'>
                     Registration Date
-                    <br />
-                    <span className='text-gray-400'>{userDetail.registrationDate?.slice(0, 16)}</span>
+                    <div className='text-gray-400'>{userDetail.registrationDate?.slice(0, 16)}</div>
+                  </div>
+                </div>
+              )}
+              {userKids && userKids.length > 0 && (
+                <div className='w-full border-t border-gray-700'>
+                  <div className='w-full py-5 pl-5 text-lg font-semibold'>Kids</div>
+                  <div className='w-full'>
+                    {userKids.map((kid) => {
+                      return <KidInfo kid={kid} key={kid.docId} />;
+                    })}
                   </div>
                 </div>
               )}
@@ -309,7 +349,7 @@ function Messages() {
                     });
                   }
                 }}>
-                <div className='w-full my-4 pl-4 text-red-500 cursor-pointer'>Delete chat</div>
+                <div className='w-full my-4 pl-4 text-red-500 cursor-pointer'>Delete messages</div>
               </div>
             </div>
           </div>

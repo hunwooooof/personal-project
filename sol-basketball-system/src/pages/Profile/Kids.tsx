@@ -82,7 +82,7 @@ function Kids() {
         docId,
       });
       firestore
-        .updateDocArrayUnionByRef(userRef, ' kids', doc(db, 'students', docId))
+        .updateDocArrayUnionByRef(userRef, 'kids', doc(db, 'students', docId))
         .then(() => getUserProfile(userRef));
     }
     setNewKid(emptyNewKid);

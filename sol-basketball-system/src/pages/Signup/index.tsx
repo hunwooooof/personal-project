@@ -61,7 +61,7 @@ function Signup() {
             className='custom-signin-input'
             value={account.password}
             onChange={handleInputChange}
-          />{' '}
+          />
           <div className='flex flex-col'>
             <button
               type='submit'
