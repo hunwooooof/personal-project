@@ -175,10 +175,12 @@ function Profile() {
         </div>
       </div>
 
-      <div className='border-t border-gray-600 pb-14 pt-6 lg:pt-14'>
+      <div className='border-t border-gray-600 pt-4 lg:pt-8'>
         <PageTitle title='Kids' />
       </div>
-      <Kids />
+      <div className='mx-0 md:mx-12 lg:mx-20 flex items-center pt-8 pb-4'>
+        <Kids />
+      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react';
 import { useRef, useState } from 'react';
-import { Age, Cake, School } from '../../components/Icon';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { db, doc, firestore } from '../../utils/firestore';
@@ -70,48 +70,7 @@ function Card({ kid }: PropsType) {
     }
   };
 
-  const renderTrashIcon = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        viewBox='0 0 20 20'
-        fill='currentColor'
-        onClick={() => {
-          const userConfirmed = confirm('Are you sure you want to delete?');
-          if (userConfirmed && userRef) {
-            firestore.deleteDoc('students', kid.docId);
-            firestore.updateDocArrayRemoveByRef(userRef, 'kids', doc(db, 'students', kid.docId));
-            getUserProfile(userRef);
-          }
-        }}
-        className='w-6 h-6 inline-block text-slate-600 cursor-pointer hover:text-red-400'>
-        <path
-          fillRule='evenodd'
-          d='M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z'
-          clipRule='evenodd'
-        />
-      </svg>
-    );
-  };
-
-  const renderEditIcon = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        fill='none'
-        viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
-        onClick={() => setEdit(true)}
-        className='w-6 h-6 inline-block text-slate-600 cursor-pointer hover:text-blue-400'>
-        <path
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'
-        />
-      </svg>
-    );
-  };
+  const [isListShow, setListShow] = useState(false);
 
   const calculate_age = (birthday: string) => {
     const dateOfBirth = new Date(birthday);
@@ -121,34 +80,79 @@ function Card({ kid }: PropsType) {
   };
 
   return (
-    <div>
-      {!isEdit && (
-        <div
-          className='flex flex-col shrink-0 border border-gray-600 items-center w-56 h-96 p-3 rounded-sm'
-          key={kid.id}>
-          <div className='w-full flex justify-between mb-2'>
-            {renderTrashIcon()}
-            {renderEditIcon()}
+    <div className='mt-8'>
+      <div className='flex flex-col shrink-0 bg-white rounded-3xl items-center w-56 h-[270px] relative' key={kid.id}>
+        <div className='absolute right-2 top-2'>
+          <Dropdown
+            classNames={{
+              trigger: ['min-w-unit-0', 'bg-white', 'rounded-full', 'px-unit-0', 'w-9', 'h-8'],
+            }}>
+            <DropdownTrigger>
+              <Button>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  onClick={() => setListShow(!isListShow)}
+                  className='w-7 h-7 text-gray-600 cursor-pointer hover:scale-125 duration-150 hover:text-gray-400'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z'
+                  />
+                </svg>
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label='Static Actions'>
+              <DropdownItem key='edit' color='default' onClick={() => setEdit(true)}>
+                Edit file
+              </DropdownItem>
+              <DropdownItem
+                key='delete'
+                className='text-danger'
+                color='danger'
+                onClick={() => {
+                  const userConfirmed = confirm('Are you sure you want to delete?');
+                  if (userConfirmed && userRef) {
+                    firestore.deleteDoc('students', kid.docId);
+                    firestore.updateDocArrayRemoveByRef(userRef, 'kids', doc(db, 'students', kid.docId));
+                    getUserProfile(userRef);
+                  }
+                }}>
+                Delete file
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+        <img
+          src={kid.photoURL}
+          className='w-24 h-24 object-cover rounded-full my-2 absolute -top-14 border-2 border-white'
+        />
+        <div className='text-xl text-black mt-14 font-bold'>
+          {kid.firstName} {kid.lastName}
+        </div>
+        <div className=' text-black mb-4 font-semibold'>{kid.chineseName}</div>
+        <div className='pl-8 w-full py-1 text-sm'>
+          <div className='w-full mb-2 text-g text-black'>
+            <span className='inline-block w-5/12 text-gray-500'>ID</span>
+            {kid.id}
           </div>
-          <img src={kid.photoURL} className='w-24 h-24 object-cover rounded-full my-2' />
-          <div className='text-xl text-white mb-2'>
-            {kid.firstName} {kid.lastName}
-          </div>
-          <div className=' text-white mb-5'>{kid.chineseName}</div>
-          <div className='flex w-8/12 gap-1 mb-2 items-center text-gray-400'>
-            {Cake()}
-            {kid.birthday}
-          </div>
-          <div className='flex w-8/12 gap-1 mb-2 items-center text-gray-400'>
-            {School()}
+          <div className='w-full mb-2 text-g text-black'>
+            <span className='inline-block w-5/12 text-gray-500'>School</span>
             {kid.school}
           </div>
-          <div className='flex w-8/12 gap-1 items-center text-gray-400'>
-            {Age()}
-            {calculate_age(kid.birthday)} y
+          <div className='w-full mb-2 text-g text-black'>
+            <span className='inline-block w-5/12 text-gray-500'>Birthday</span>
+            {kid.birthday}
+          </div>
+          <div className='w-full text-g text-black'>
+            <span className='inline-block w-5/12 text-gray-500'>Age</span>
+            {calculate_age(kid.birthday)}
           </div>
         </div>
-      )}
+      </div>
       {isEdit && (
         <div className='flex flex-col gap-3 items-center w-56 h-96 shrink-0 border border-gray-600 px-5 py-3 rounded-sm'>
           <div className='relative w-full flex flex-col items-center'>
