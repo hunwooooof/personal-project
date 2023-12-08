@@ -19,7 +19,7 @@ interface KidType {
 function Kids() {
   const { userRef, kids, getUserProfile } = useStore();
   const [isAddingKid, setAddingKid] = useState(false);
-  const inputFileRef = useRef(null);
+  const inputKidFileRef = useRef(null);
   const inputFieldClass = 'rounded-sm px-2 w-full bg-slate-700';
   const defaultPhotoURL =
     'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/default-avatar-profile.png?alt=media&token=2ca8bd76-a025-4b94-a2f6-d5d39210289c';
@@ -106,7 +106,7 @@ function Kids() {
               type='file'
               id='fileInput'
               accept='image/*'
-              ref={inputFileRef}
+              ref={inputKidFileRef}
               className='hidden'
               onChange={handleImageChange}
             />

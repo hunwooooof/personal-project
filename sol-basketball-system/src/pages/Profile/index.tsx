@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit } from '../../components/Icon';
+import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { firestore } from '../../utils/firestore';
@@ -70,87 +71,114 @@ function Profile() {
   };
 
   return (
-    <div className='custom-main-container pt-16'>
-      <div className='border-b border-gray-600 pb-4'>
-        <div className='w-9/12 mx-auto'>
-          <div className='custom-page-title'>Profile</div>
-          {!isEditProfile && (
-            <div className='flex items-center justify-center gap-16 p-8'>
-              <img src={user.photoURL} className='w-24 h-24 object-cover rounded-full border bg-white' />
-              <div className='w-80 flex flex-col gap-2'>
-                <div className='flex gap-10 items-center'>
-                  <div className='text-gray-500 w-14'>Name</div>
-                  {user.displayName}
-                </div>
-                <div className='flex gap-10 items-center'>
-                  <div className='text-gray-500 w-14'>Phone</div>
-                  {user.phoneNumber}
-                </div>
-                <div className='flex gap-10 items-center'>
-                  <div className='text-gray-500 w-14'>Email</div>
-                  {user.email}
-                </div>
-              </div>
-              <span
-                onClick={() => {
-                  setEditProfile(true);
-                  setNewProfile({
-                    displayName: user?.displayName || '',
-                    phoneNumber: user?.phoneNumber || '',
-                    photoURL: user?.photoURL || '',
-                  });
-                }}>
-                {Edit('w-6 h-6 inline-block text-gray-400 cursor-pointer')}
-              </span>
-            </div>
-          )}
-          {isEditProfile && (
-            <div className='flex items-center justify-center gap-16 p-8'>
-              <div className='flex flex-col gap-4 items-center'>
-                <img
-                  src={newProfile.photoURL}
-                  className='w-24 h-24 object-cover rounded-full border border-slate-200 bg-white'
+    <div className='custom-main-container pt-6 lg:pt-14'>
+      <PageTitle title='Profile' />
+      <div className='mx-0 md:mx-12 lg:mx-20 flex items-center py-6'>
+        <div className='w-full relative pt-10 pb-6 pl-40 flex items-center my-4 bg-white rounded-3xl'>
+          <div className='absolute top-0 left-0 rounded-t-3xl bg-slate-400 w-full h-6' />
+          <div className='relative'>
+            <img
+              src={isEditProfile ? newProfile.photoURL : user.photoURL}
+              className='w-24 h-24 object-cover rounded-full border bg-white mr-20'
+            />
+            {isEditProfile && (
+              <div>
+                <input
+                  type='file'
+                  id='userPhoto'
+                  accept='image/*'
+                  ref={inputFileRef}
+                  onChange={handleImageChange}
+                  className='hidden'
                 />
-                <input type='file' accept='image/*' ref={inputFileRef} onChange={handleImageChange} className=' w-60' />
+                <label
+                  htmlFor='userPhoto'
+                  className='absolute left-0 top-0 w-24 h-24 rounded-full flex opacity-0 hover:opacity-100 hover:bg-gray-600/70 cursor-pointer items-center justify-center duration-150'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='w-6 h-6'>
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5'
+                    />
+                  </svg>
+                </label>
               </div>
-              <div className='flex flex-col justify-center gap-4 w-80 h-32'>
-                <div className='flex justify-between items-center'>
-                  <label className='text-gray-500'>Name</label>
-                  <input
-                    type='text'
-                    value={newProfile.displayName}
-                    id='displayName'
-                    onChange={handleChangeProfile}
-                    className='w-64 px-2 py-1 rounded-sm bg-slate-700'
-                  />
-                </div>
-                <div className='flex justify-between items-center'>
-                  <label className='text-gray-500'>Phone</label>
-                  <input
-                    type='text'
-                    value={newProfile.phoneNumber}
-                    id='phoneNumber'
-                    onChange={handleChangeProfile}
-                    className='w-64 px-2 py-1 rounded-sm bg-slate-700'
-                  />
-                </div>
-                <button
-                  onClick={() => {
-                    setEditProfile(false);
-                    handleSaveProfile();
-                  }}
-                  className='text-white px-3 py-1 border border-gray-600 rounded-sm hover:bg-slate-600'>
-                  Save
-                </button>
-              </div>
+            )}
+          </div>
+          <div className='flex gap-4 text-black'>
+            <div className='flex flex-col w-32 gap-2'>
+              <div className='px-2 text-gray-500'>Name</div>
+              {isEditProfile ? (
+                <input
+                  type='text'
+                  value={newProfile.displayName}
+                  id='displayName'
+                  onChange={handleChangeProfile}
+                  className='px-2 py-1 rounded-xl bg-slate-200'
+                />
+              ) : (
+                <div className='px-2 py-1'>{user.displayName}</div>
+              )}
+            </div>
+            <div className='flex flex-col w-32 gap-2'>
+              <div className='px-2 text-gray-500'>Phone</div>
+              {!isEditProfile &&
+                (user.phoneNumber?.length === 0 ? (
+                  <div className='px-2'>N/A</div>
+                ) : (
+                  <div className='px-2 py-1'>{user.phoneNumber}</div>
+                ))}
+              {isEditProfile && (
+                <input
+                  type='text'
+                  value={newProfile.phoneNumber}
+                  id='phoneNumber'
+                  onChange={handleChangeProfile}
+                  className='px-2 py-1 rounded-xl bg-slate-200'
+                />
+              )}
+            </div>
+            <div className='flex flex-col w-32 gap-2'>
+              <div className='text-gray-500 pl-6'>Email</div>
+              <div className='pl-6 py-1'>{user.email}</div>
+            </div>
+          </div>
+          {isEditProfile ? (
+            <button
+              onClick={() => {
+                setEditProfile(false);
+                handleSaveProfile();
+              }}
+              className='absolute right-4 bottom-4 text-center w-14 py-1 border rounded-xl hover:text-gray-600 hover:scale-110 duration-150 text-black'>
+              Save
+            </button>
+          ) : (
+            <div
+              className='absolute right-4 bottom-4 cursor-pointer w-14 py-1 border rounded-xl hover:text-gray-600 hover:scale-110 duration-150 text-black'
+              onClick={() => {
+                setEditProfile(true);
+                setNewProfile({
+                  displayName: user?.displayName || '',
+                  phoneNumber: user?.phoneNumber || '',
+                  photoURL: user?.photoURL || '',
+                });
+              }}>
+              {Edit('w-6 h-6 mx-auto')}
             </div>
           )}
         </div>
       </div>
-      <div className='w-9/12 mx-auto'>
-        <div className='custom-page-title mt-8'>Kids</div>
-        <Kids />
+
+      <div className='border-t border-gray-600 pb-14 pt-6 lg:pt-14'>
+        <PageTitle title='Kids' />
       </div>
+      <Kids />
     </div>
   );
 }
