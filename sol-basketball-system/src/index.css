@@ -26,3 +26,7 @@ html {
 .isScheduledClass {
   @apply px-12 py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider cursor-pointer text-black;
 }
+
+.kidCard {
+  @apply mt-8 flex flex-col shrink-0 rounded-3xl relative items-center w-60 h-[320px];
+}

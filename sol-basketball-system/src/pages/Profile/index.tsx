@@ -120,7 +120,7 @@ function Profile() {
                   value={newProfile.displayName}
                   id='displayName'
                   onChange={handleChangeProfile}
-                  className='px-2 py-1 rounded-xl bg-slate-200'
+                  className='px-2 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200'
                 />
               ) : (
                 <div className='px-2 py-1'>{user.displayName}</div>
@@ -140,7 +140,7 @@ function Profile() {
                   value={newProfile.phoneNumber}
                   id='phoneNumber'
                   onChange={handleChangeProfile}
-                  className='px-2 py-1 rounded-xl bg-slate-200'
+                  className='px-2 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200'
                 />
               )}
             </div>
@@ -155,12 +155,12 @@ function Profile() {
                 setEditProfile(false);
                 handleSaveProfile();
               }}
-              className='absolute right-4 bottom-4 text-center w-14 py-1 border rounded-xl hover:text-gray-600 hover:scale-110 duration-150 text-black'>
+              className='absolute right-4 bottom-4 text-center w-14 py-1 border rounded-xl hover:text-zinc-500 hover:scale-110 duration-150 text-zinc-300'>
               Save
             </button>
           ) : (
             <div
-              className='absolute right-4 bottom-4 cursor-pointer w-14 py-1 border rounded-xl hover:text-gray-600 hover:scale-110 duration-150 text-black'
+              className='absolute right-4 bottom-4 cursor-pointer w-14 py-1 border rounded-xl hover:text-zinc-300 hover:scale-110 duration-150 text-zinc-200'
               onClick={() => {
                 setEditProfile(true);
                 setNewProfile({
@@ -174,11 +174,10 @@ function Profile() {
           )}
         </div>
       </div>
-
       <div className='border-t border-gray-600 pt-4 lg:pt-8'>
         <PageTitle title='Kids' />
       </div>
-      <div className='mx-0 md:mx-12 lg:mx-20 flex items-center pt-8 pb-4'>
+      <div className='mx-0 md:mx-12 lg:mx-20 flex items-center pt-4 pb-4'>
         <Kids />
       </div>
     </div>

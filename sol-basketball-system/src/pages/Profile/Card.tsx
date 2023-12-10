@@ -1,4 +1,4 @@
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react';
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input } from '@nextui-org/react';
 import { useRef, useState } from 'react';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
@@ -21,7 +21,6 @@ function Card({ kid }: PropsType) {
   const { userRef, getUserProfile } = useStore();
   const [isEdit, setEdit] = useState(false);
   const inputFileRef = useRef(null);
-  const inputFieldClass = 'rounded-sm px-2 w-full bg-slate-700';
 
   const defaultKid = {
     firstName: kid.firstName,
@@ -80,12 +79,12 @@ function Card({ kid }: PropsType) {
   };
 
   return (
-    <div className='mt-8'>
-      <div className='flex flex-col shrink-0 bg-white rounded-3xl items-center w-56 h-[270px] relative' key={kid.id}>
-        <div className='absolute right-2 top-2'>
+    <div className='kidCard bg-white'>
+      <div className='absolute right-1 top-2'>
+        {!isEdit && (
           <Dropdown
             classNames={{
-              trigger: ['min-w-unit-0', 'bg-white', 'rounded-full', 'px-unit-0', 'w-9', 'h-8'],
+              trigger: ['min-w-unit-0', 'bg-white', 'rounded-full', 'px-unit-0', 'w-8', 'h-8'],
             }}>
             <DropdownTrigger>
               <Button>
@@ -96,7 +95,7 @@ function Card({ kid }: PropsType) {
                   strokeWidth={1.5}
                   stroke='currentColor'
                   onClick={() => setListShow(!isListShow)}
-                  className='w-7 h-7 text-gray-600 cursor-pointer hover:scale-125 duration-150 hover:text-gray-400'>
+                  className='w-6 h-6 text-gray-300 cursor-pointer hover:scale-125 duration-150 hover:text-gray-400'>
                   <path
                     strokeLinecap='round'
                     strokeLinejoin='round'
@@ -125,141 +124,197 @@ function Card({ kid }: PropsType) {
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
+        )}
+      </div>
+      <img
+        src={isEdit ? newKid.photoURL : kid.photoURL}
+        className='w-24 h-24 object-cover rounded-full my-2 absolute -top-14 border-2 border-white'
+      />
+      {isEdit && (
+        <div>
+          <input
+            type='file'
+            id='fileInput'
+            accept='image/*'
+            ref={inputFileRef}
+            onChange={handleImageChange}
+            className='hidden'
+          />
+          <label
+            htmlFor='fileInput'
+            className='absolute -top-14 w-24 h-24 my-2 left-[72px] border-2 border-white rounded-full flex opacity-0 hover:opacity-100 hover:bg-gray-600/70 cursor-pointer items-center justify-center duration-150'>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={1.5}
+              stroke='currentColor'
+              className='w-6 h-6'>
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5'
+              />
+            </svg>
+          </label>
         </div>
-        <img
-          src={kid.photoURL}
-          className='w-24 h-24 object-cover rounded-full my-2 absolute -top-14 border-2 border-white'
-        />
+      )}
+      {!isEdit && (
         <div className='text-xl text-black mt-14 font-bold'>
           {kid.firstName} {kid.lastName}
         </div>
-        <div className=' text-black mb-4 font-semibold'>{kid.chineseName}</div>
-        <div className='pl-8 w-full py-1 text-sm'>
-          <div className='w-full mb-2 text-g text-black'>
-            <span className='inline-block w-5/12 text-gray-500'>ID</span>
-            {kid.id}
-          </div>
-          <div className='w-full mb-2 text-g text-black'>
-            <span className='inline-block w-5/12 text-gray-500'>School</span>
-            {kid.school}
-          </div>
-          <div className='w-full mb-2 text-g text-black'>
-            <span className='inline-block w-5/12 text-gray-500'>Birthday</span>
-            {kid.birthday}
-          </div>
-          <div className='w-full text-g text-black'>
-            <span className='inline-block w-5/12 text-gray-500'>Age</span>
+      )}
+      {isEdit && (
+        <div className='flex items-center gap-1 mt-14 px-4'>
+          <Input
+            isRequired
+            size='sm'
+            label='First name'
+            type='text'
+            id='firstName'
+            classNames={{
+              inputWrapper: ['h-9', 'py-0', 'px-2'],
+            }}
+            value={newKid.firstName}
+            onChange={handleChangeKidProfile}
+          />
+          <Input
+            isRequired
+            size='sm'
+            label='Last name'
+            type='text'
+            id='lastName'
+            classNames={{
+              inputWrapper: ['h-9', 'py-0', 'px-2'],
+            }}
+            value={newKid.lastName}
+            onChange={handleChangeKidProfile}
+          />
+        </div>
+      )}
+      {!isEdit && <div className=' text-black mb-4 font-semibold'>{kid.chineseName}</div>}
+      {isEdit && (
+        <Input
+          isRequired
+          size='sm'
+          label='Chinese name'
+          type='text'
+          id='chineseName'
+          className='my-2'
+          classNames={{
+            inputWrapper: ['h-9', 'py-0', 'mx-4', 'w-auto'],
+          }}
+          value={newKid.chineseName}
+          onChange={handleChangeKidProfile}
+        />
+      )}
+      <div className={`flex flex-col w-full items-center text-sm ${isEdit ? 'px-4' : 'px-8 mt-4 gap-2'}`}>
+        <div
+          className={`w-full flex items-center mb-2 text-black ${isEdit ? 'justify-between' : 'justify-start gap-2'}`}>
+          <span className='inline-block w-4/12 mr-2 text-gray-500'>ID</span>
+          {!isEdit && kid.id}
+          {isEdit && (
+            <Input
+              isRequired
+              size='sm'
+              type='text'
+              id='id'
+              className='inline-block w-7/12'
+              classNames={{
+                inputWrapper: ['h-6', 'py-0', 'px-2'],
+              }}
+              value={newKid.id}
+              onChange={handleChangeKidProfile}
+            />
+          )}
+        </div>
+        <div
+          className={`w-full flex items-center mb-2 text-black ${isEdit ? 'justify-between' : 'justify-start gap-2'}`}>
+          <span className='inline-block w-4/12 mr-2 text-gray-500'>School</span>
+          {!isEdit && kid.school}
+          {isEdit && (
+            <Input
+              isRequired
+              size='sm'
+              type='text'
+              id='school'
+              className='inline-block w-7/12'
+              classNames={{
+                inputWrapper: ['h-6', 'py-0', 'px-2'],
+              }}
+              value={newKid.school}
+              onChange={handleChangeKidProfile}
+            />
+          )}
+        </div>
+        <div
+          className={`w-full flex items-center mb-2 text-black ${isEdit ? 'justify-between' : 'justify-start gap-2'}`}>
+          <span className='inline-block w-4/12 mr-2 text-gray-500'>Birthday</span>
+          {!isEdit && kid.birthday}
+          {isEdit && (
+            <Input
+              isRequired
+              size='sm'
+              type='date'
+              id='birthday'
+              className='inline-block w-7/12'
+              classNames={{
+                inputWrapper: ['h-6', 'py-0', 'px-2'],
+              }}
+              value={newKid.birthday}
+              onChange={handleChangeKidProfile}
+            />
+          )}
+        </div>
+        {!isEdit && (
+          <div className='w-full flex items-center mb-2 text-black justify-start gap-2'>
+            <span className='inline-block w-4/12 mr-2 text-gray-500'>Age</span>
             {calculate_age(kid.birthday)}
           </div>
-        </div>
-      </div>
-      {isEdit && (
-        <div className='flex flex-col gap-3 items-center w-56 h-96 shrink-0 border border-gray-600 px-5 py-3 rounded-sm'>
-          <div className='relative w-full flex flex-col items-center'>
-            <img src={newKid.photoURL} className='w-16 h-16 object-cover rounded-full mb-1' />
-            <input
-              type='file'
-              id='fileInput'
-              accept='image/*'
-              ref={inputFileRef}
-              className='hidden'
-              onChange={handleImageChange}
-            />
-            <label
-              htmlFor='fileInput'
-              className='absolute right-12 bottom-0 p-1 text-white rounded-md cursor-pointer text-sm hover:scale-125 duration-150'>
+        )}
+        {isEdit && (
+          <div className='w-full flex mt-2 justify-between items-center'>
+            <Button
+              isIconOnly
+              color='default'
+              aria-label='cancel'
+              className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
+              onClick={() => {
+                setEdit(false);
+                setNewKid(defaultKid);
+              }}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'
                 viewBox='0 0 24 24'
                 strokeWidth={1.5}
                 stroke='currentColor'
-                className='w-3 h-3'>
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5'
-                />
+                className='w-6 h-6'>
+                <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
               </svg>
-            </label>
-          </div>
-          <input
-            type='text'
-            name='firstName'
-            id='firstName'
-            placeholder='First Name *'
-            className={inputFieldClass}
-            value={newKid.firstName}
-            onChange={handleChangeKidProfile}
-          />
-          <input
-            type='text'
-            name='lastName'
-            id='lastName'
-            placeholder='Last Name *'
-            className={inputFieldClass}
-            value={newKid.lastName}
-            onChange={handleChangeKidProfile}
-          />
-          <input
-            type='text'
-            name='chineseName'
-            id='chineseName'
-            placeholder='Chinese Name *'
-            className={inputFieldClass}
-            value={newKid.chineseName}
-            onChange={handleChangeKidProfile}
-          />
-          <div>
-            <label htmlFor='birthday' className='text-gray-400 text-sm self-start'>
-              Birthday
-            </label>
-            <input
-              type='date'
-              name='birthday'
-              id='birthday'
-              className={inputFieldClass}
-              value={newKid.birthday}
-              onChange={handleChangeKidProfile}
-            />
-          </div>
-          <input
-            type='text'
-            name='id'
-            id='id'
-            placeholder='ID (A123456789) *'
-            className={inputFieldClass}
-            value={newKid.id}
-            onChange={handleChangeKidProfile}
-          />
-          <input
-            type='text'
-            name='school'
-            id='school'
-            placeholder='School *'
-            className={inputFieldClass}
-            value={newKid.school}
-            onChange={handleChangeKidProfile}
-          />
-          <div className='flex gap-2 items-center mt-1 text-white'>
-            <button
-              className='px-1 rounded-full bg-green-600 hover:bg-slate-700  text-md w-20 text-center'
+            </Button>
+            <Button
+              isIconOnly
+              color='success'
+              aria-label='save'
+              className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
               onClick={() => {
                 setEdit(false);
                 handleSaveKid();
               }}>
-              Save
-            </button>
-            <button
-              className='px-1 rounded-full bg-red-500 hover:bg-slate-700 text-md w-20 text-center'
-              onClick={() => {
-                setEdit(false);
-              }}>
-              Cancel
-            </button>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                fill='none'
+                viewBox='0 0 24 24'
+                strokeWidth={1.5}
+                stroke='currentColor'
+                className='w-5 h-5'>
+                <path strokeLinecap='round' strokeLinejoin='round' d='M4.5 12.75l6 6 9-13.5' />
+              </svg>
+            </Button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
