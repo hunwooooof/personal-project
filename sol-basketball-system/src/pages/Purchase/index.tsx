@@ -1,3 +1,4 @@
+import { Avatar, Button, Card, Divider, Radio, RadioGroup, Select, SelectItem, Tooltip } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle } from '../../components/Icon';
@@ -84,14 +85,16 @@ function Purchase() {
       <PageTitle title='Purchase' />
       <div className='mx-0 md:mx-12 lg:mx-20 py-8'>
         <div className='flex mb-8 items-center'>
-          <label className='px-8'>Kid</label>
-          {kids.length > 0 && (
-            <select
-              name='kid'
-              id='kid'
-              className='ml-2 w-40 px-2 py-1 bg-slate-700 rounded-sm'
+          <h4 className='w-28'>Kid</h4>
+          <div className='w-60'>
+            <Select
+              aria-label='Kid'
+              className='max-w-md text-black'
+              placeholder='Select a kid'
+              id='type'
+              size='sm'
               onChange={(e) => {
-                if (e.target.value === '-1') {
+                if (e.target.value === '') {
                   setOrder({
                     ...order,
                     kid: {
@@ -112,74 +115,60 @@ function Purchase() {
                   });
                 }
               }}>
-              <option value='-1'>Select a kid</option>
               {kids.map((kid, index) => (
-                <option value={index} key={kid.docId}>
+                <SelectItem
+                  key={index}
+                  startContent={<Avatar alt={kid.firstName} className='w-6 h-6' src={kid.photoURL} />}>
                   {kid.firstName}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-          )}
-          {kids.length === 0 && <div className='text-gray-600 mx-2'>Add a kid</div>}
-          {PlusCircle('w-6 h-6 cursor-pointer text-gray-400 ml-3', () => navigate('/profile'))}
+            </Select>
+          </div>
+          <Tooltip showArrow={true} content='Add a kid' placement='right'>
+            {PlusCircle('w-6 h-6 cursor-pointer text-gray-400 ml-3', () => navigate('/profile'))}
+          </Tooltip>
         </div>
         <div className='flex mb-16'>
-          <h4 className='px-8'>Plan</h4>
+          <h4 className='w-28'>Plan</h4>
           <div className='w-[736px] overflow-x-auto flex flex-wrap justify-center gap-8'>
             {plans.map((plan) => {
               return (
-                <div
-                  onClick={() => {
+                <Card
+                  isHoverable={true}
+                  isPressable={true}
+                  onPress={() => {
                     setSelectPlanId(plan.id);
                     setOrder({ ...order, price: plan.price, plan: plan.id });
                   }}
-                  className={`w-40 rounded-sm border border-gray-600 cursor-pointer ${
-                    selectPlanId === plan.id
-                      ? 'bg-slate-500 border-slate-400 hover:bg-slate-500 hover:border-slate-400'
-                      : 'bg-slate-700 hover:bg-slate-600 hover:border-slate-500'
+                  className={`w-40 cursor-pointer ${
+                    selectPlanId === plan.id && 'border-4 border-blue-500 hover:border-blue-500'
                   }`}
                   key={plan.id}>
-                  <div className='text-center py-3 font-bold'>{plan.title}</div>
-                  <div className='text-center py-5 rounded-b-sm bg-slate-800 text-3xl'>{plan.priceText}</div>
-                </div>
+                  <div className='w-full text-center py-3 font-bold'>{plan.title}</div>
+                  <Divider />
+                  <div className='w-full text-center py-5 rounded-b-sm text-3xl'>{plan.priceText}</div>
+                </Card>
               );
             })}
           </div>
         </div>
-      </div>
-      <div className='border-t border-gray-600'>
-        <div className='text-xl font-bold my-8 w-10/12 mx-auto'>Payment Method</div>
-        <div className='w-10/12 mx-auto pb-20'>
-          <div id='payment-selection' className='pl-8 flex flex-col gap-3'>
-            <div className='flex items-center'>
-              <input
-                type='radio'
-                name='payment'
-                className='mr-3'
-                defaultChecked
-                onClick={() => setOrder({ ...order, method: 'cash' })}
-              />
-              By Cash
-            </div>
-            <div className='flex items-center'>
-              <input
-                type='radio'
-                name='payment'
-                className='mr-3'
-                onClick={() => setOrder({ ...order, method: 'tran' })}
-              />
-              Online Banking Transfer
-              <span>Account: (808) 0624-979-171404</span>
-            </div>
-          </div>
-          <button
-            type='submit'
-            className='ml-8 mt-8 border border-gray-600 rounded-sm text-white w-28 text-center py-1 hover:bg-slate-700 disabled:text-gray-700'
-            disabled={order.kid.docId.length === 0}
-            onClick={handleSubmitOrder}>
-            Confirm
-          </button>
+        <div className='flex mb-16'>
+          <h4 className='w-28'>Payment</h4>
+          <RadioGroup
+            aria-label='Payment'
+            defaultValue='cash'
+            onChange={(e) => setOrder({ ...order, method: e.target.value })}>
+            <Radio value='cash' className='mb-2'>
+              <span className='text-white'>By Cash</span>
+            </Radio>
+            <Radio value='tran' description='Account: (808) 0624-979-171404'>
+              <span className='text-white'>Online Banking Transfer</span>
+            </Radio>
+          </RadioGroup>
         </div>
+        <Button isDisabled={order.kid.docId.length === 0} color='primary' onClick={handleSubmitOrder}>
+          Confirm
+        </Button>
       </div>
     </div>
   );
