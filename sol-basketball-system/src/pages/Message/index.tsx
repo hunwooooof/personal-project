@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { db, doc, firestore, onSnapshot } from '../../utils/firestore';
+import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
 import Bubble from './Bubble';
 
 interface MessageType {
@@ -27,7 +28,6 @@ interface ChatType {
 function Message() {
   const navigate = useNavigate();
   const { isLogin, user, userID, setCurrentNav } = useStore();
-  // const chatRoomRef = useRef<HTMLDivElement>(null);
   const [chat, setChat] = useState<ChatType>();
   const [newMessage, setNewMessage] = useState<string>('');
   const adminPhoto =
@@ -36,7 +36,6 @@ function Message() {
     if (userID) {
       const unsubscribe = onSnapshot(doc(db, 'messages', userID), (docSnap) => {
         setChat(docSnap.data() as ChatType);
-        console.log(docSnap.data());
       });
       return () => unsubscribe();
     }
@@ -58,7 +57,7 @@ function Message() {
   }, [chat]);
 
   const sortByTimestamp = (a: MessageType, b: MessageType) => a.timestamp - b.timestamp;
-
+  const sortedMessages = chat?.messages.sort(sortByTimestamp);
   const handleSendMessage = () => {
     const currentTimestamp = new Date().getTime();
     if (userID) {
@@ -116,8 +115,38 @@ function Message() {
               <div className='text-center mt-2 font-bold'>admin</div>
             </div>
             {chat &&
-              chat.messages.sort(sortByTimestamp).map((message) => {
-                return <Bubble message={message} key={message.timestamp} />;
+              sortedMessages?.map((message, index) => {
+                const date = formatTimestampToYYYYMMDD(message.timestamp);
+                const showDate = formatTimestampToYYYYslashMMslashDD(message.timestamp);
+
+                const lastTimestamp = sortedMessages[index - 1]?.timestamp;
+                const lastDate = formatTimestampToYYYYMMDD(lastTimestamp);
+
+                const now = new Date().getTime();
+                const today = formatTimestampToYYYYMMDD(now);
+
+                let dateBubble = undefined;
+                if (lastDate === 'NaNNaNNaN' && date !== today) {
+                  dateBubble = showDate;
+                } else if (Number(date) > Number(lastDate)) {
+                  dateBubble = showDate;
+                }
+                if (Number(today) - Number(date) === 1 && date !== lastDate) {
+                  dateBubble = 'Yesterday';
+                } else if (date === today && date !== lastDate) {
+                  dateBubble = 'Today';
+                }
+
+                return (
+                  <>
+                    {dateBubble && (
+                      <div className='mt-2 px-3 py-1 scale-75 mx-auto text-center text-sm text-gray-500 bg-slate-900 rounded-full'>
+                        {dateBubble}
+                      </div>
+                    )}
+                    <Bubble message={message} key={message.timestamp} />
+                  </>
+                );
               })}
           </div>
           {!chat && (

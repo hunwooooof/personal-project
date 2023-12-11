@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStore } from '../../../store/store';
 import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
+import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../../utils/helpers';
 import Bubble from './Bubble';
 import KidInfo from './KidInfo';
 
@@ -282,8 +283,38 @@ function Messages() {
                             <div className='text-center mt-2 font-bold'>{currentChat.userName}</div>
                           </div>
                           {currentChat.messages.length > 0 &&
-                            currentChat.messages.sort(sortByTimestamp).map((message) => {
-                              return <Bubble message={message} key={message.timestamp} />;
+                            currentChat.messages.sort(sortByTimestamp).map((message, index) => {
+                              const date = formatTimestampToYYYYMMDD(message.timestamp);
+                              const showDate = formatTimestampToYYYYslashMMslashDD(message.timestamp);
+
+                              const lastTimestamp = currentChat.messages.sort(sortByTimestamp)[index - 1]?.timestamp;
+                              const lastDate = formatTimestampToYYYYMMDD(lastTimestamp);
+
+                              const now = new Date().getTime();
+                              const today = formatTimestampToYYYYMMDD(now);
+
+                              let dateBubble = undefined;
+                              if (lastDate === 'NaNNaNNaN' && date !== today) {
+                                dateBubble = showDate;
+                              } else if (Number(date) > Number(lastDate)) {
+                                dateBubble = showDate;
+                              }
+                              if (Number(today) - Number(date) === 1 && date !== lastDate) {
+                                dateBubble = 'Yesterday';
+                              } else if (date === today && date !== lastDate) {
+                                dateBubble = 'Today';
+                              }
+
+                              return (
+                                <>
+                                  {dateBubble && (
+                                    <div className='mt-2 px-3 py-1 scale-75 mx-auto text-center text-sm text-gray-500 bg-slate-900 rounded-full'>
+                                      {dateBubble}
+                                    </div>
+                                  )}
+                                  <Bubble message={message} key={message.timestamp} />
+                                </>
+                              );
                             })}
                         </div>
                         <div className='w-full px-4 py-4 relative'>
