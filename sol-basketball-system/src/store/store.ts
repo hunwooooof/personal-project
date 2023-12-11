@@ -137,7 +137,7 @@ export const useStore = create<StoreState>((set) => ({
       }
     });
   },
-  setLogOut: () => {
+  setLogOut: async () => {
     firebaseAuth.signOut(() => {
       set(() => ({ isLogin: false }));
       set(() => ({ user: {} }));

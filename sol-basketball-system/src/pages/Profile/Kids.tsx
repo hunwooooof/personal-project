@@ -99,12 +99,10 @@ function Kids() {
           return <Card kid={kid as KidType} key={kid.docId} />;
         })}
       {!isAddingKid && (
-        <div className='kidCard border-4 border-gray-700 border-dashed'>
-          <div
-            className='my-auto font-bold text-gray-700 cursor-pointer hover:scale-125 hover:text-white duration-150'
-            onClick={() => setAddingKid(true)}>
-            Add a kid
-          </div>
+        <div
+          className='kidCard border-4 border-gray-700 border-dashed text-gray-700 cursor-pointer hover:text-white hover:border-white duration-150'
+          onClick={() => setAddingKid(true)}>
+          <div className='my-auto font-bold'>Add a kid</div>
         </div>
       )}
       {isAddingKid && (

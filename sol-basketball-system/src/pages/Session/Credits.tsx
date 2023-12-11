@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PageTitle from '../../components/PageTitle';
 import { firestore } from '../../utils/firestore';
 
 interface PropsType {
@@ -38,8 +39,11 @@ function Credits({ currentKidId }: PropsType) {
 
   return (
     <div className='border-b border-gray-600'>
-      <div className='w-10/12 mx-auto custom-page-title mt-8'>Credits</div>
-      <div className='w-10/12 mx-auto flex justify-center gap-11 py-6 mb-6'>
+      <div className='border-t border-gray-600 pt-4 lg:pt-8'>
+        <PageTitle title='Credits' />
+      </div>
+
+      <div className='flex justify-center gap-11 py-6 mb-6'>
         <div className='flex flex-col w-52 justify-center items-center'>
           <div className='text-5xl mb-3'>{credit.all}</div>
           <div className='text-gray-500'>Session Credits Purchased</div>

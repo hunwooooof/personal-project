@@ -1,5 +1,6 @@
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input } from '@nextui-org/react';
 import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { db, doc, firestore } from '../../utils/firestore';
@@ -21,13 +22,14 @@ function Card({ kid }: PropsType) {
   const { userRef, getUserProfile } = useStore();
   const [isEdit, setEdit] = useState(false);
   const inputFileRef = useRef(null);
+  const { docId, id } = kid;
 
   const defaultKid = {
     firstName: kid.firstName,
     lastName: kid.lastName,
     chineseName: kid.chineseName,
     birthday: kid.birthday,
-    id: kid.id,
+    id,
     school: kid.school,
     photoURL: kid.photoURL,
   };
@@ -55,7 +57,6 @@ function Card({ kid }: PropsType) {
   };
 
   const handleSaveKid = () => {
-    const { docId } = kid;
     const unitTime = Date.now();
     if (newProfileImg && userRef) {
       const storageReferenceRoot = `users-photo/${unitTime}${newProfileImg.name}`;
@@ -79,12 +80,13 @@ function Card({ kid }: PropsType) {
   };
 
   return (
-    <div className='kidCard bg-white'>
+    <Link to={`/session/${id}`} className='kidCard bg-white'>
       <div className='absolute right-1 top-2'>
         {!isEdit && (
           <Dropdown
+            className='z-10'
             classNames={{
-              trigger: ['min-w-unit-0', 'bg-white', 'rounded-full', 'px-unit-0', 'w-8', 'h-8'],
+              trigger: ['min-w-unit-0', 'bg-white', 'rounded-full', 'px-unit-0', 'w-8', 'h-8', 'hover:bg-gray-100'],
             }}>
             <DropdownTrigger>
               <Button>
@@ -94,7 +96,11 @@ function Card({ kid }: PropsType) {
                   viewBox='0 0 24 24'
                   strokeWidth={1.5}
                   stroke='currentColor'
-                  onClick={() => setListShow(!isListShow)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setListShow(!isListShow);
+                  }}
                   className='w-6 h-6 text-gray-300 cursor-pointer hover:scale-125 duration-150 hover:text-gray-400'>
                   <path
                     strokeLinecap='round'
@@ -279,7 +285,9 @@ function Card({ kid }: PropsType) {
               color='default'
               aria-label='cancel'
               className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
                 setEdit(false);
                 setNewKid(defaultKid);
               }}>
@@ -298,7 +306,9 @@ function Card({ kid }: PropsType) {
               color='success'
               aria-label='save'
               className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
                 setEdit(false);
                 handleSaveKid();
               }}>
@@ -315,7 +325,7 @@ function Card({ kid }: PropsType) {
           </div>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
 

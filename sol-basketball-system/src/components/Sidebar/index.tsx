@@ -1,9 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/sol-logo.png';
 import { useStore } from '../../store/store';
 
 function Sidebar() {
-  const { currentNav, setCurrentNav, isLogin, user, kids, setLogOut } = useStore();
+  const navigate = useNavigate();
+  const { currentNav, setCurrentNav, isLogin, user, setLogOut } = useStore();
   const activeNavClass = 'flex items-center gap-2 text-lg text-white px-2 lg:px-0 lg:pl-3 py-2';
   const normalNavClass =
     'flex items-center gap-2 text-lg text-slate-500 rounded-xl hover:bg-slate-800 px-2 lg:px-0 lg:pl-3 py-2';
@@ -29,7 +30,7 @@ function Sidebar() {
             <path
               strokeLinecap='round'
               strokeLinejoin='round'
-              d='M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5'
+              d='M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z'
             />
           </svg>
           <span className='hidden lg:inline'>Schedules</span>
@@ -75,7 +76,7 @@ function Sidebar() {
               </svg>
               <span className='hidden lg:inline'>Profile</span>
             </Link>
-            {kids.length > 0 && (
+            {/* {kids.length > 0 && (
               <Link
                 to='/session'
                 id='session'
@@ -96,7 +97,7 @@ function Sidebar() {
                 </svg>
                 <span className='hidden lg:inline'>Session</span>
               </Link>
-            )}
+            )} */}
             <Link
               to='/purchase'
               id='purchase'
@@ -286,7 +287,13 @@ function Sidebar() {
         )}
         {isLogin && (
           <button
-            onClick={setLogOut}
+            onClick={() => {
+              setLogOut();
+              setTimeout(() => {
+                navigate('/login');
+                setCurrentNav('');
+              }, 170);
+            }}
             className='mt-auto text-gray-500 border border-gray-600 lg:w-24 rounded-2xl fixed lg:left-5 bottom-5 px-2 lg:px-0 py-1 shadow-md hover:text-white'>
             <span className='hidden lg:inline'>Log out</span>
             <svg

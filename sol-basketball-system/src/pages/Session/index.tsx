@@ -1,20 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Tab, Tabs } from '@nextui-org/react';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import Attendance from './Attendance';
 import Credits from './Credits';
 
 function Session() {
-  const navigate = useNavigate();
-  const { setCurrentNav, kids, isLogin } = useStore();
-  const [currentKidIndex, setCurrentKidIndex] = useState(0);
+  const { id } = useParams();
+  const { kids, isLogin } = useStore();
 
   useEffect(() => {
-    if (!isLogin || kids.length === 0) {
-      navigate('/');
-      setCurrentNav('schedules');
-    }
-  }, [isLogin]);
+    window.scrollTo({
+      behavior: 'smooth',
+      top: 0,
+    });
+  }, [id]);
 
   const calculate_age = (birthday: string) => {
     const dateOfBirth = new Date(birthday);
@@ -24,55 +25,53 @@ function Session() {
   };
 
   return (
-    <div className='custom-main-container py-14'>
-      <div className='w-10/12 mx-auto'>
-        <div className='flex justify-between items-center mb-6'>
-          <div className='custom-page-title'>Session</div>
-          <div className='flex text-lg font-bold items-center border border-gray-600'>
-            {kids.map((kid, index) => {
-              return (
-                <div
-                  key={kid.docId}
-                  onClick={() => setCurrentKidIndex(index)}
-                  className={`text-center rounded-sm py-1 px-4 cursor-pointer hover:bg-gray-100 ${
-                    index === currentKidIndex ? 'bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
-                  }`}>
-                  {kid.firstName}
-                </div>
-              );
-            })}
-          </div>
+    <div className='custom-main-container'>
+      <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14'>
+        <PageTitle title='Student' />
+        <div className='w-36 flex flex-col mr-0 md:mr-12 lg:mr-20'>
+          <Tabs aria-label='kid' selectedKey={id}>
+            {kids.map((kid) => (
+              <Tab key={kid.id} title={kid.firstName} href={`/session/${kid.id}`} />
+            ))}
+          </Tabs>
         </div>
       </div>
-      {kids[currentKidIndex] && (
-        <>
-          <div className='border-b border-gray-600 pb-8'>
-            <div className='w-10/12 mx-auto mt-6 flex gap-16 items-center pl-16 py-3'>
-              <img src={kids[currentKidIndex]?.photoURL} className='w-20 h-20 object-cover bg-white rounded-full' />
-              <div className='w-36'>
-                <div className='text-gray-400 font-bold mb-2'>Name</div>
-                <div className='text-lg'>
-                  {kids[currentKidIndex].firstName} {kids[currentKidIndex].lastName}
+      {kids.map((kid) => {
+        if (kid.id === id) {
+          return (
+            <div key={kid.id}>
+              <div className='border-b border-gray-600 pb-4'>
+                <div className='mx-0 md:mx-12 lg:mx-20 flex items-center py-6 text-black'>
+                  <div className='w-full relative pt-10 pb-6 pl-40 flex items-center my-4 bg-white rounded-3xl'>
+                    <div className='absolute top-0 left-0 rounded-t-3xl bg-gray-300 w-full h-6' />
+                    <img src={kid.photoURL} className='w-24 h-24 object-cover rounded-full border bg-white mr-20' />
+                    <div className='flex flex-col w-32 gap-2'>
+                      <div className='text-gray-500'>Name</div>
+                      <div>
+                        {kid.firstName} {kid.lastName}
+                      </div>
+                    </div>
+                    <div className='flex flex-col w-32 gap-2'>
+                      <div className='text-gray-500'>Age</div>
+                      <div>{calculate_age(kid.birthday)}</div>
+                    </div>
+                    <div className='flex flex-col w-32 gap-2'>
+                      <div className='text-gray-500'>School</div>
+                      <div>{kid.school}</div>
+                    </div>
+                    <div className='flex flex-col w-32 gap-2'>
+                      <div className='text-gray-500'>ID</div>
+                      <div>{kid.id}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className='w-16'>
-                <div className='text-gray-400 font-bold mb-2'>Age</div>
-                <div className='text-lg'>{calculate_age(kids[currentKidIndex].birthday)}</div>
-              </div>
-              <div className='w-28'>
-                <div className='text-gray-400 font-bold mb-2'>School</div>
-                <div className='text-lg'>{kids[currentKidIndex].school}</div>
-              </div>
-              <div className='w-28'>
-                <div className='text-gray-400 font-bold mb-2'>ID</div>
-                <div className='text-lg'>{kids[currentKidIndex].id}</div>
-              </div>
+              <Credits currentKidId={kid.docId} />
+              <Attendance currentKidId={kid.docId} />
             </div>
-          </div>
-          <Credits currentKidId={kids[currentKidIndex].docId} />
-          <Attendance currentKidId={kids[currentKidIndex].docId} />
-        </>
-      )}
+          );
+        }
+      })}
     </div>
   );
 }

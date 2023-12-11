@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle } from '../../components/Icon';
+import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import email from '../../utils/emailJS';
 import { db, doc, firestore, serverTimestamp } from '../../utils/firestore';
@@ -79,9 +80,9 @@ function Purchase() {
   };
 
   return (
-    <div className='custom-main-container pt-16'>
-      <div className='w-10/12 mx-auto'>
-        <div className='custom-page-title mb-6'>Purchase</div>
+    <div className='custom-main-container pt-6 lg:pt-14'>
+      <PageTitle title='Purchase' />
+      <div className='mx-0 md:mx-12 lg:mx-20 py-8'>
         <div className='flex mb-8 items-center'>
           <label className='px-8'>Kid</label>
           {kids.length > 0 && (
