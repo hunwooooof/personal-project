@@ -1,5 +1,6 @@
 import { Input, Select, SelectItem } from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
+import LoadingAnimation from '../../components/LoadingAnimation';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { firestore } from '../../utils/firestore';
@@ -12,7 +13,7 @@ interface VideoType {
   type?: string;
 }
 function GameVideos() {
-  const { user, isLogin } = useStore();
+  const { user, isLogin, isLoading, setLoading, setCurrentNav } = useStore();
   const [topLeague, setTopLeague] = useState<VideoType[]>([]);
   const [friendlyGame, setFriendlyGame] = useState<VideoType[]>([]);
   const [filteredTopLeague, setFilteredTopLeague] = useState<VideoType[]>(topLeague);
@@ -24,6 +25,10 @@ function GameVideos() {
     youtubeId: '',
     type: '',
   });
+
+  useEffect(() => {
+    setCurrentNav('videos');
+  }, []);
 
   const sortVideoByDate = (a: VideoType, b: VideoType) => {
     const videoA = new Date(a.date).getTime();
@@ -47,7 +52,7 @@ function GameVideos() {
 
   useEffect(() => {
     getTopLeagueVideos();
-    getFriendlyGameVideos();
+    getFriendlyGameVideos().then(() => setLoading(false));
   }, [isLogin]);
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,6 +100,7 @@ function GameVideos() {
 
   return (
     <div className='custom-main-container'>
+      {isLoading && <LoadingAnimation />}
       {user.role === 'admin' && (
         <div className='pt-6 lg:pt-14 pb-14 border-b border-gray-600'>
           <PageTitle title='Add Video' />

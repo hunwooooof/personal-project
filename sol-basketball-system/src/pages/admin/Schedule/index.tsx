@@ -18,8 +18,10 @@ function AdminSchedule() {
   const navigate = useNavigate();
   useEffect(() => {
     if (!isLogin) {
-      navigate('/login');
-      setCurrentNav('');
+      navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('admin-schedules');
     }
   }, [isLogin]);
 

@@ -19,11 +19,14 @@ interface CreditDocType {
 }
 
 function Attendance() {
-  const { user, isLogin } = useStore();
+  const { user, isLogin, setCurrentNav } = useStore();
   const navigate = useNavigate();
   useEffect(() => {
     if (user.role === 'user' || !isLogin) {
       navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('admin-attendance');
     }
   }, [isLogin]);
 

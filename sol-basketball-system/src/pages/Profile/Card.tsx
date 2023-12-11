@@ -19,7 +19,7 @@ interface PropsType {
 }
 
 function Card({ kid }: PropsType) {
-  const { userRef, getUserProfile } = useStore();
+  const { userRef, getUserProfile, setLoading } = useStore();
   const [isEdit, setEdit] = useState(false);
   const inputFileRef = useRef(null);
   const { docId, id } = kid;
@@ -63,10 +63,20 @@ function Card({ kid }: PropsType) {
       firebaseStorage
         .uploadAndGetDownloadURL(storageReferenceRoot, newProfileImg)
         .then((url) => firestore.updateDoc('students', docId, { ...newKid, photoURL: url }))
-        .then(() => getUserProfile(userRef));
+        .then(() => getUserProfile(userRef))
+        .then(() => {
+          setLoading(false);
+          setEdit(false);
+        });
       setNewProfileImg(undefined);
     } else if (userRef) {
-      firestore.updateDoc('students', docId, newKid).then(() => getUserProfile(userRef));
+      firestore
+        .updateDoc('students', docId, newKid)
+        .then(() => getUserProfile(userRef))
+        .then(() => {
+          setLoading(false);
+          setEdit(false);
+        });
     }
   };
 
@@ -80,7 +90,7 @@ function Card({ kid }: PropsType) {
   };
 
   return (
-    <Link to={`/session/${id}`} className='kidCard bg-white'>
+    <div className='kidCard bg-white'>
       <div className='absolute right-1 top-2'>
         {!isEdit && (
           <Dropdown
@@ -96,11 +106,7 @@ function Card({ kid }: PropsType) {
                   viewBox='0 0 24 24'
                   strokeWidth={1.5}
                   stroke='currentColor'
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setListShow(!isListShow);
-                  }}
+                  onClick={() => setListShow(!isListShow)}
                   className='w-6 h-6 text-gray-300 cursor-pointer hover:scale-125 duration-150 hover:text-gray-400'>
                   <path
                     strokeLinecap='round'
@@ -111,7 +117,21 @@ function Card({ kid }: PropsType) {
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label='Static Actions'>
-              <DropdownItem key='edit' color='default' onClick={() => setEdit(true)}>
+              <DropdownItem
+                key='edit'
+                color='default'
+                onClick={() => {
+                  setNewKid({
+                    firstName: kid.firstName,
+                    lastName: kid.lastName,
+                    chineseName: kid.chineseName,
+                    birthday: kid.birthday,
+                    id,
+                    school: kid.school,
+                    photoURL: kid.photoURL,
+                  });
+                  setEdit(true);
+                }}>
                 Edit file
               </DropdownItem>
               <DropdownItem
@@ -278,6 +298,7 @@ function Card({ kid }: PropsType) {
             {calculate_age(kid.birthday)}
           </div>
         )}
+        {!isEdit && <Link to={`/session/${id}`}>info</Link>}
         {isEdit && (
           <div className='w-full flex mt-2 justify-between items-center'>
             <Button
@@ -285,9 +306,7 @@ function Card({ kid }: PropsType) {
               color='default'
               aria-label='cancel'
               className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
+              onClick={() => {
                 setEdit(false);
                 setNewKid(defaultKid);
               }}>
@@ -306,10 +325,8 @@ function Card({ kid }: PropsType) {
               color='success'
               aria-label='save'
               className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setEdit(false);
+              onClick={() => {
+                setLoading(true);
                 handleSaveKid();
               }}>
               <svg
@@ -325,7 +342,7 @@ function Card({ kid }: PropsType) {
           </div>
         )}
       </div>
-    </Link>
+    </div>
   );
 }
 

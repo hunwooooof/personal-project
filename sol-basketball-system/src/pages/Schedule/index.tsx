@@ -37,7 +37,7 @@ interface EventType {
 }
 
 function Schedule() {
-  const { getScheduledDates, getSaturdaySchedules } = useStore();
+  const { getScheduledDates, getSaturdaySchedules, setCurrentNav } = useStore();
   const getCurrentQuarter = (currentDate: Date) => {
     const currentMonth = currentDate.getMonth() + 1;
     const currentQuarter = Math.ceil(currentMonth / 3);
@@ -48,6 +48,10 @@ function Schedule() {
   const currentYear = currentDate.getFullYear();
   const [quarter, setQuarter] = useState(currentQuarter);
   const [year, setYear] = useState(currentYear);
+
+  useEffect(() => {
+    setCurrentNav('schedules');
+  }, []);
 
   const firstDate = () => {
     switch (quarter) {

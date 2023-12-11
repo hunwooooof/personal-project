@@ -14,7 +14,7 @@ const emptyAccount = {
 
 function Login() {
   const navigate = useNavigate();
-  const { nativeLogin, googleLogin, isLogin, userRef, getUserProfile } = useStore();
+  const { nativeLogin, googleLogin, isLogin, userRef, getUserProfile, setLoading } = useStore();
   const [account, setAccount] = useState(emptyAccount);
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -28,6 +28,7 @@ function Login() {
     if (isLogin) {
       getUserProfile(userRef);
       navigate('/schedule');
+      setLoading(false);
     }
   }, [isLogin]);
 
@@ -70,7 +71,10 @@ function Login() {
             color='primary'
             className='disabled:cursor-auto disabled:bg-gray-300 disabled:scale-100 mx-auto'
             disabled={Object.values(account).some((item) => item.length === 0)}
-            onClick={() => nativeLogin(account)}>
+            onClick={() => {
+              setLoading(true);
+              nativeLogin(account);
+            }}>
             SIGN IN
           </Button>
           <Link to='/signup' className='text-sm mx-auto underline mt-2 text-blue-400 hover:scale-105 duration-150'>

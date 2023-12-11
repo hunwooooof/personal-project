@@ -1,14 +1,16 @@
 import { Tab, Tabs } from '@nextui-org/react';
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import LoadingAnimation from '../../components/LoadingAnimation';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import Attendance from './Attendance';
 import Credits from './Credits';
 
 function Session() {
+  const navigate = useNavigate();
   const { id } = useParams();
-  const { kids, isLogin } = useStore();
+  const { kids, isLogin, isLoading, setLoading, setCurrentNav } = useStore();
 
   useEffect(() => {
     window.scrollTo({
@@ -16,6 +18,16 @@ function Session() {
       top: 0,
     });
   }, [id]);
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 400);
+    if (!isLogin) {
+      navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('profile');
+    }
+  }, [isLogin]);
 
   const calculate_age = (birthday: string) => {
     const dateOfBirth = new Date(birthday);
@@ -26,12 +38,13 @@ function Session() {
 
   return (
     <div className='custom-main-container'>
+      {isLoading && <LoadingAnimation />}
       <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14'>
         <PageTitle title='Student' />
         <div className='w-36 flex flex-col mr-0 md:mr-12 lg:mr-20'>
           <Tabs aria-label='kid' selectedKey={id}>
             {kids.map((kid) => (
-              <Tab key={kid.id} title={kid.firstName} href={`/session/${kid.id}`} />
+              <Tab key={kid.id} title={kid.firstName} href={`/session/${kid.id}`} onClick={() => setLoading(true)} />
             ))}
           </Tabs>
         </div>

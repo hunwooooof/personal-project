@@ -17,7 +17,7 @@ interface KidType {
 }
 
 function Kids() {
-  const { userRef, kids, getUserProfile } = useStore();
+  const { userRef, kids, getUserProfile, setLoading } = useStore();
   const [isAddingKid, setAddingKid] = useState(false);
   const inputKidFileRef = useRef(null);
   const defaultPhotoURL =
@@ -70,7 +70,11 @@ function Kids() {
           });
           firestore
             .updateDocArrayUnionByRef(userRef, 'kids', doc(db, 'students', docId))
-            .then(() => getUserProfile(userRef));
+            .then(() => getUserProfile(userRef))
+            .then(() => {
+              setAddingKid(false);
+              setLoading(false);
+            });
         });
         setNewProfileImg(undefined);
       } else if (userRef) {
@@ -83,12 +87,16 @@ function Kids() {
         });
         firestore
           .updateDocArrayUnionByRef(userRef, 'kids', doc(db, 'students', docId))
-          .then(() => getUserProfile(userRef));
+          .then(() => getUserProfile(userRef))
+          .then(() => {
+            setAddingKid(false);
+            setLoading(false);
+          });
       }
       setNewKid(emptyNewKid);
-      setAddingKid(false);
     } else {
       alert('Something miss!');
+      setLoading(false);
     }
   };
 
@@ -250,7 +258,10 @@ function Kids() {
               color='success'
               aria-label='save'
               className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
-              onClick={handleAddNewKid}>
+              onClick={() => {
+                setLoading(true);
+                handleAddNewKid();
+              }}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 fill='none'

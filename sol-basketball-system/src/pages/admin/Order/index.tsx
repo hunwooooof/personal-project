@@ -24,10 +24,13 @@ interface OrderType {
 
 function AdminOrder() {
   const navigate = useNavigate();
-  const { user, isLogin } = useStore();
+  const { user, isLogin, setCurrentNav } = useStore();
   useEffect(() => {
     if (user.role === 'user' || !isLogin) {
       navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('admin-order');
     }
   }, [isLogin]);
 

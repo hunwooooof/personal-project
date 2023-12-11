@@ -23,8 +23,10 @@ function Student() {
 
   useEffect(() => {
     if (!isLogin) {
-      navigate('/login');
-      setCurrentNav('');
+      navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('admin-students');
     }
   }, [isLogin]);
 
@@ -52,7 +54,9 @@ function Student() {
               return Math.abs(age.getUTCFullYear() - 1970);
             };
             return (
-              <div className='flex flex-col items-center w-56 h-88 shrink-0 rounded-2xl bg-gray-100' key={student.id}>
+              <div
+                className='flex flex-col items-center w-56 h-[350px] shrink-0 rounded-2xl bg-gray-100'
+                key={student.id}>
                 <div className='w-full h-24 bg-slate-900 rounded-t-2xl relative'>
                   <img
                     src={student.photoURL}

@@ -39,11 +39,14 @@ function Order() {
   };
 
   useEffect(() => {
-    if (isLogin && user.ordersRef) {
-      getOrders(user.ordersRef);
+    if (isLogin) {
+      setCurrentNav('order');
     } else if (!isLogin) {
-      navigate('/login');
-      setCurrentNav('');
+      navigate('/');
+      setCurrentNav('schedules');
+    }
+    if (user.ordersRef) {
+      getOrders(user.ordersRef);
     }
   }, [isLogin, user]);
 
@@ -67,7 +70,7 @@ function Order() {
           <div className='flex-1'>STATUS</div>
         </div>
         <div className='flex flex-col gap-4 h-[60vh] overflow-y-auto'>
-          {orders.length === 0 && <div className='pt-10 text-2xl text-center text-gray-400'>No Orders</div>}
+          {orders.length === 0 && <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>}
           {orders.length > 0 &&
             orders.map((order) => {
               const { seconds } = order.timestamp;
@@ -110,7 +113,7 @@ function Order() {
                 );
               }
             })}
-          {tag === 'inProcess' && !orders.some((order) => order.status === 'IN_PROCESS') && (
+          {orders.length !== 0 && tag === 'inProcess' && !orders.some((order) => order.status === 'IN_PROCESS') && (
             <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>
           )}
         </div>

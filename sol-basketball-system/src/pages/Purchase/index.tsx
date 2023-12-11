@@ -34,8 +34,10 @@ function Purchase() {
 
   useEffect(() => {
     if (!isLogin) {
-      navigate('/login');
-      setCurrentNav('');
+      navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('purchase');
     }
   }, [kids, isLogin]);
 

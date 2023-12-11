@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit } from '../../components/Icon';
+import LoadingAnimation from '../../components/LoadingAnimation';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
@@ -15,7 +16,7 @@ interface NewProfileType {
 
 function Profile() {
   const navigate = useNavigate();
-  const { setCurrentNav, user, userRef, isLogin, getUserProfile } = useStore();
+  const { setCurrentNav, user, userRef, isLogin, getUserProfile, isLoading, setLoading } = useStore();
   const [isEditProfile, setEditProfile] = useState(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -29,6 +30,8 @@ function Profile() {
     if (!isLogin) {
       navigate('/');
       setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('profile');
     }
   }, [isLogin]);
 
@@ -64,14 +67,24 @@ function Profile() {
           firestore.updateDocByRef(userRef, { ...newProfile });
           firestore.updateDocByRef(userRef, { photoURL: url });
         })
-        .then(() => getUserProfile(userRef));
+        .then(() => getUserProfile(userRef))
+        .then(() => {
+          setEditProfile(false);
+          setLoading(false);
+        });
       setNewProfileImg(undefined);
-    } else if (userRef) firestore.updateDocByRef(userRef, { ...newProfile });
+    } else if (userRef) {
+      firestore.updateDocByRef(userRef, { ...newProfile }).then(() => {
+        setEditProfile(false);
+        setLoading(false);
+      });
+    }
     getUserProfile(userRef);
   };
 
   return (
     <div className='custom-main-container pt-6 lg:pt-14'>
+      {isLoading && <LoadingAnimation />}
       <PageTitle title='Profile' />
       <div className='mx-0 md:mx-12 lg:mx-20 flex items-center py-6'>
         <div className='w-full relative pt-10 pb-6 pl-40 flex items-center my-4 bg-white rounded-3xl'>
@@ -152,7 +165,7 @@ function Profile() {
           {isEditProfile ? (
             <button
               onClick={() => {
-                setEditProfile(false);
+                setLoading(true);
                 handleSaveProfile();
               }}
               className='absolute right-4 bottom-4 text-center w-14 py-1 border rounded-xl hover:text-zinc-500 hover:scale-110 duration-150 text-zinc-300'>

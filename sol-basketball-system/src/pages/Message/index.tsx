@@ -32,6 +32,7 @@ function Message() {
   const [newMessage, setNewMessage] = useState<string>('');
   const adminPhoto =
     'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496';
+
   useEffect(() => {
     if (userID) {
       const unsubscribe = onSnapshot(doc(db, 'messages', userID), (docSnap) => {
@@ -42,9 +43,11 @@ function Message() {
   }, []);
 
   useEffect(() => {
-    if (!isLogin || user.role !== 'user') {
-      navigate('/login');
-      setCurrentNav('');
+    if (!isLogin || user.role === 'admin') {
+      navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('message');
     }
   }, [isLogin, user]);
 
