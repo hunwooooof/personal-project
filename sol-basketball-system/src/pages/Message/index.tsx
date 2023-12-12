@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { db, doc, firestore, onSnapshot } from '../../utils/firestore';
+import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
 import Bubble from './Bubble';
 
 interface MessageType {
@@ -27,25 +28,26 @@ interface ChatType {
 function Message() {
   const navigate = useNavigate();
   const { isLogin, user, userID, setCurrentNav } = useStore();
-  // const chatRoomRef = useRef<HTMLDivElement>(null);
   const [chat, setChat] = useState<ChatType>();
   const [newMessage, setNewMessage] = useState<string>('');
   const adminPhoto =
     'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496';
+
   useEffect(() => {
     if (userID) {
       const unsubscribe = onSnapshot(doc(db, 'messages', userID), (docSnap) => {
         setChat(docSnap.data() as ChatType);
-        console.log(docSnap.data());
       });
       return () => unsubscribe();
     }
   }, []);
 
   useEffect(() => {
-    if (!isLogin || user.role !== 'user') {
-      navigate('/login');
-      setCurrentNav('');
+    if (!isLogin || user.role === 'admin') {
+      navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('message');
     }
   }, [isLogin, user]);
 
@@ -58,7 +60,7 @@ function Message() {
   }, [chat]);
 
   const sortByTimestamp = (a: MessageType, b: MessageType) => a.timestamp - b.timestamp;
-
+  const sortedMessages = chat?.messages.sort(sortByTimestamp);
   const handleSendMessage = () => {
     const currentTimestamp = new Date().getTime();
     if (userID) {
@@ -83,37 +85,30 @@ function Message() {
     }
   };
 
-  // useEffect(() => {
-  //   if (id) {
-  //     firestore.getDoc('users', id).then((result) => setUserDetail(result));
-  //   }
-  // }, [id]);
-
-  /*
-  const handleEnterDown = (e) => {
+  const handleEnterDown = (e: {
+    key: string;
+    nativeEvent: { isComposing: boolean };
+    preventDefault: () => void;
+    stopPropagation: () => void;
+  }) => {
     const pressedKey = e.key.toUpperCase();
     if (pressedKey === 'ENTER') {
-      if (e.isComposing) {
+      if (e.nativeEvent.isComposing) {
         e.preventDefault();
+        e.stopPropagation();
       }
-      if (!e.isComposing && newMessage.trim()) {
+      if (!e.nativeEvent.isComposing && newMessage.trim()) {
         handleSendMessage();
+        e.preventDefault();
       }
     }
   };
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleEnterDown);
-    return () => {
-      window.removeEventListener('keydown', handleEnterDown);
-    };
-  }, []);
-*/
   return (
     <div className='custom-main-container'>
       <div className='w-full bg-slate-800 text-white'>
-        <div className='max-w-[700px] mx-auto lg:border-r lg:border-l flex flex-col'>
-          <div className='flex justify-between items-center px-4 py-4 border-b border-gray-700'>
+        <div className='lg:max-w-[700px] mx-auto lg:border-r lg:border-l border-gray-600 flex flex-col'>
+          <div className='flex justify-between items-center px-4 py-4 border-b border-gray-600'>
             <img src={adminPhoto} alt='user photo' className='h-10 w-10 rounded-full' />
             <div className='ml-3 mr-auto font-bold'>admin</div>
           </div>
@@ -123,12 +118,42 @@ function Message() {
               <div className='text-center mt-2 font-bold'>admin</div>
             </div>
             {chat &&
-              chat.messages.sort(sortByTimestamp).map((message) => {
-                return <Bubble message={message} key={message.timestamp} />;
+              sortedMessages?.map((message, index) => {
+                const date = formatTimestampToYYYYMMDD(message.timestamp);
+                const showDate = formatTimestampToYYYYslashMMslashDD(message.timestamp);
+
+                const lastTimestamp = sortedMessages[index - 1]?.timestamp;
+                const lastDate = formatTimestampToYYYYMMDD(lastTimestamp);
+
+                const now = new Date().getTime();
+                const today = formatTimestampToYYYYMMDD(now);
+
+                let dateBubble = undefined;
+                if (lastDate === 'NaNNaNNaN' && date !== today) {
+                  dateBubble = showDate;
+                } else if (Number(date) > Number(lastDate)) {
+                  dateBubble = showDate;
+                }
+                if (Number(today) - Number(date) === 1 && date !== lastDate) {
+                  dateBubble = 'Yesterday';
+                } else if (date === today && date !== lastDate) {
+                  dateBubble = 'Today';
+                }
+
+                return (
+                  <>
+                    {dateBubble && (
+                      <div className='mt-2 px-3 py-1 scale-75 mx-auto text-center text-sm text-gray-500 bg-slate-900 rounded-full'>
+                        {dateBubble}
+                      </div>
+                    )}
+                    <Bubble message={message} key={message.timestamp} />
+                  </>
+                );
               })}
           </div>
           {!chat && (
-            <div className='w-full px-4 py-4 relative'>
+            <div className='w-full flex justify-center py-4'>
               <button
                 className='px-4 py-1 text-center border rounded-full hover:bg-slate-600'
                 onClick={() => {
@@ -150,10 +175,11 @@ function Message() {
             <div className='w-full px-4 py-4 relative'>
               <input
                 type='text'
-                onChange={(e) => setNewMessage(e.target.value)}
                 value={newMessage}
                 placeholder='Message...'
                 className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full'
+                onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={handleEnterDown}
               />
               {newMessage.trim() && (
                 <button className='absolute top-5 right-8 text-blue-500 hover:text-white' onClick={handleSendMessage}>

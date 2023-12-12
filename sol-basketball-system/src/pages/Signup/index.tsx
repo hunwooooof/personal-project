@@ -1,7 +1,10 @@
+import { Button, Input } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import googleLogoUrl from '../../assets/google-logo.png';
 import logoUrl from '../../assets/sol-logo.png';
+import { EyeFilledIcon } from '../../components/EyeFilledIcon';
+import { EyeSlashFilledIcon } from '../../components/EyeSlashFilledIcon';
 import { useStore } from '../../store/store';
 
 const emptyAccount = {
@@ -13,8 +16,9 @@ const emptyAccount = {
 function Signup() {
   const navigate = useNavigate();
   const { setCurrentNav, nativeSignup, googleLogin, isLogin, userRef, getUserProfile } = useStore();
-
   const [account, setAccount] = useState(emptyAccount);
+  const [isVisible, setIsVisible] = useState(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
@@ -33,47 +37,57 @@ function Signup() {
     <div className='custom-main-container pt-14'>
       <div className='mt-10 mx-auto w-5/12 flex items-center flex-col'>
         <img src={logoUrl} alt='sign-up-icon' className='w-20 mb-5 rounded-full bg-white' />
-        <div className='flex flex-col gap-5 w-full p-8 rounded-3xl mb-8'>
+        <div className='flex flex-col gap-5 w-full p-8 rounded-3xl mb-8 text-black'>
           <div className='text-2xl text-gray-300 text-center'>Sign up</div>
-          <input
+          <Input
+            isRequired
             type='text'
-            name='name'
+            label='Full name'
             id='name'
-            placeholder='Name *'
-            className='custom-signin-input'
+            placeholder='Enter your name'
+            className='mx-auto max-w-sm'
             value={account.name}
             onChange={handleInputChange}
           />
-          <input
+          <Input
+            isRequired
             type='email'
-            name='email'
+            label='Email'
             id='email'
-            placeholder='Email Address *'
-            className='custom-signin-input'
+            placeholder='Enter your email'
+            className='mx-auto max-w-sm'
             value={account.email}
             onChange={handleInputChange}
           />
-          <input
-            type='text'
-            name='password'
+          <Input
+            isRequired
             id='password'
-            placeholder='Password *'
-            className='custom-signin-input'
+            label='Password'
+            placeholder='Enter your password'
             value={account.password}
             onChange={handleInputChange}
-          />{' '}
-          <div className='flex flex-col'>
-            <button
-              type='submit'
-              className='text-white bg-blue-600 text-center p-2 rounded-md hover:scale-105 duration-150 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:scale-100'
-              disabled={Object.values(account).some((item) => item.length === 0)}
-              onClick={() => nativeSignup(account)}>
-              SIGN UP
-            </button>
-            <Link to='/login' className='text-sm self-end underline mt-2 text-blue-600 hover:scale-105 duration-150'>
-              Already have an account? Sign in
-            </Link>
-          </div>
+            type={isVisible ? 'text' : 'password'}
+            className='mx-auto max-w-sm'
+            endContent={
+              <button className='focus:outline-none' type='button' onClick={toggleVisibility}>
+                {isVisible ? (
+                  <EyeSlashFilledIcon className='text-2xl text-default-400 pointer-events-none' />
+                ) : (
+                  <EyeFilledIcon className='text-2xl text-default-400 pointer-events-none' />
+                )}
+              </button>
+            }
+          />
+          <Button
+            color='primary'
+            className='disabled:cursor-auto disabled:bg-gray-300 disabled:scale-100 mx-auto'
+            disabled={Object.values(account).some((item) => item.length === 0)}
+            onClick={() => nativeSignup(account)}>
+            SIGN UP
+          </Button>
+          <Link to='/login' className='text-sm mx-auto underline mt-2 text-blue-400 hover:scale-105 duration-150'>
+            Already have an account? Sign in
+          </Link>
         </div>
         <button
           onClick={googleLogin}

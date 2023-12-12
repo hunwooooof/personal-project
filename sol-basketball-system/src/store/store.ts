@@ -32,13 +32,15 @@ interface AccountType {
 }
 
 interface StoreState {
+  isLoading: boolean;
+  setLoading: (boolean: boolean) => void;
   currentNav: string;
   setCurrentNav: (nav: string) => void;
   user: UserType;
   userRef: undefined | DocumentReference<DocumentData, DocumentData>;
   userID: undefined | string;
   kids: KidType[] | [];
-  isLogin: boolean;
+  isLogin: boolean | 'undefined';
   nativeSignup: (account: AccountType) => void;
   nativeLogin: (account: AccountType) => void;
   googleLogin: () => void;
@@ -67,7 +69,9 @@ const initialProfile = (user: UserCredential['user'], name?: string | undefined)
 };
 
 export const useStore = create<StoreState>((set) => ({
-  currentNav: 'schedules',
+  isLoading: true,
+  setLoading: (boolean: boolean) => set(() => ({ isLoading: boolean })),
+  currentNav: '',
   setCurrentNav: (nav: string) => set(() => ({ currentNav: nav })),
   user: {},
   userRef: undefined,
@@ -126,7 +130,7 @@ export const useStore = create<StoreState>((set) => ({
       })
       .catch((error) => console.error(error));
   },
-  isLogin: false,
+  isLogin: 'undefined',
   checkLogIn: () => {
     firebaseAuth.onAuthStateChanged((user) => {
       if (user) {
@@ -134,10 +138,14 @@ export const useStore = create<StoreState>((set) => ({
         set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
         set(() => ({ userID: user.uid }));
+        set(() => ({ isLoading: false }));
+      } else {
+        set(() => ({ isLogin: false }));
+        set(() => ({ isLoading: false }));
       }
     });
   },
-  setLogOut: () => {
+  setLogOut: async () => {
     firebaseAuth.signOut(() => {
       set(() => ({ isLogin: false }));
       set(() => ({ user: {} }));

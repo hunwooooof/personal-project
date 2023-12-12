@@ -4,10 +4,11 @@
 
 html {
   box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .custom-main-container {
-  @apply ml-[73px] md:ml-60 w-[calc(100%-73px)] md:w-[calc(100%-240px)] bg-slate-800 text-white min-h-screen;
+  @apply ml-[73px] lg:ml-60 w-[calc(100%-73px)] lg:w-[calc(100%-240px)] bg-slate-800 text-white min-h-screen;
 }
 
 .custom-signin-input {
@@ -15,13 +16,17 @@ html {
 }
 
 .custom-page-title {
-  @apply font-bold px-3 py-2 text-3xl;
+  @apply font-bold px-3 py-2 text-2xl sm:text-3xl;
 }
 
 .unScheduledClass {
-  @apply px-12 py-5 rounded-md mt-4 font-bold text-gray-400 tracking-wider relative;
+  @apply px-12 py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-600 tracking-wider;
 }
 
 .isScheduledClass {
-  @apply px-12 py-5 rounded-md mt-4 font-bold tracking-wider cursor-pointer bg-slate-700 text-white relative hover:bg-slate-600;
+  @apply px-12 py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider cursor-pointer text-black;
+}
+
+.kidCard {
+  @apply mt-8 flex flex-col shrink-0 rounded-3xl relative items-center w-60 h-[320px];
 }

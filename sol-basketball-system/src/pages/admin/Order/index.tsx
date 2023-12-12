@@ -1,9 +1,10 @@
+import { Tab, Tabs } from '@nextui-org/react';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { Key, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
-
 interface OrderType {
   id: string;
   userRef: DocumentReference<DocumentData, DocumentData>;
@@ -23,10 +24,13 @@ interface OrderType {
 
 function AdminOrder() {
   const navigate = useNavigate();
-  const { user, isLogin } = useStore();
+  const { user, isLogin, setCurrentNav } = useStore();
   useEffect(() => {
     if (user.role === 'user' || !isLogin) {
       navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('admin-order');
     }
   }, [isLogin]);
 
@@ -61,7 +65,7 @@ function AdminOrder() {
         viewBox='0 0 24 24'
         strokeWidth={1.5}
         stroke='currentColor'
-        className='h-6 cursor-pointer text-slate-400 hover:text-green-800'>
+        className='h-6 cursor-pointer text-slate-400 hover:text-green-500 hover:scale-125 duration-150'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -83,7 +87,7 @@ function AdminOrder() {
         onClick={() => {
           firestore.updateDoc('orders', orderId, { status: 'FAILED' }).then(() => getOrders());
         }}
-        className='h-6 cursor-pointer text-slate-400 hover:text-red-800'>
+        className='h-6 cursor-pointer text-slate-400 hover:text-red-500 hover:scale-125 duration-150'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -105,7 +109,7 @@ function AdminOrder() {
         onClick={() => {
           firestore.updateDoc('orders', orderId, { status: 'IN_PROCESS' }).then(() => getOrders());
         }}
-        className='h-6 cursor-pointer hover:text-black'>
+        className='h-5 cursor-pointer text-slate-400 hover:text-black hover:scale-125 duration-150'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -116,97 +120,79 @@ function AdminOrder() {
   };
 
   return (
-    <div className='custom-main-container pt-16'>
-      <div className='w-10/12 mx-auto'>
-        <div className='flex justify-between items-center mb-6'>
-          <div className='custom-page-title'>Orders</div>
-          <div className='flex border border-gray-600 rounded-sm text-lg font-bold items-center text-gray-400'>
-            <div
-              className={`w-16 text-center p-1 cursor-pointer text-white ${
-                tag === 'all' ? ' bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
-              }`}
-              onClick={() => {
-                setTag('all');
-              }}>
-              All
-            </div>
-            <div
-              className={`w-32 text-center p-1 cursor-pointer text-white ${
-                tag === 'inProcess' ? ' bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
-              }`}
-              onClick={() => {
-                setTag('inProcess');
-              }}>
-              In Process
-            </div>
-          </div>
+    <div className='custom-main-container'>
+      <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14 pb-14'>
+        <PageTitle title='Orders' />
+        <div className='flex flex-col mr-0 md:mr-12 lg:mr-20 h-[36px]'>
+          <Tabs aria-label='status' selectedKey={tag} onSelectionChange={setTag as (key: Key) => string}>
+            <Tab key='all' title='All' />
+            <Tab key='inProcess' title='In Process' />
+          </Tabs>
         </div>
-
-        <div className='w-full min-h-[70vh] p-8'>
-          <div className='flex my-2 mb-8 font-bold text-slate-400 tracking-wider'>
-            <div className='w-52 pl-4'>Time</div>
-            <div className='w-40 pl-2'>Plan</div>
-            <div className='w-36 pl-2'>Name</div>
-            <div className='w-36 pl-2'>Method</div>
-            <div className='w-36 pl-2'>Status</div>
-            <div className='w-16 pl-2'>Confirm</div>
-          </div>
-          <div className='flex flex-col gap-4 h-[60vh] overflow-y-auto'>
-            {orders.length === 0 && <div className='pt-10 text-2xl text-center text-gray-400'>No Orders</div>}
-            {orders.length > 0 &&
-              orders.map((order) => {
-                const { seconds } = order.timestamp;
-                const timestamp = new Date(seconds * 1000);
-                const yyyy = timestamp.getFullYear();
-                const mm = timestamp.getMonth() + 1;
-                const formattedMm = mm < 10 ? `0${mm}` : String(mm);
-                const dd = timestamp.getDate();
-                const formattedDd = dd < 10 ? `0${dd}` : String(dd);
-                const hour = timestamp.getHours();
-                const formattedHour = hour < 10 ? `0${hour}` : String(hour);
-                const min = timestamp.getMinutes();
-                const formattedMin = min < 10 ? `0${min}` : String(min);
-                const sec = timestamp.getSeconds();
-                const formattedSec = sec < 10 ? `0${sec}` : String(sec);
-                const dateTime = `${yyyy}/${formattedMm}/${formattedDd} ${formattedHour}:${formattedMin}:${formattedSec}`;
-                if (tag === 'all' || (tag === 'inProcess' && order.status === 'IN_PROCESS'))
-                  return (
-                    <div
-                      className={`flex border border-gray-600 items-center px-2 py-1 rounded-sm font-bold text-sm ${
-                        order.status === 'IN_PROCESS' ? '' : 'text-slate-400'
-                      }`}
-                      key={seconds}>
-                      <div className='w-52 pl-2'>{dateTime}</div>
-                      <div className='w-40'>
-                        {order.plan === '01'
-                          ? 'Single Session'
-                          : order.plan === '08'
-                            ? '8 Sessions'
-                            : order.plan === '10'
-                              ? '10 Sessions'
-                              : '12 Sessions'}
-                      </div>
-                      <div className='w-36'>{order.kid.firstName}</div>
-                      <div className='w-36'>{order.method === 'cash' ? 'Cash' : 'Bank transfer'}</div>
-                      <div className='w-36'>
-                        {order.status === 'SUCCESS'
-                          ? 'Success'
-                          : order.status === 'IN_PROCESS'
-                            ? 'In process'
-                            : 'Failed'}
-                      </div>
-                      <div className='w-16 flex items-center gap-4'>
-                        {order.status === 'IN_PROCESS'
-                          ? renderUncheck(order.id, order.kid.docId, order.plan)
-                          : order.status === 'SUCCESS'
-                            ? ''
-                            : renderReset(order.id)}
-                        {order.status === 'IN_PROCESS' && renderRemoveIcon(order.id)}
-                      </div>
+      </div>
+      <div className='mx-0 md:mx-12 lg:mx-20 min-h-[70vh] p-6 bg-white rounded-2xl'>
+        <div className='flex mb-8 px-4 py-2 font-bold text-gray-500 bg-gray-100 rounded-lg'>
+          <div className='flex-1 mr-6'>TIME</div>
+          <div className='flex-1'>PLAN</div>
+          <div className='flex-1'>NAME</div>
+          <div className='flex-1'>METHOD</div>
+          <div className='flex-1'>STATUS</div>
+          <div className='flex-1'>CONFIRM</div>
+        </div>
+        <div className='flex flex-col gap-4 h-[60vh] overflow-y-auto'>
+          {orders.length === 0 && <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>}
+          {orders.length > 0 &&
+            orders.map((order) => {
+              const { seconds } = order.timestamp;
+              const timestamp = new Date(seconds * 1000);
+              const yyyy = timestamp.getFullYear();
+              const mm = timestamp.getMonth() + 1;
+              const formattedMm = mm < 10 ? `0${mm}` : String(mm);
+              const dd = timestamp.getDate();
+              const formattedDd = dd < 10 ? `0${dd}` : String(dd);
+              const hour = timestamp.getHours();
+              const formattedHour = hour < 10 ? `0${hour}` : String(hour);
+              const min = timestamp.getMinutes();
+              const formattedMin = min < 10 ? `0${min}` : String(min);
+              const sec = timestamp.getSeconds();
+              const formattedSec = sec < 10 ? `0${sec}` : String(sec);
+              const dateTime = `${yyyy}/${formattedMm}/${formattedDd} ${formattedHour}:${formattedMin}:${formattedSec}`;
+              if (tag === 'all' || (tag === 'inProcess' && order.status === 'IN_PROCESS'))
+                return (
+                  <div
+                    className={`flex items-center px-4 py-1 rounded-sm ${
+                      order.status === 'IN_PROCESS' ? 'text-black' : 'text-gray-400'
+                    }`}
+                    key={seconds}>
+                    <div className='flex-1 mr-6'>{dateTime}</div>
+                    <div className='flex-1'>
+                      {order.plan === '01'
+                        ? 'Single Session'
+                        : order.plan === '08'
+                          ? '8 Sessions'
+                          : order.plan === '10'
+                            ? '10 Sessions'
+                            : '12 Sessions'}
                     </div>
-                  );
-              })}
-          </div>
+                    <div className='flex-1'>{order.kid.firstName}</div>
+                    <div className='flex-1'>{order.method === 'cash' ? 'Cash' : 'Bank transfer'}</div>
+                    <div className='flex-1'>
+                      {order.status === 'SUCCESS' ? 'Success' : order.status === 'IN_PROCESS' ? 'In process' : 'Failed'}
+                    </div>
+                    <div className='flex-1 flex items-center gap-4'>
+                      {order.status === 'IN_PROCESS'
+                        ? renderUncheck(order.id, order.kid.docId, order.plan)
+                        : order.status === 'SUCCESS'
+                          ? ''
+                          : renderReset(order.id)}
+                      {order.status === 'IN_PROCESS' && renderRemoveIcon(order.id)}
+                    </div>
+                  </div>
+                );
+            })}
+          {orders.length !== 0 && tag === 'inProcess' && !orders.some((order) => order.status === 'IN_PROCESS') && (
+            <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>
+          )}
         </div>
       </div>
     </div>

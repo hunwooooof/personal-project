@@ -1,6 +1,8 @@
+import { ScrollShadow } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Reset } from '../../../components/Icon';
+import CalendarButton from '../../../components/CalendarButton';
+import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
 
@@ -18,11 +20,14 @@ interface CreditDocType {
 }
 
 function Attendance() {
-  const { user, isLogin } = useStore();
+  const { user, isLogin, setCurrentNav } = useStore();
   const navigate = useNavigate();
   useEffect(() => {
     if (user.role === 'user' || !isLogin) {
       navigate('/');
+      setCurrentNav('schedules');
+    } else if (isLogin) {
+      setCurrentNav('admin-attendance');
     }
   }, [isLogin]);
 
@@ -57,21 +62,6 @@ function Attendance() {
     getAttendances();
   }, [quarter, year]);
 
-  const months = () => {
-    switch (quarter) {
-      case 1:
-        return 'M1 － M3';
-      case 2:
-        return 'M4 － M6';
-      case 3:
-        return 'M7 － M9';
-      case 4:
-        return 'M10 － M12';
-      default:
-        return 'M1 － M3';
-    }
-  };
-
   const [allCredits, setAllCredits] = useState<CreditDocType[]>();
   async function getCredits() {
     const creditsArray = await firestore.getDocs('credits');
@@ -80,8 +70,6 @@ function Attendance() {
   useEffect(() => {
     getCredits();
   }, []);
-
-  const arrowClass = 'w-6 h-6 ml-1 rounded-full text-blue-400 cursor-pointer hover:scale-125 duration-150 select-none';
 
   const renderUncheck = (date: string, docId: string) => {
     return (
@@ -146,89 +134,75 @@ function Attendance() {
   };
 
   return (
-    <div className='custom-main-container pt-16'>
-      <div className='w-10/12 mx-auto'>
-        <div className='flex justify-between items-center mb-6'>
-          <div className='custom-page-title'>Attendance</div>
-          <div className='flex items-center rounded-sm border border-gray-600'>
-            <div className='flex px-2 py-1 w-44 justify-end border-r border-gray-600'>
-              <div className='text-white font-medium select-none text-center w-24'>{months()}</div>
-              {ArrowLeft(arrowClass, () => {
-                if (quarter > 1) setQuarter((n) => n - 1);
-                else setQuarter(4);
-              })}
-              {ArrowRight(arrowClass, () => {
-                if (quarter < 4) setQuarter((n) => n + 1);
-                else setQuarter(1);
-              })}
-            </div>
-            <div className='flex border-r border-gray-600 pr-2 pl-4 py-1 '>
-              <div className='text-white font-medium select-none'>{year}</div>
-              {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
-              {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
-            </div>
-            <div className='px-2 cursor-pointer text-blue-400 hover:scale-125 duration-150'>
-              {Reset('w-5 h-5', () => {
-                setQuarter(currentQuarter);
-                setYear(currentYear);
-              })}
-            </div>
-          </div>
-        </div>
+    <div className='custom-main-container'>
+      <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14 pb-14'>
+        <PageTitle title='Attendance' />
+        <CalendarButton
+          quarter={quarter}
+          setQuarter={setQuarter}
+          year={year}
+          setYear={setYear}
+          currentQuarter={currentQuarter}
+          currentYear={currentYear}
+        />
+      </div>
+      <div className='mx-0 md:mx-12 lg:mx-20 rounded-2xl bg-white'>
         {dates.length === 0 && (
           <div className='w-full h-[70vh] p-2 text-xl text-center text-gray-600 flex justify-center items-center'>
             No data available for this section.
           </div>
         )}
         {dates.length > 0 && (
-          <div className='w-full min-h-[70vh] border border-gray-600 rounded-sm flex px-6'>
-            <div className='px-2 py-6 border-r border-gray-600'>
-              <div className='text-gray-400 w-40 tracking-wider px-2 mb-5'>Name</div>
+          <div className='w-full min-h-[70vh] flex px-6 text-black'>
+            <div className='pl-2 py-6'>
+              <div className='w-40 px-2 mb-5 py-2 font-bold text-gray-500 bg-gray-100 rounded-l-lg'>Name</div>
               {attendances.map((attendance: AttendanceType) => {
                 const { name } = attendance;
                 return (
-                  <div className='shrink-0 w-40 mt-3 font-bold tracking-wider py-1 px-2' key={name}>
+                  <div className='shrink-0 w-40 mt-3 font-bold tracking-wide py-1 px-2' key={name}>
                     {name.replace('-', ' ')}
                   </div>
                 );
               })}
             </div>
-            <div className='overflow-x-auto py-6 mx-4'>
-              <div className='flex mb-5'>
-                {dates.map((date: string) => {
-                  const formateDate = date.substring(5).replace('-', '/');
-                  return (
-                    <div key={date} className='text-gray-400 text-center w-16 tracking-wider shrink-0 select-none'>
-                      {formateDate}
-                    </div>
-                  );
-                })}
-              </div>
-              {attendances.length > 0 &&
-                attendances.map((attendance: AttendanceType) => {
-                  const { docId, name, showUpDate } = attendance;
-                  return (
-                    <div className='flex items-center mt-3' key={name}>
-                      <div className='flex shrink-0'>
-                        {dates.map((date) => {
-                          return (
-                            <div
-                              key={date}
-                              id={date}
-                              className='shrink-0 w-16 text-sm mx-auto py-1 flex justify-center'>
-                              {showUpDate.includes(date) ? renderChecked(date, docId) : renderUncheck(date, docId)}
-                            </div>
-                          );
-                        })}
+            <ScrollShadow orientation='horizontal' className='w-full h-full'>
+              <div className='py-6'>
+                <div className='flex mb-5 py-2 font-bold text-gray-500 bg-gray-100 w-[2000px]'>
+                  {dates.map((date: string) => {
+                    const formateDate = date.substring(5).replace('-', '/');
+                    return (
+                      <div key={date} className='text-center w-16 tracking-wide shrink-0 select-none'>
+                        {formateDate}
                       </div>
-                    </div>
-                  );
-                })}
-            </div>
-            <div className='px-2 py-6 border-l border-gray-600'>
-              <div className='flex mb-5'>
-                <div className='text-gray-400 shrink-0 w-20 tracking-wider text-center select-none'>Used</div>
-                <div className='text-gray-400 shrink-0 w-24 tracking-wider text-center select-none'>Purchased</div>
+                    );
+                  })}
+                </div>
+                {attendances.length > 0 &&
+                  attendances.map((attendance: AttendanceType) => {
+                    const { docId, name, showUpDate } = attendance;
+                    return (
+                      <div className='flex items-center mt-3' key={name}>
+                        <div className='flex shrink-0'>
+                          {dates.map((date) => {
+                            return (
+                              <div
+                                key={date}
+                                id={date}
+                                className='shrink-0 w-16 text-sm mx-auto py-1 flex justify-center'>
+                                {showUpDate.includes(date) ? renderChecked(date, docId) : renderUncheck(date, docId)}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </ScrollShadow>
+            <div className='py-6'>
+              <div className='flex mb-5 pr-2 py-2 font-bold text-gray-500 bg-gray-100 rounded-r-lg'>
+                <div className='shrink-0 w-20 text-center select-none'>Used</div>
+                <div className='shrink-0 w-24 text-center select-none'>Purchased</div>
               </div>
               {attendances.map((attendance: AttendanceType) => {
                 const { docId, name } = attendance;
