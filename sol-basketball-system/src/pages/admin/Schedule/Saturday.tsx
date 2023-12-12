@@ -1,3 +1,4 @@
+import { Button, Input, Select, SelectItem } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { Edit } from '../../../components/Icon';
 import { useStore } from '../../../store/store';
@@ -41,11 +42,11 @@ function Saturday({ date, quarter, year }: PropsType) {
   const showDate = date.slice(5).replace('-', '/');
   const [todaySchedule, setTodaySchedule] = useState<object>({ [date]: [] });
   const [detail, setDetail] = useState<DetailType>({
-    address: 'xindian-sport-center',
+    address: '',
     date: date,
-    tag: 'u10r',
+    tag: '',
     time: '',
-    title: 'top-league-game',
+    title: '',
   });
 
   const getTodaySchedule = (date: string) => {
@@ -127,7 +128,7 @@ function Saturday({ date, quarter, year }: PropsType) {
               className='fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-60 z-10'
               onClick={() => setEdit(false)}>
               <div
-                className='z-20 bg-white w-5/12 mx-auto mt-28 rounded-2xl py-8 cursor-default font-sans relative'
+                className='z-20 bg-white w-5/12 mx-auto mt-24 rounded-2xl py-4 cursor-default font-sans relative'
                 onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setEdit(false)}
@@ -158,32 +159,38 @@ function Saturday({ date, quarter, year }: PropsType) {
                   </div>
                 )}
                 <div className='mt-2 text-sm'>
-                  <label htmlFor='time' className='inline-block mr-4 w-2/12 text-center'>
+                  <label htmlFor='time' className='inline-block mr-10 w-1/12 text-center'>
                     Time
                   </label>
                   <span className='inline-block w-6/12'>
-                    <input
+                    <Input
+                      isRequired
                       type='time'
                       name='start'
                       id='start'
+                      aria-label='start'
+                      className='w-5/12 inline-block'
+                      size='sm'
                       value={detail.time.slice(0, 5)}
-                      className='cursor-pointer border pl-2 py-1 rounded-md w-5/12 font-bold text-gray-800'
                       onChange={(e) => {
                         const id = e.target.value;
+                        console.log(id);
                         setDetail({
                           ...detail,
-                          time: `${id}-${detail.time.slice(6)}`,
+                          time: `${id}-${id}`,
                         });
                       }}
-                      required
                     />
                     <span className='inline-block w-2/12'>～</span>
-                    <input
+                    <Input
+                      isRequired
                       type='time'
                       name='end'
                       id='end'
+                      aria-label='end'
+                      className='w-5/12 inline-block'
+                      size='sm'
                       value={detail.time.slice(6)}
-                      className='cursor-pointer border pl-2 py-1 rounded-md w-5/12 font-bold text-gray-800'
                       onChange={(e) => {
                         const id = e.target.value;
                         setDetail({
@@ -195,14 +202,12 @@ function Saturday({ date, quarter, year }: PropsType) {
                   </span>
                 </div>
                 <div className='mt-4 text-sm'>
-                  <label htmlFor='title' className='inline-block mr-4 w-2/12 text-center'>
-                    Game Type
-                  </label>
-                  <select
-                    name='title'
-                    id='title'
-                    value={detail.title}
-                    className='cursor-pointer border font-bold px-2 py-1 rounded-md w-6/12 text-center text-gray-800'
+                  <Select
+                    isRequired
+                    label='Game Type'
+                    className='max-w-sm text-black'
+                    id='type'
+                    size='sm'
                     onChange={(e) => {
                       const id = e.target.value;
                       setDetail({
@@ -210,24 +215,20 @@ function Saturday({ date, quarter, year }: PropsType) {
                         title: id,
                       });
                     }}>
-                    {detailSelection.title.map((title) => {
-                      return (
-                        <option key={title.id} value={title.id}>
-                          {title.text}
-                        </option>
-                      );
-                    })}
-                  </select>
+                    {detailSelection.title.map((title) => (
+                      <SelectItem key={title.id} value={title.id}>
+                        {title.text}
+                      </SelectItem>
+                    ))}
+                  </Select>
                 </div>
                 <div className='mt-4 text-sm'>
-                  <label htmlFor='team' className='inline-block mr-4 w-2/12 text-center'>
-                    Team
-                  </label>
-                  <select
-                    name='team'
-                    id='team'
-                    value={detail.tag}
-                    className='cursor-pointer border font-bold px-2 py-1 rounded-md w-6/12 text-center text-gray-800'
+                  <Select
+                    isRequired
+                    label='Team'
+                    className='max-w-sm text-black'
+                    id='type'
+                    size='sm'
                     onChange={(e) => {
                       const id = e.target.value;
                       setDetail({
@@ -235,24 +236,20 @@ function Saturday({ date, quarter, year }: PropsType) {
                         tag: id,
                       });
                     }}>
-                    {detailSelection.tag.map((tag) => {
-                      return (
-                        <option key={tag.id} value={tag.id}>
-                          {tag.text}
-                        </option>
-                      );
-                    })}
-                  </select>
+                    {detailSelection.tag.map((tag) => (
+                      <SelectItem key={tag.id} value={tag.id}>
+                        {tag.text}
+                      </SelectItem>
+                    ))}
+                  </Select>
                 </div>
                 <div className='mt-4 text-sm'>
-                  <label htmlFor='address' className='inline-block mr-4 w-2/12 text-center'>
-                    Location
-                  </label>
-                  <select
-                    name='address'
-                    id='address'
-                    value={detail.address}
-                    className='cursor-pointer border font-bold px-2 py-1 rounded-md w-6/12 text-center text-gray-800'
+                  <Select
+                    isRequired
+                    label='Location'
+                    className='max-w-sm text-black'
+                    id='type'
+                    size='sm'
                     onChange={(e) => {
                       const id = e.target.value;
                       setDetail({
@@ -260,22 +257,20 @@ function Saturday({ date, quarter, year }: PropsType) {
                         address: id,
                       });
                     }}>
-                    {detailSelection.address.map((address) => {
-                      return (
-                        <option key={address.id} value={address.id}>
-                          {address.text}
-                        </option>
-                      );
-                    })}
-                  </select>
+                    {detailSelection.address.map((address) => (
+                      <SelectItem key={address.id} value={address.id}>
+                        {address.text}
+                      </SelectItem>
+                    ))}
+                  </Select>
                 </div>
                 <div className='flex gap-2 justify-center mt-4 font-normal'>
-                  <button
-                    onClick={handleClickAdd}
-                    className={`bg-green-800 text-white px-3 py-1 rounded-md cursor-pointer hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-gray-300`}
-                    disabled={Object.values(detail).some((item) => item.length === 0)}>
+                  <Button
+                    isDisabled={Object.values(detail).some((item) => item.length === 0)}
+                    color='primary'
+                    onClick={handleClickAdd}>
                     Add
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

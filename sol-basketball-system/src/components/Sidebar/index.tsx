@@ -294,7 +294,7 @@ function Sidebar() {
           <Link
             to='/login'
             onClick={() => setCurrentNav('')}
-            className='mt-auto text-gray-500 text-center border border-gray-600 lg:w-24 rounded-2xl fixed lg:left-5 bottom-5 px-2 lg:px-0 py-1 shadow-md hover:text-white'>
+            className='bg-slate-900 mt-auto text-gray-500 text-center border border-gray-600 lg:w-24 rounded-2xl fixed lg:left-5 bottom-5 px-2 lg:px-0 py-1 shadow-md hover:text-white'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -322,7 +322,7 @@ function Sidebar() {
                 setLoading(false);
               }, 170);
             }}
-            className='mt-auto text-gray-500 border border-gray-600 lg:w-24 rounded-2xl fixed lg:left-5 bottom-5 px-2 lg:px-0 py-1 shadow-md hover:text-white'>
+            className='bg-slate-900 mt-auto text-gray-500 border border-gray-600 lg:w-24 rounded-2xl fixed lg:left-5 bottom-5 px-2 lg:px-0 py-1 shadow-md hover:text-white'>
             <span className='hidden lg:inline'>Log out</span>
             <svg
               xmlns='http://www.w3.org/2000/svg'

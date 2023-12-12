@@ -123,7 +123,7 @@ function AdminOrder() {
     <div className='custom-main-container'>
       <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14 pb-14'>
         <PageTitle title='Orders' />
-        <div className='flex flex-col mr-0 md:mr-12 lg:mr-20'>
+        <div className='flex flex-col mr-0 md:mr-12 lg:mr-20 h-[36px]'>
           <Tabs aria-label='status' selectedKey={tag} onSelectionChange={setTag as (key: Key) => string}>
             <Tab key='all' title='All' />
             <Tab key='inProcess' title='In Process' />
@@ -140,7 +140,7 @@ function AdminOrder() {
           <div className='flex-1'>CONFIRM</div>
         </div>
         <div className='flex flex-col gap-4 h-[60vh] overflow-y-auto'>
-          {orders.length === 0 && <div className='pt-10 text-xl text-center text-gray-400'>No Orders</div>}
+          {orders.length === 0 && <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>}
           {orders.length > 0 &&
             orders.map((order) => {
               const { seconds } = order.timestamp;
@@ -161,7 +161,7 @@ function AdminOrder() {
                 return (
                   <div
                     className={`flex items-center px-4 py-1 rounded-sm ${
-                      order.status === 'IN_PROCESS' ? 'text-gray-600' : 'text-black'
+                      order.status === 'IN_PROCESS' ? 'text-black' : 'text-gray-400'
                     }`}
                     key={seconds}>
                     <div className='flex-1 mr-6'>{dateTime}</div>
@@ -190,7 +190,7 @@ function AdminOrder() {
                   </div>
                 );
             })}
-          {tag === 'inProcess' && !orders.some((order) => order.status === 'IN_PROCESS') && (
+          {orders.length !== 0 && tag === 'inProcess' && !orders.some((order) => order.status === 'IN_PROCESS') && (
             <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>
           )}
         </div>

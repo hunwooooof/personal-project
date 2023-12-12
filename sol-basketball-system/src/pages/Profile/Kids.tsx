@@ -13,11 +13,12 @@ interface KidType {
   birthday: string;
   id: string;
   school: string;
+  parentID: string;
   photoURL: string;
 }
 
 function Kids() {
-  const { userRef, kids, getUserProfile, setLoading } = useStore();
+  const { userID, userRef, kids, getUserProfile, setLoading } = useStore();
   const [isAddingKid, setAddingKid] = useState(false);
   const inputKidFileRef = useRef(null);
   const defaultPhotoURL =
@@ -29,6 +30,7 @@ function Kids() {
     birthday: '',
     id: '',
     school: '',
+    parentID: userID || '',
     photoURL: defaultPhotoURL,
   };
   const [newKid, setNewKid] = useState({ ...emptyNewKid });
@@ -153,6 +155,7 @@ function Kids() {
               label='First name'
               type='text'
               id='firstName'
+              placeholder='John'
               classNames={{
                 inputWrapper: ['h-9', 'py-0', 'px-2'],
               }}
@@ -165,6 +168,7 @@ function Kids() {
               label='Last name'
               type='text'
               id='lastName'
+              placeholder='Wang'
               classNames={{
                 inputWrapper: ['h-9', 'py-0', 'px-2'],
               }}

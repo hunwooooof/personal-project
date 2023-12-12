@@ -31,7 +31,7 @@ function ArrowLeft(className: string, callback: () => void) {
   );
 }
 
-function ArrowRight(className: string, callback: () => void) {
+function ArrowRight(className: string, callback?: () => void) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'

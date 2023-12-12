@@ -190,7 +190,9 @@ function Messages() {
       {!isLoading && (
         <div className='flex bg-slate-800 text-white'>
           <div className='min-w-20 lg:w-4/12 flex flex-col border-r border-gray-700'>
-            <div className='hidden lg:block font-bold px-5 py-4'>Messages</div>
+            <div className='hidden lg:block font-bold text-2xl border-b border-gray-700 sm:text-3xl pl-0 md:pl-12 lg:pl-20 whitespace-nowrap pt-6 lg:pt-14 pb-14'>
+              Messages
+            </div>
             <div className='overflow-y-auto h-[calc(100vh-56px)]'>
               {chats &&
                 chats
@@ -207,7 +209,7 @@ function Messages() {
                         className={`flex items-center px-5 py-2 cursor-pointer ${
                           id === chat.userID ? 'bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
                         }`}>
-                        <img src={chat.userPhoto} alt='' className='h-14 w-14 rounded-full' />
+                        <img src={chat.userPhoto} alt='' className='h-14 w-14 rounded-full object-cover' />
                         <div className='hidden lg:block px-4 w-[calc(100%-56px)]'>
                           <div className={`${chat.unread && 'font-extrabold'} w-full`}>{chat.userName}</div>
                           {chat.lastMessage.timestamp !== 0 && (
@@ -252,7 +254,11 @@ function Messages() {
                       return (
                         <div className='flex flex-col' key={currentChat.userID}>
                           <div className='flex justify-between items-center px-4 py-4 border-b border-gray-700'>
-                            <img src={currentChat.userPhoto} alt='user photo' className='h-10 w-10 rounded-full' />
+                            <img
+                              src={currentChat.userPhoto}
+                              alt='user photo'
+                              className='h-10 w-10 rounded-full object-cover'
+                            />
                             <div className='ml-3 mr-auto font-bold'>{currentChat.userName}</div>
                             {!isInfoShow && (
                               <svg
@@ -287,7 +293,11 @@ function Messages() {
                           </div>
                           <div id='chatBox' className='flex flex-col w-full px-4 h-[calc(100vh-139px)] overflow-y-auto'>
                             <div className='self-center pt-6 pb-4'>
-                              <img src={currentChat.userPhoto} alt='user photo' className='h-20 w-20 rounded-full' />
+                              <img
+                                src={currentChat.userPhoto}
+                                alt='user photo'
+                                className='h-20 w-20 rounded-full object-cover'
+                              />
                               <div className='text-center mt-2 font-bold'>{currentChat.userName}</div>
                             </div>
                             {currentChat.messages.length > 0 &&
@@ -378,7 +388,7 @@ function Messages() {
                 <div
                   className='mt-auto w-full border-t border-gray-700'
                   onClick={() => {
-                    const userConfirm = confirm('Permanently delete chat?');
+                    const userConfirm = confirm('Permanently delete previous messages?');
                     if (userConfirm && id) {
                       updateDoc(doc(db, 'messages', id), {
                         messages: [],

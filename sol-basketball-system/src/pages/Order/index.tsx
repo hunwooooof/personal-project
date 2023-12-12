@@ -33,8 +33,10 @@ function Order() {
     const orders = [];
     for (const orderRef of ordersRef) {
       const order = await firestore.getDocByRef(orderRef);
-      if (order) orders.push(order);
+      if (order) orders.push(order as OrderType);
     }
+    const sortByTimestamp = (a: OrderType, b: OrderType) => b.timestamp.seconds - a.timestamp.seconds;
+    orders.sort(sortByTimestamp);
     setOrders(orders as OrderType[]);
   };
 
@@ -91,7 +93,7 @@ function Order() {
                 return (
                   <div
                     className={`flex items-center px-4 py-1 rounded-sm ${
-                      order.status === 'IN_PROCESS' ? 'text-gray-600' : 'text-black'
+                      order.status === 'IN_PROCESS' ? 'text-black' : 'text-gray-400'
                     }`}
                     key={seconds}>
                     <div className='flex-1'>{dateTime}</div>
