@@ -76,17 +76,22 @@ function Attendance() {
       <svg
         id={date}
         onClick={(e) => {
-          firestore
-            .updateDocArrayUnion('attendance', docId, 'showUpDate', e.currentTarget.id)
-            .then(() => getAttendances())
-            .then(() => {
-              firestore.getDoc('attendance', docId).then((attendance) => {
-                if (attendance) {
-                  const countShowUp = attendance.showUpDate.length;
-                  firestore.updateDoc('credits', docId, { used: countShowUp }).then(() => getCredits());
-                }
-              });
-            });
+          const targetId = e.currentTarget.id;
+          firestore.getDoc('credits', docId).then((result) => {
+            if (result) {
+              firestore
+                .updateDocArrayUnion('attendance', docId, 'showUpDate', targetId)
+                .then(() => getAttendances())
+                .then(() => {
+                  firestore.getDoc('attendance', docId).then((attendance) => {
+                    if (attendance) {
+                      const countShowUp = attendance.showUpDate.length;
+                      firestore.updateDoc('credits', docId, { used: countShowUp }).then(() => getCredits());
+                    }
+                  });
+                });
+            }
+          });
         }}
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
@@ -167,7 +172,7 @@ function Attendance() {
             </div>
             <ScrollShadow orientation='horizontal' className='w-full h-full'>
               <div className='py-6'>
-                <div className='flex mb-5 py-2 font-bold text-gray-500 bg-gray-100 w-[2000px]'>
+                <div className='flex mb-5 py-2 font-bold text-gray-500 bg-gray-100 w-[1800px]'>
                   {dates.map((date: string) => {
                     const formateDate = date.substring(5).replace('-', '/');
                     return (

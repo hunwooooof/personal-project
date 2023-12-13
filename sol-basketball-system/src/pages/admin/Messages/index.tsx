@@ -190,10 +190,10 @@ function Messages() {
       {!isLoading && (
         <div className='flex bg-slate-800 text-white'>
           <div className='min-w-20 lg:w-4/12 flex flex-col border-r border-gray-700'>
-            <div className='hidden lg:block font-bold text-2xl border-b border-gray-700 sm:text-3xl pl-0 md:pl-12 lg:pl-20 whitespace-nowrap pt-6 lg:pt-14 pb-14'>
+            <div className='hidden lg:block font-bold text-2xl sm:text-3xl pl-0 md:pl-12 lg:pl-20 whitespace-nowrap pt-6 lg:pt-14 pb-14'>
               Messages
             </div>
-            <div className='overflow-y-auto h-[calc(100vh-56px)]'>
+            <div className='overflow-y-auto h-[calc(100vh-148px)]'>
               {chats &&
                 chats
                   .sort((a, b) => b.lastMessage.timestamp - a.lastMessage.timestamp)
@@ -291,8 +291,10 @@ function Messages() {
                               </svg>
                             )}
                           </div>
-                          <div id='chatBox' className='flex flex-col w-full px-4 h-[calc(100vh-139px)] overflow-y-auto'>
-                            <div className='self-center pt-6 pb-4'>
+                          <div
+                            id='chatBox'
+                            className='flex flex-col w-full px-4 h-[calc(100vh-139px)] overflow-y-auto overflow-x-hidden'>
+                            <div className='self-center pt-6 pb-4 flex flex-col items-center'>
                               <img
                                 src={currentChat.userPhoto}
                                 alt='user photo'

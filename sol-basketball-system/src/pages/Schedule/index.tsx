@@ -237,8 +237,8 @@ function Schedule() {
           </div>
 
           <div
-            className={`mx-0 md:mx-12 lg:mx-20 flex flex-col lg:py-6 pb-0 ${
-              isInfoShow ? 'h-[calc(100vh-540px)] lg:h-auto' : 'h-auto'
+            className={`flex flex-col lg:py-6 pb-0 ${
+              isInfoShow ? 'mx-0 md:mx-12 h-[calc(100vh-540px)] lg:h-auto' : 'mx-0 md:mx-12 lg:mx-20 h-auto'
             }`}>
             <div className='flex gap-3 text-sm sm:text-base lg:text-lg font-semibold tracking-wider my-4'>
               <div className={`flex-col ${tableHeadClass}`}>
