@@ -4,7 +4,8 @@ import { Key, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
-import { firestore } from '../../../utils/firestore';
+import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
+
 interface OrderType {
   id: string;
   userRef: DocumentReference<DocumentData, DocumentData>;
@@ -36,17 +37,20 @@ function AdminOrder() {
 
   const [tag, setTag] = useState('all');
   const [orders, setOrders] = useState<OrderType[]>([]);
-  async function getOrders() {
-    const ordersArray = (await firestore.getDocs('orders')) as OrderType[];
-    const sortByTimestamp = (a: OrderType, b: OrderType) => b.timestamp.seconds - a.timestamp.seconds;
-    if (ordersArray) {
-      ordersArray.sort(sortByTimestamp);
-      setOrders(ordersArray as OrderType[]);
-    }
-  }
+
   useEffect(() => {
-    getOrders();
-  }, [isLogin]);
+    const unsubscribe = onSnapshot(collection(db, 'orders'), (docSnaps) => {
+      const ordersArray: OrderType[] = [];
+      const sortByTimestamp = (a: OrderType, b: OrderType) => b.timestamp.seconds - a.timestamp.seconds;
+      docSnaps.forEach((docSnap) => {
+        const doc = docSnap.data();
+        ordersArray.push(doc as OrderType);
+      });
+      ordersArray.sort(sortByTimestamp);
+      setOrders(ordersArray);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const renderUncheck = (orderId: string, docId: string, plan: string) => {
     const credit = parseInt(plan);
@@ -56,7 +60,7 @@ function AdminOrder() {
         onClick={() => {
           const userConfirm = confirm('Set the order to SUCCESS?');
           if (userConfirm) {
-            firestore.updateDoc('orders', orderId, { status: 'SUCCESS' }).then(() => getOrders());
+            firestore.updateDoc('orders', orderId, { status: 'SUCCESS' });
             firestore.updateDocIncrement('credits', docId, 'all', credit);
           }
         }}
@@ -85,7 +89,7 @@ function AdminOrder() {
         stroke='currentColor'
         fill='none'
         onClick={() => {
-          firestore.updateDoc('orders', orderId, { status: 'FAILED' }).then(() => getOrders());
+          firestore.updateDoc('orders', orderId, { status: 'FAILED' });
         }}
         className='h-6 cursor-pointer text-slate-400 hover:text-red-500 hover:scale-125 duration-150'>
         <path
@@ -107,7 +111,7 @@ function AdminOrder() {
         strokeWidth={1.5}
         stroke='currentColor'
         onClick={() => {
-          firestore.updateDoc('orders', orderId, { status: 'IN_PROCESS' }).then(() => getOrders());
+          firestore.updateDoc('orders', orderId, { status: 'IN_PROCESS' });
         }}
         className='h-5 cursor-pointer text-slate-400 hover:text-black hover:scale-125 duration-150'>
         <path

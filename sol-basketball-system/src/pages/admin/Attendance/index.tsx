@@ -22,6 +22,7 @@ interface CreditDocType {
 function Attendance() {
   const { user, isLogin, setCurrentNav } = useStore();
   const navigate = useNavigate();
+
   useEffect(() => {
     if (user.role === 'user' || !isLogin) {
       navigate('/');
@@ -33,7 +34,7 @@ function Attendance() {
 
   const currentDate = new Date();
   function getCurrentQuarter(currentDate: Date) {
-    const currentMonth = currentDate.getMonth() + 1; // JavaScript 中月份是從 0 開始的
+    const currentMonth = currentDate.getMonth() + 1;
     const currentQuarter = Math.ceil(currentMonth / 3);
     return currentQuarter;
   }

@@ -19,10 +19,15 @@ interface VideoType {
 function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
   const [newVideo, setNewVideo] = useState<VideoType>({
     tag: '',
-    date: '',
-    title: '',
-    youtubeId: '',
+    date: '2023-11-25',
+    title: 'Hoopboyz vs Roadrunners Rookies',
+    youtubeId: 'Iqs4n-2UWvo',
     type: '',
+    // tag: '',
+    // date: '',
+    // title: '',
+    // youtubeId: '',
+    // type: '',
   });
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
