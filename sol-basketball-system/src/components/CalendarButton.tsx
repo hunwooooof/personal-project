@@ -10,9 +10,6 @@ interface PropsType {
 }
 
 function CalendarButton({ quarter, setQuarter, year, setYear, currentQuarter, currentYear }: PropsType) {
-  const arrowClass =
-    'w-4 sm:w-5 w-4 sm:h-5 ml-1 text-gray-300 cursor-pointer hover:text-white hover:scale-125 duration-150 select-none';
-
   const months = () => {
     switch (quarter) {
       case 1:
@@ -28,10 +25,16 @@ function CalendarButton({ quarter, setQuarter, year, setYear, currentQuarter, cu
     }
   };
 
+  const contentClass =
+    'relative z-10 whitespace-nowrap mr-2 text-sm select-none text-center transition-colors text-zinc-500';
+
+  const button = 'w-6 h-6 text-zinc-700 cursor-pointer bg-white rounded-md shadow p-1';
+  const arrowClass = `${button} ml-1 hover:scale-125 duration-150 select-none`;
+
   return (
-    <div className='flex items-center rounded-sm border border-gray-600 mr-0 md:mr-12 lg:mr-20'>
-      <div className='flex items-center px-2 py-1 w-36 sm:w-40 justify-end border-r border-gray-600'>
-        <div className='text-gray-300 font-medium select-none text-center w-24 text-sm sm:text-base'>{months()}</div>
+    <div className='flex p-1 h-9 gap-2 items-center flex-nowrap overflow-x-scroll scrollbar-hide bg-zinc-100 rounded-medium mr-0 md:mr-12 lg:mr-20'>
+      <div className='flex items-center py-1 pl-3 justify-end w-36'>
+        <div className={contentClass}>{months()}</div>
         {ArrowLeft(arrowClass, () => {
           if (quarter > 1) setQuarter((n) => n - 1);
           else setQuarter(4);
@@ -41,13 +44,13 @@ function CalendarButton({ quarter, setQuarter, year, setYear, currentQuarter, cu
           else setQuarter(1);
         })}
       </div>
-      <div className='flex items-center border-r border-gray-600 pr-2 pl-4 py-1'>
-        <div className='text-gray-300 font-medium select-none text-sm sm:text-base'>{year}</div>
+      <div className='flex items-center pl-2 py-1'>
+        <div className={contentClass}>{year}</div>
         {ArrowLeft(arrowClass, () => setYear((n) => n - 1))}
         {ArrowRight(arrowClass, () => setYear((n) => n + 1))}
       </div>
-      <div className='px-2 cursor-pointer text-gray-300 hover:text-white hover:scale-125 duration-150'>
-        {Reset('w-5 h-5', () => {
+      <div className='px-2 cursor-pointer text-zinc-700 hover:scale-125 duration-150'>
+        {Reset(button, () => {
           setQuarter(currentQuarter);
           setYear(currentYear);
         })}

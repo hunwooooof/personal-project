@@ -141,7 +141,7 @@ function AdminOrder() {
           <div className='flex-1'>NAME</div>
           <div className='flex-1'>METHOD</div>
           <div className='flex-1'>STATUS</div>
-          <div className='flex-1'>CONFIRM</div>
+          <div className='w-20'>CONFIRM</div>
         </div>
         <div className='flex flex-col gap-4 h-[60vh] overflow-y-auto'>
           {orders.length === 0 && <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>}
@@ -183,7 +183,7 @@ function AdminOrder() {
                     <div className='flex-1'>
                       {order.status === 'SUCCESS' ? 'Success' : order.status === 'IN_PROCESS' ? 'In process' : 'Failed'}
                     </div>
-                    <div className='flex-1 flex items-center gap-4'>
+                    <div className='flex w-20 items-center justify-center gap-4'>
                       {order.status === 'IN_PROCESS'
                         ? renderUncheck(order.id, order.kid.docId, order.plan)
                         : order.status === 'SUCCESS'

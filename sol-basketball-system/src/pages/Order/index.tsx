@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { firestore } from '../../utils/firestore';
+import { formatTimestampToTime, formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
 
 interface OrderType {
   id?: string;
@@ -65,30 +66,23 @@ function Order() {
       </div>
       <div className='mx-0 md:mx-12 lg:mx-20 min-h-[70vh] p-6 bg-white rounded-2xl'>
         <div className='flex mb-8 px-4 py-2 font-bold text-gray-500 bg-gray-100 rounded-lg'>
-          <div className='flex-1'>TIME</div>
+          <div className='flex-1 mr-6'>TIME</div>
           <div className='flex-1'>PLAN</div>
           <div className='flex-1'>NAME</div>
           <div className='flex-1'>METHOD</div>
-          <div className='flex-1'>STATUS</div>
+          <div className=''>STATUS</div>
         </div>
         <div className='flex flex-col gap-4 h-[60vh] overflow-y-auto'>
           {orders.length === 0 && <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>}
           {orders.length > 0 &&
             orders.map((order) => {
               const { seconds } = order.timestamp;
+              const showDate = formatTimestampToYYYYslashMMslashDD(seconds * 1000);
+              const time = formatTimestampToTime(seconds * 1000);
               const timestamp = new Date(seconds * 1000);
-              const yyyy = timestamp.getFullYear();
-              const mm = timestamp.getMonth() + 1;
-              const formattedMm = mm < 10 ? `0${mm}` : String(mm);
-              const dd = timestamp.getDate();
-              const formattedDd = dd < 10 ? `0${dd}` : String(dd);
-              const hour = timestamp.getHours();
-              const formattedHour = hour < 10 ? `0${hour}` : String(hour);
-              const min = timestamp.getMinutes();
-              const formattedMin = min < 10 ? `0${min}` : String(min);
               const sec = timestamp.getSeconds();
               const formattedSec = sec < 10 ? `0${sec}` : String(sec);
-              const dateTime = `${yyyy}/${formattedMm}/${formattedDd} ${formattedHour}:${formattedMin}:${formattedSec}`;
+              const dateTime = `${showDate} ${time}:${formattedSec}`;
               if (tag === 'all' || (tag === 'inProcess' && order.status === 'IN_PROCESS')) {
                 return (
                   <div
@@ -96,7 +90,7 @@ function Order() {
                       order.status === 'IN_PROCESS' ? 'text-black' : 'text-gray-400'
                     }`}
                     key={seconds}>
-                    <div className='flex-1'>{dateTime}</div>
+                    <div className='flex-1 mr-6'>{dateTime}</div>
                     <div className='flex-1'>
                       {order.plan === '01'
                         ? 'Single Session'
@@ -108,7 +102,7 @@ function Order() {
                     </div>
                     <div className='flex-1'>{order.kid.firstName}</div>
                     <div className='flex-1'>{order.method === 'cash' ? 'Cash' : 'Bank transfer'}</div>
-                    <div className='flex-1'>
+                    <div className=''>
                       {order.status === 'SUCCESS' ? 'Success' : order.status === 'IN_PROCESS' ? 'In process' : 'Failed'}
                     </div>
                   </div>
