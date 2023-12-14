@@ -26,7 +26,7 @@ function CalendarButton({ quarter, setQuarter, year, setYear, currentQuarter, cu
   };
 
   const contentClass =
-    'relative z-10 whitespace-nowrap mr-2 text-sm select-none text-center transition-colors text-zinc-500';
+    'relative z-10 whitespace-nowrap mr-2 text-sm select-none text-center transition-colors text-zinc-800 font-semibold';
 
   const button = 'w-6 h-6 text-zinc-700 cursor-pointer bg-white rounded-md shadow p-1';
   const arrowClass = `${button} ml-1 hover:scale-125 duration-150 select-none`;

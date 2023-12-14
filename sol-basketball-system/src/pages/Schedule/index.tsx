@@ -263,6 +263,7 @@ function Schedule() {
                         <Friday
                           key={date}
                           date={date}
+                          isInfoShow={isInfoShow}
                           setInfoShow={setInfoShow}
                           setInfo={setInfo}
                           info={info as DetailType}
@@ -277,6 +278,7 @@ function Schedule() {
                         <Saturday
                           key={date}
                           date={date}
+                          isInfoShow={isInfoShow}
                           setInfoShow={setInfoShow}
                           setInfo={setInfo}
                           info={info as DetailType[]}
@@ -290,6 +292,7 @@ function Schedule() {
                         <Sunday
                           key={date}
                           date={date}
+                          isInfoShow={isInfoShow}
                           setInfoShow={setInfoShow}
                           setInfo={setInfo}
                           info={info as DetailType}
@@ -381,15 +384,12 @@ function Schedule() {
                       </svg>
                       {info.time}
                     </div>
-                    <div className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'>
-                      <img
-                        src={googleCalendarIco}
-                        alt='google-calendar-icon'
-                        className='w-5 h-5'
-                        onClick={() => {
-                          handleClickGoogleCalendar(info);
-                        }}
-                      />
+                    <div
+                      className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                      onClick={() => {
+                        handleClickGoogleCalendar(info);
+                      }}>
+                      <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
                       Add to calendar
                     </div>
                   </div>
@@ -474,15 +474,12 @@ function Schedule() {
                           </svg>
                           {item.time}
                         </div>
-                        <div className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'>
-                          <img
-                            src={googleCalendarIco}
-                            alt='google-calendar-icon'
-                            className='w-5 h-5'
-                            onClick={() => {
-                              handleClickGoogleCalendar(item);
-                            }}
-                          />
+                        <div
+                          className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                          onClick={() => {
+                            handleClickGoogleCalendar(item);
+                          }}>
+                          <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
                           Add to calendar
                         </div>
                         <iframe
