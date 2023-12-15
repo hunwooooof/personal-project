@@ -92,12 +92,12 @@ function Message() {
     stopPropagation: () => void;
   }) => {
     const pressedKey = e.key.toUpperCase();
-    if (pressedKey === 'ENTER') {
+    if (pressedKey === 'ENTER' && newMessage.trim()) {
       if (e.nativeEvent.isComposing) {
         e.preventDefault();
         e.stopPropagation();
       }
-      if (!e.nativeEvent.isComposing && newMessage.trim()) {
+      if (!e.nativeEvent.isComposing) {
         handleSendMessage();
         e.preventDefault();
       }

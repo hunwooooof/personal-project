@@ -1,8 +1,9 @@
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input, Tooltip } from '@nextui-org/react';
 import { useRef, useState } from 'react';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { db, doc, firestore } from '../../utils/firestore';
+import { formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
 import Card from './Card';
 
 interface KidType {
@@ -108,6 +109,9 @@ function Kids() {
     }
   };
 
+  const currenTime = new Date();
+  const isBirthdayInvalid = new Date().getTime() - new Date(newKid.birthday).getTime() < 94608000000;
+
   return (
     <div className='flex gap-8 items-center overflow-x-auto pt-4 pb-10'>
       {kids.length > 0 &&
@@ -197,7 +201,25 @@ function Kids() {
           />
           <div className={`flex flex-col w-full items-center text-sm ${isAddingKid && 'px-4'}`}>
             <div className='w-full flex items-center mb-2 text-black justify-between'>
-              <span className='inline-block w-4/12 mr-2 text-gray-500'>ID</span>
+              <span className='inline-block w-4/12 mr-2 text-gray-500'>
+                ID
+                <Tooltip
+                  content='For the convenience of student competition registration, we kindly request your student ID number. Rest assured, we will handle your personal information with strict confidentiality. We appreciate your understanding and cooperation.'
+                  placement='right'
+                  className='text-sm scale-80 -ml-12 p-4 text-zinc-400'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    className='w-4 h-4 mb-[2px] inline ml-1 stroke-1 stroke-zinc-400 cursor-pointer'>
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      d='M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z'
+                    />
+                  </svg>
+                </Tooltip>
+              </span>
               <Input
                 isRequired
                 size='sm'
@@ -227,20 +249,25 @@ function Kids() {
                 onChange={handleChangeNewKidProfile}
               />
             </div>
-            <div className='w-full flex items-center mb-2 text-black justify-between'>
+            <div className='w-full flex items-center mb-2 text-black justify-between relative'>
               <span className='inline-block w-4/12 mr-2 text-gray-500'>Birthday</span>
               <Input
                 isRequired
                 size='sm'
                 type='date'
                 id='birthday'
-                className='inline-block w-7/12'
+                className={`inline-block w-7/12 rounded-lg ${isBirthdayInvalid && 'ring-1 ring-red-500'}`}
                 classNames={{
                   inputWrapper: ['h-6', 'py-0', 'px-2'],
                 }}
                 value={newKid.birthday}
                 onChange={handleChangeNewKidProfile}
               />
+              {isBirthdayInvalid && (
+                <div className={`absolute -bottom-4 -right-6 text-red-500 text-sm scale-80 whitespace-nowrap`}>
+                  出生日期不可為 {formatTimestampToYYYYslashMMslashDD(currenTime.getTime() - 94608000000)} 之後！
+                </div>
+              )}
             </div>
           </div>
           <div className='px-4 w-full flex mt-2 justify-between items-center'>
@@ -267,6 +294,7 @@ function Kids() {
               isIconOnly
               color='success'
               aria-label='save'
+              isDisabled={isBirthdayInvalid}
               className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
               onClick={() => {
                 setLoading(true);
