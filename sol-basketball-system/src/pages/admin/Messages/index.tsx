@@ -338,23 +338,21 @@ function Messages() {
                               })}
                           </div>
                           <div className='w-full px-4 py-4 relative'>
-                            <form action=''>
-                              <input
-                                type='text'
-                                value={newMessage}
-                                placeholder='Message...'
-                                className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full'
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                onKeyDown={handleEnterDown}
-                              />
-                              {newMessage.trim() && (
-                                <button
-                                  className='absolute top-5 right-8 text-blue-500 hover:text-white'
-                                  onClick={handleSendMessage}>
-                                  Send
-                                </button>
-                              )}
-                            </form>
+                            <input
+                              type='text'
+                              value={newMessage}
+                              placeholder='Message...'
+                              className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full'
+                              onChange={(e) => setNewMessage(e.target.value)}
+                              onKeyDown={handleEnterDown}
+                            />
+                            {newMessage.trim() && (
+                              <button
+                                className='absolute top-5 right-8 text-blue-500 hover:text-white'
+                                onClick={handleSendMessage}>
+                                Send
+                              </button>
+                            )}
                           </div>
                         </div>
                       );

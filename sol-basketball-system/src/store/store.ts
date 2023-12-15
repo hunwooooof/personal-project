@@ -1,4 +1,5 @@
 import { DocumentData, DocumentReference } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 import { create } from 'zustand';
 import { UserCredential, firebaseAuth } from '../utils/firebaseAuth';
 import { db, doc, firestore } from '../utils/firestore';
@@ -78,9 +79,10 @@ export const useStore = create<StoreState>((set) => ({
   userID: undefined,
   kids: [],
   nativeSignup: (account: AccountType) => {
-    const { name, email, password } = account;
+    const { email, password } = account;
+    const name = account.name?.trim();
     firebaseAuth
-      .createUserWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(email.trim(), password.trim())
       .then((user) => {
         firebaseAuth.updateProfile(name as string, solBasketballLogo);
         firestore.setDoc('users', user.uid, initialProfile(user, name));
@@ -89,25 +91,31 @@ export const useStore = create<StoreState>((set) => ({
         set(() => ({ isLogin: true }));
         set(() => ({ currentNav: 'schedules' }));
       })
-      .catch((error: { code: number; message: string }) => {
-        console.error(error.code, error.message);
-      });
+      .catch((error) => {
+        if (error.message === 'Firebase: Error (auth/email-already-in-use).') {
+          toast.error('The email address is already registered. Please use a different email.');
+        } else {
+          toast.error('Account registration failed. Please check your information and try again.');
+        }
+      })
+      .finally(() => set(() => ({ isLoading: false })));
   },
   nativeLogin: (account: AccountType) => {
     const { email, password } = account;
     firebaseAuth
-      .signInWithEmailAndPassword(email, password)
+      .signInWithEmailAndPassword(email.trim(), password.trim())
       .then((user) => {
         set(() => ({ user: user as UserType }));
         set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
         set(() => ({ userID: user.uid }));
         set(() => ({ currentNav: 'schedules' }));
+        toast.success(`Hi ${user.displayName}, welcome back!`, { icon: '😸' });
       })
-      .catch((error) => {
-        window.alert('Wrong email or password');
-        console.error(error.code, error.message);
-      });
+      .catch(() => {
+        toast.error('Wrong email or password');
+      })
+      .finally(() => set(() => ({ isLoading: false })));
   },
   googleLogin: () => {
     firebaseAuth
@@ -126,7 +134,10 @@ export const useStore = create<StoreState>((set) => ({
               set(() => ({ currentNav: 'schedules' }));
             }
           })
-          .then(() => set(() => ({ isLogin: true })));
+          .then(() => {
+            set(() => ({ isLogin: true }));
+            toast.success('Account registered successfully!');
+          });
       })
       .catch((error) => console.error(error));
   },
@@ -146,12 +157,14 @@ export const useStore = create<StoreState>((set) => ({
     });
   },
   setLogOut: async () => {
-    firebaseAuth.signOut(() => {
-      set(() => ({ isLogin: false }));
-      set(() => ({ user: {} }));
-      set(() => ({ userRef: undefined }));
-      set(() => ({ userID: undefined }));
-    });
+    firebaseAuth
+      .signOut(() => {
+        set(() => ({ isLogin: false }));
+        set(() => ({ user: {} }));
+        set(() => ({ userRef: undefined }));
+        set(() => ({ userID: undefined }));
+      })
+      .then(() => toast.success('See you. Have a great day!', { icon: '👋🏻' }));
   },
   getUserProfile: async (userRef) => {
     const profile = await firestore.getDocByRef(userRef as DocumentReference<DocumentData, DocumentData>);

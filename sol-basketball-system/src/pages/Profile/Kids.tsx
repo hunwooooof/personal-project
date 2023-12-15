@@ -264,7 +264,7 @@ function Kids() {
                 onChange={handleChangeNewKidProfile}
               />
               {isBirthdayInvalid && (
-                <div className={`absolute -bottom-4 -right-6 text-red-500 text-sm scale-80 whitespace-nowrap`}>
+                <div className={`absolute -bottom-[18px] -right-6 text-red-500 text-sm scale-80 whitespace-nowrap`}>
                   出生日期不可為 {formatTimestampToYYYYslashMMslashDD(currenTime.getTime() - 94608000000)} 之後！
                 </div>
               )}

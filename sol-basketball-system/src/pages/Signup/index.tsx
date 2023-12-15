@@ -1,4 +1,4 @@
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input, Spinner } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import googleLogoUrl from '../../assets/google-logo.png';
@@ -6,7 +6,6 @@ import logoUrl from '../../assets/sol-logo.png';
 import { EyeFilledIcon } from '../../components/EyeFilledIcon';
 import { EyeSlashFilledIcon } from '../../components/EyeSlashFilledIcon';
 import { useStore } from '../../store/store';
-
 const emptyAccount = {
   name: '',
   email: '',
@@ -15,14 +14,15 @@ const emptyAccount = {
 
 function Signup() {
   const navigate = useNavigate();
-  const { setCurrentNav, nativeSignup, googleLogin, isLogin, userRef, getUserProfile } = useStore();
+  const { setCurrentNav, nativeSignup, googleLogin, isLogin, userRef, getUserProfile, isLoading, setLoading } =
+    useStore();
   const [account, setAccount] = useState(emptyAccount);
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
-    setAccount({ ...account, [id]: e.target.value.trim() });
+    setAccount({ ...account, [id]: e.target.value });
   };
 
   useEffect(() => {
@@ -31,7 +31,12 @@ function Signup() {
       navigate('/');
       setCurrentNav('/schedules');
     }
+    setLoading(false);
   }, [isLogin]);
+
+  const isInvalidName = account.name.length > 26;
+  const isInvalidEmail = !/^[A-Za-z0-9._%+-]+@[^@\s]+\.[^@\s]+$/.test(account.email) && account.email.length > 0;
+  const isInvalidPassword = account.password.length < 6 && account.password.length > 0;
 
   return (
     <div className='custom-main-container pt-14'>
@@ -45,7 +50,11 @@ function Signup() {
             label='Full name'
             id='name'
             placeholder='Enter your name'
+            isInvalid={isInvalidName}
+            color={isInvalidName ? 'danger' : 'default'}
+            errorMessage={isInvalidName && 'Exceeded the word limit.'}
             className='mx-auto max-w-sm'
+            classNames={{ errorMessage: 'text-red-400' }}
             value={account.name}
             onChange={handleInputChange}
           />
@@ -55,7 +64,11 @@ function Signup() {
             label='Email'
             id='email'
             placeholder='Enter your email'
+            isInvalid={isInvalidEmail}
+            color={isInvalidEmail ? 'danger' : 'default'}
+            errorMessage={isInvalidEmail && 'Please enter a valid email.'}
             className='mx-auto max-w-sm'
+            classNames={{ errorMessage: 'text-red-400' }}
             value={account.email}
             onChange={handleInputChange}
           />
@@ -64,10 +77,21 @@ function Signup() {
             id='password'
             label='Password'
             placeholder='Enter your password'
+            isInvalid={isInvalidPassword}
+            color={isInvalidPassword ? 'danger' : 'default'}
+            errorMessage={isInvalidPassword && 'Password should be at least 6 characters.'}
             value={account.password}
             onChange={handleInputChange}
+            onKeyDown={(e) => {
+              const pressedKey = e.key.toUpperCase();
+              if (pressedKey === 'ENTER') {
+                setLoading(true);
+                nativeSignup(account);
+              }
+            }}
             type={isVisible ? 'text' : 'password'}
             className='mx-auto max-w-sm'
+            classNames={{ errorMessage: 'text-red-400' }}
             endContent={
               <button className='focus:outline-none' type='button' onClick={toggleVisibility}>
                 {isVisible ? (
@@ -81,8 +105,14 @@ function Signup() {
           <Button
             color='primary'
             className='disabled:cursor-auto disabled:bg-gray-300 disabled:scale-100 mx-auto'
-            disabled={Object.values(account).some((item) => item.length === 0)}
+            disabled={
+              Object.values(account).some((item) => item.length === 0) ||
+              isInvalidName ||
+              isInvalidEmail ||
+              isInvalidPassword
+            }
             onClick={() => nativeSignup(account)}>
+            {isLoading && <Spinner color='default' size='sm' />}
             SIGN UP
           </Button>
           <Link to='/login' className='text-sm mx-auto underline mt-2 text-blue-400 hover:scale-105 duration-150'>

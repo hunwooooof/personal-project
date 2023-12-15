@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { db, doc, firestore } from '../../utils/firestore';
+import { formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
 
 interface PropsType {
   kid: {
@@ -93,6 +94,9 @@ function Card({ kid }: PropsType) {
     const age = new Date(diff);
     return Math.abs(age.getUTCFullYear() - 1970);
   };
+
+  const currenTime = new Date();
+  const isBirthdayInvalid = new Date().getTime() - new Date(newKid.birthday).getTime() < 94608000000;
 
   return (
     <div className='kidCard bg-white'>
@@ -279,22 +283,31 @@ function Card({ kid }: PropsType) {
           )}
         </div>
         <div
-          className={`w-full flex items-center mb-2 text-black ${isEdit ? 'justify-between' : 'justify-start gap-2'}`}>
+          className={`relative w-full flex items-center mb-2 text-black ${
+            isEdit ? 'justify-between' : 'justify-start gap-2'
+          }`}>
           <span className='inline-block w-4/12 mr-2 text-gray-500'>Birthday</span>
           {!isEdit && kid.birthday}
           {isEdit && (
-            <Input
-              isRequired
-              size='sm'
-              type='date'
-              id='birthday'
-              className='inline-block w-7/12'
-              classNames={{
-                inputWrapper: ['h-6', 'py-0', 'px-2'],
-              }}
-              value={newKid.birthday}
-              onChange={handleChangeKidProfile}
-            />
+            <>
+              <Input
+                isRequired
+                size='sm'
+                type='date'
+                id='birthday'
+                className={`inline-block w-7/12 rounded-lg ${isBirthdayInvalid && 'ring-1 ring-red-500'}`}
+                classNames={{
+                  inputWrapper: ['h-6', 'py-0', 'px-2'],
+                }}
+                value={newKid.birthday}
+                onChange={handleChangeKidProfile}
+              />
+              {isBirthdayInvalid && (
+                <div className={`absolute -bottom-[18px] -right-6 text-red-500 text-sm scale-80 whitespace-nowrap`}>
+                  出生日期不可為 {formatTimestampToYYYYslashMMslashDD(currenTime.getTime() - 94608000000)} 之後！
+                </div>
+              )}
+            </>
           )}
         </div>
         {!isEdit && (

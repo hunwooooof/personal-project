@@ -1,4 +1,5 @@
 import { Tooltip } from '@nextui-org/react';
+import { Toaster } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/sol-logo.png';
 import { useStore } from '../../store/store';
@@ -62,30 +63,33 @@ function Sidebar() {
             <span className='hidden lg:inline'>Game Videos</span>
           </Link>
         </Tooltip>
+        <Tooltip content='Profile' placement='right' className='lg:hidden'>
+          <Link
+            to='/profile'
+            id='profile'
+            onClick={() => {
+              setLoading(true);
+              setCurrentNav('profile');
+            }}
+            className={currentNav === 'profile' ? activeNavClass : normalNavClass}>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={1.5}
+              stroke='currentColor'
+              className='w-7 h-7'>
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'
+              />
+            </svg>
+            <span className='hidden lg:inline'>Profile</span>
+          </Link>
+        </Tooltip>
         {isLogin && user && user.role === 'user' && (
           <>
-            <Tooltip content='Profile' placement='right' className='lg:hidden'>
-              <Link
-                to='/profile'
-                id='profile'
-                onClick={() => setCurrentNav('profile')}
-                className={currentNav === 'profile' ? activeNavClass : normalNavClass}>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth={1.5}
-                  stroke='currentColor'
-                  className='w-7 h-7'>
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'
-                  />
-                </svg>
-                <span className='hidden lg:inline'>Profile</span>
-              </Link>
-            </Tooltip>
             <Tooltip content='Purchase' placement='right' className='lg:hidden'>
               <Link
                 to='/purchase'
@@ -318,6 +322,7 @@ function Sidebar() {
           </button>
         )}
       </div>
+      <Toaster position='top-right' />
     </div>
   );
 }
