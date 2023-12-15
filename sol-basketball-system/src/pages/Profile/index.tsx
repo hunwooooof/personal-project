@@ -91,13 +91,13 @@ function Profile() {
       {!isLoading && (
         <>
           <PageTitle title='Profile' />
-          <div className='mx-0 md:mx-12 lg:mx-20 flex items-center py-6'>
-            <div className='w-full relative pt-10 pb-6 pl-20 flex items-center my-4 bg-white rounded-3xl'>
+          <div className='mx-8 md:mx-12 lg:mx-20 flex items-center py-6'>
+            <div className='w-full relative pt-10 pb-6 flex items-center justify-center gap-8 my-4 bg-white rounded-3xl'>
               <div className='absolute top-0 left-0 rounded-t-3xl bg-slate-400 w-full h-6' />
               <div className='relative'>
                 <img
                   src={isEditProfile ? newProfile.photoURL : user.photoURL}
-                  className='w-24 h-24 object-cover rounded-full border bg-white mr-20'
+                  className='w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-full border bg-white'
                 />
                 {isEditProfile && (
                   <div>
@@ -111,7 +111,7 @@ function Profile() {
                     />
                     <label
                       htmlFor='userPhoto'
-                      className='absolute left-0 top-0 w-24 h-24 rounded-full flex opacity-0 hover:opacity-100 hover:bg-gray-600/70 cursor-pointer items-center justify-center duration-150'>
+                      className='absolute left-0 top-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full flex opacity-0 hover:opacity-100 hover:bg-gray-600/70 cursor-pointer items-center justify-center duration-150'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         fill='none'
@@ -129,9 +129,9 @@ function Profile() {
                   </div>
                 )}
               </div>
-              <div className='flex text-black'>
-                <div className='flex flex-col w-52 gap-2'>
-                  <div className='px-2 text-gray-500'>Name</div>
+              <div className='w-72 sm:w-60 md:w-auto flex flex-col md:flex-row gap-1 md:gap-0 text-black'>
+                <div className='flex flex-row md:flex-col mr-10 gap-2'>
+                  <div className='px-2 text-gray-500 pt-1 md:pt-0'>Name</div>
                   {isEditProfile ? (
                     <div className='relative'>
                       <input
@@ -153,8 +153,8 @@ function Profile() {
                     <div className='px-2 py-1'>{user.displayName}</div>
                   )}
                 </div>
-                <div className='flex flex-col w-32 gap-2'>
-                  <div className='px-2 text-gray-500'>Phone</div>
+                <div className='flex flex-row md:flex-col w-32 gap-2'>
+                  <div className='px-2 text-gray-500 pt-1 md:pt-0'>Phone</div>
                   {!isEditProfile &&
                     (user.phoneNumber?.length === 0 ? (
                       <div className='px-2'>N/A</div>
@@ -171,8 +171,8 @@ function Profile() {
                     />
                   )}
                 </div>
-                <div className='flex flex-col w-32 gap-2'>
-                  <div className='text-gray-500 pl-6'>Email</div>
+                <div className='flex flex-row md:flex-col w-40 gap-2'>
+                  <div className='text-gray-500 pt-1 md:pt-0 pl-2 md:pl-6'>Email</div>
                   <div className='pl-6 py-1'>{user.email}</div>
                 </div>
               </div>
@@ -188,7 +188,7 @@ function Profile() {
                 </button>
               ) : (
                 <div
-                  className='absolute right-4 bottom-4 cursor-pointer w-14 py-1 border rounded-xl hover:text-zinc-300 hover:scale-110 duration-150 text-zinc-200'
+                  className='absolute right-0 bottom-2 cursor-pointer w-14 py-1 rounded-xl hover:text-zinc-300 hover:scale-110 duration-150 text-zinc-200'
                   onClick={() => {
                     setEditProfile(true);
                     setNewProfile({

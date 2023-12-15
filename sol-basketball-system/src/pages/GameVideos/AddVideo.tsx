@@ -1,5 +1,6 @@
 import { Input, Select, SelectItem } from '@nextui-org/react';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import PageTitle from '../../components/PageTitle';
 import { firestore } from '../../utils/firestore';
 
@@ -12,50 +13,24 @@ interface VideoType {
   tag: string;
   date: string;
   title: string;
-  youtubeId: string;
+  youtubeLink: string;
   type?: string;
 }
 
 function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
+  const selectBox = useRef(null);
   const [newVideo, setNewVideo] = useState<VideoType>({
-    tag: '',
-    date: '2023-11-25',
-    title: 'Hoopboyz vs Roadrunners Rookies',
-    youtubeId: 'Iqs4n-2UWvo',
-    type: '',
     // tag: '',
-    // date: '',
-    // title: '',
-    // youtubeId: '',
+    // date: '2023-11-25',
+    // title: 'Hoopboyz vs Roadrunners Rookies',
+    // youtubeLink: 'https://www.youtube.com/watch?v=Iqs4n-2UWvo',
     // type: '',
+    tag: '',
+    date: '',
+    title: '',
+    youtubeLink: '',
+    type: '',
   });
-
-  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const id = e.target.id;
-    setNewVideo({ ...newVideo, [id]: e.target.value });
-  };
-
-  const handleSubmit = () => {
-    const { tag, date, title, youtubeId, type } = newVideo;
-    firestore
-      .setDoc(
-        'videos',
-        'roadrunners',
-        { tag, date, title: title.trim(), youtubeId: youtubeId.trim() },
-        `${newVideo.type}`,
-        newVideo.youtubeId,
-      )
-      .then(() => {
-        type === 'top-league' ? getTopLeagueVideos() : getFriendlyGameVideos();
-      });
-    setNewVideo({
-      tag: '',
-      date: '',
-      title: '',
-      youtubeId: '',
-      type: '',
-    });
-  };
 
   const types = [
     { label: 'Top League', value: 'top-league' },
@@ -68,6 +43,46 @@ function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
   ];
 
   const inputClass = 'flex flex-wrap md:flex-nowrap gap-4';
+
+  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const id = e.target.id;
+    setNewVideo({ ...newVideo, [id]: e.target.value });
+  };
+
+  const extractVideoId = (youtubeLink: string) => {
+    const regex = /(?:youtube\.com\/(?:[^/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = youtubeLink.match(regex);
+    return match ? match[1] : null;
+  };
+
+  const youtubeId = extractVideoId(newVideo.youtubeLink.trim());
+
+  const handleSubmit = () => {
+    const { tag, date, title, type } = newVideo;
+    firestore
+      .setDoc(
+        'videos',
+        'roadrunners',
+        { tag, date, title: title.trim(), youtubeId: youtubeId },
+        `${newVideo.type}`,
+        youtubeId as string,
+      )
+      .then(() => {
+        toast.success('Video upload successful');
+        type === 'top-league' ? getTopLeagueVideos() : getFriendlyGameVideos();
+      })
+      .catch(() => {
+        toast.error('Upload failed.');
+      });
+    setNewVideo({
+      tag: '',
+      date: '',
+      title: '',
+      youtubeLink: '',
+      type: '',
+    });
+    selectBox.current = null;
+  };
 
   return (
     <div className='pt-6 lg:pt-14 pb-14 border-b border-gray-600 px-10 md:px-0'>
@@ -82,11 +97,11 @@ function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
           }}>
           <div className={`${inputClass} w-[360px] xl:w-[420px]`}>
             <Select
+              ref={selectBox}
               isRequired
               label='Type'
               className='max-w-md'
               id='type'
-              value={newVideo.type}
               onChange={(e) => {
                 const value = e.target.value;
                 setNewVideo({
@@ -120,7 +135,7 @@ function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
                 label='Age'
                 className='max-w-md'
                 id='tag'
-                value={newVideo.tag}
+                // value={newVideo.tag}
                 onChange={(e) => {
                   const value = e.target.value;
                   setNewVideo({
@@ -141,18 +156,11 @@ function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
               isRequired
               type='text'
               className='max-w-md'
-              id='youtubeId'
-              label=' YouTube Video ID'
-              placeholder='07NkJZ2N94M'
-              value={newVideo.youtubeId}
+              id='youtubeLink'
+              label=' YouTube Video Link'
+              placeholder='https://www.youtube.com/watch?v=Iqs4n-2UWvo'
+              value={newVideo.youtubeLink}
               onChange={handleChangeInput}
-              startContent={
-                <div className='pointer-events-none flex items-center'>
-                  <span className='text-default-400 font-normal text-xs w-[202px]'>
-                    https://www.youtube.com/watch?v=
-                  </span>
-                </div>
-              }
             />
           </div>
           <div className={`${inputClass} w-[360px] xl:w-[420px]`}>
@@ -168,15 +176,15 @@ function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
             />
           </div>
           <button
-            className='w-32 font-semibold rounded-full bg-gray-700 text-white mt-4 py-2 hover:scale-110 duration-150 disabled:scale-100 disabled:cursor-auto disabled:text-gray-600'
-            disabled={Object.values(newVideo).some((item) => item.length === 0) || newVideo.youtubeId.length !== 11}
+            className='flex items-center justify-center font-semibold rounded-full bg-gray-700 text-white mt-4 py-2 hover:scale-110 duration-150 disabled:scale-100 disabled:cursor-auto disabled:text-gray-600'
+            disabled={Object.values(newVideo).some((item) => item.length === 0)}
             type='submit'>
             Add Video
           </button>
         </form>
         <div className='w-[350px] lg:w-[400px] flex-shrink-0 bg-gray-100 rounded-xl' id='video-demonstrate'>
           <iframe
-            src={`https://www.youtube.com/embed/${newVideo.youtubeId}`}
+            src={`https://www.youtube.com/embed/${extractVideoId(newVideo.youtubeLink.trim())}`}
             title='YouTube video player'
             className='w-full h-[200px] lg:h-[250px] rounded-t-xl'
             allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'

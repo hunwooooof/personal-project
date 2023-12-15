@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { useStore } from '../../store/store';
 import { firestore } from '../../utils/firestore';
 
@@ -24,7 +25,18 @@ function Video({ video, type, getVideo }: PropsType) {
 
   const handleDelete = (video: VideoType, type: string, getVideo: () => void) => {
     const userConfirm = confirm('Are you sure you want to delete this video?');
-    if (userConfirm) firestore.deleteDoc('videos', 'roadrunners', type, video.youtubeId).then(() => getVideo());
+    if (userConfirm) {
+      firestore
+        .deleteDoc('videos', 'roadrunners', type, video.youtubeId)
+        .then(() => {
+          toast.success('Deletion successful');
+          getVideo();
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error('Deletion failed');
+        });
+    }
   };
 
   return (

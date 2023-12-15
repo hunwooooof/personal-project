@@ -1,5 +1,17 @@
-import { Avatar, Button, Card, Divider, Radio, RadioGroup, Select, SelectItem, Tooltip } from '@nextui-org/react';
+import {
+  Avatar,
+  Button,
+  Card,
+  Divider,
+  Input,
+  Radio,
+  RadioGroup,
+  Select,
+  SelectItem,
+  Tooltip,
+} from '@nextui-org/react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle } from '../../components/Icon';
 import PageTitle from '../../components/PageTitle';
@@ -10,6 +22,7 @@ import { db, doc, firestore, serverTimestamp } from '../../utils/firestore';
 function Purchase() {
   const navigate = useNavigate();
   const { setCurrentNav, user, userRef, kids, isLogin, getUserProfile } = useStore();
+  const [newEmail, setNewEmail] = useState(user.email);
   const [selectPlanId, setSelectPlanId] = useState('01');
   const plans = [
     { id: '01', title: 'Single Session', price: 1000, priceText: '$ 1,000' },
@@ -68,6 +81,7 @@ function Purchase() {
         getUserProfile(userRef);
         navigate('/order');
         setCurrentNav('order');
+        toast.success('Order placed successfully');
       });
       email.notifyNewOrder(
         { ...order, time: `${yyyy}/${mm}/${dd} ${hour}:${min}` },
@@ -86,7 +100,7 @@ function Purchase() {
     <div className='custom-main-container pt-6 lg:pt-14'>
       <PageTitle title='Purchase' />
       <div className='mx-0 md:mx-12 lg:mx-20 py-8'>
-        <div className='flex mb-8 items-center'>
+        <div className='flex mb-8'>
           <h4 className='w-28'>Kid</h4>
           <div className='w-60'>
             <Select
@@ -153,6 +167,18 @@ function Purchase() {
               );
             })}
           </div>
+        </div>
+        <div className='flex mb-16'>
+          <h4 className='w-28'>Email</h4>
+          <Input
+            aria-label='email'
+            type='email'
+            value={newEmail}
+            size='sm'
+            onChange={(e) => setNewEmail(e.target.value)}
+            className='w-80'
+            description='Order details will be sent to your email address. Please confirm that your email address is correct.'
+          />
         </div>
         <div className='flex mb-16'>
           <h4 className='w-28'>Payment</h4>
