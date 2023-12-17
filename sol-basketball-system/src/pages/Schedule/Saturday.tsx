@@ -49,6 +49,7 @@ function Saturday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
         <div
           className={isScheduledClass}
           onClick={() => {
+            console.log(date);
             if (Object.keys(todaySchedule)[0] == date && isInfoShow) {
               setInfoShow(false);
             } else {

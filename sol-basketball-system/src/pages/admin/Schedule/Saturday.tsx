@@ -128,7 +128,7 @@ function Saturday({ date, quarter, year }: PropsType) {
               className='fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-60 z-10'
               onClick={() => setEdit(false)}>
               <div
-                className='z-20 bg-white w-5/12 mx-auto mt-24 rounded-2xl py-4 cursor-default font-sans relative'
+                className='z-20 bg-white max-w-[600px] mx-auto mt-24 rounded-2xl py-4 cursor-default font-sans relative'
                 onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setEdit(false)}
@@ -159,10 +159,10 @@ function Saturday({ date, quarter, year }: PropsType) {
                   </div>
                 )}
                 <div className='mt-2 text-sm'>
-                  <label htmlFor='time' className='inline-block mr-10 w-1/12 text-center'>
+                  <label htmlFor='time' className='inline-block ml-1 text-center'>
                     Time
                   </label>
-                  <span className='inline-block w-6/12'>
+                  <span className='inline-block w-7/12'>
                     <Input
                       isRequired
                       type='time'
@@ -181,14 +181,21 @@ function Saturday({ date, quarter, year }: PropsType) {
                         });
                       }}
                     />
-                    <span className='inline-block w-2/12'>～</span>
+                    <span className='inline-block w-1/12'>～</span>
                     <Input
                       isRequired
                       type='time'
                       name='end'
                       id='end'
                       aria-label='end'
+                      isInvalid={detail.time.slice(0, 5) > detail.time.slice(6)}
+                      color={detail.time.slice(0, 5) > detail.time.slice(6) ? 'danger' : 'default'}
+                      errorMessage={
+                        detail.time.slice(0, 5) > detail.time.slice(6) &&
+                        'The end time should not precede the start time.'
+                      }
                       className='w-5/12 inline-block'
+                      classNames={{ errorMessage: 'whitespace-nowrap absolute right-0' }}
                       size='sm'
                       value={detail.time.slice(6)}
                       onChange={(e) => {

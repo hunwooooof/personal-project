@@ -4,11 +4,6 @@ import toast from 'react-hot-toast';
 import PageTitle from '../../components/PageTitle';
 import { firestore } from '../../utils/firestore';
 
-interface PropsType {
-  getTopLeagueVideos: () => void;
-  getFriendlyGameVideos: () => void;
-}
-
 interface VideoType {
   tag: string;
   date: string;
@@ -17,7 +12,7 @@ interface VideoType {
   type?: string;
 }
 
-function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
+function AddVideo() {
   const selectBox = useRef(null);
   const [newVideo, setNewVideo] = useState<VideoType>({
     // tag: '',
@@ -58,7 +53,7 @@ function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
   const youtubeId = extractVideoId(newVideo.youtubeLink.trim());
 
   const handleSubmit = () => {
-    const { tag, date, title, type } = newVideo;
+    const { tag, date, title } = newVideo;
     firestore
       .setDoc(
         'videos',
@@ -69,7 +64,6 @@ function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
       )
       .then(() => {
         toast.success('Video upload successful');
-        type === 'top-league' ? getTopLeagueVideos() : getFriendlyGameVideos();
       })
       .catch(() => {
         toast.error('Upload failed.');
@@ -135,7 +129,6 @@ function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
                 label='Age'
                 className='max-w-md'
                 id='tag'
-                // value={newVideo.tag}
                 onChange={(e) => {
                   const value = e.target.value;
                   setNewVideo({
@@ -171,13 +164,16 @@ function AddVideo({ getTopLeagueVideos, getFriendlyGameVideos }: PropsType) {
               id='title'
               label='Title'
               placeholder='Roadrunners vs TOP'
+              isInvalid={newVideo.title.length > 30}
+              color={newVideo.title.length > 30 ? 'danger' : 'default'}
+              errorMessage={newVideo.title.length > 30 && 'Exceeds the maximum character limit.'}
               value={newVideo.title}
               onChange={handleChangeInput}
             />
           </div>
           <button
             className='flex items-center justify-center font-semibold rounded-full bg-gray-700 text-white mt-4 py-2 hover:scale-110 duration-150 disabled:scale-100 disabled:cursor-auto disabled:text-gray-600'
-            disabled={Object.values(newVideo).some((item) => item.length === 0)}
+            disabled={Object.values(newVideo).some((item) => item.length === 0) || newVideo.title.length > 30}
             type='submit'>
             Add Video
           </button>

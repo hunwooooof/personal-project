@@ -384,14 +384,16 @@ function Schedule() {
                       </svg>
                       {info.time}
                     </div>
-                    <div
-                      className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
-                      onClick={() => {
-                        handleClickGoogleCalendar(info);
-                      }}>
-                      <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
-                      Add to calendar
-                    </div>
+                    {new Date(info.date) > new Date() && (
+                      <div
+                        className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                        onClick={() => {
+                          handleClickGoogleCalendar(info);
+                        }}>
+                        <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
+                        Add to calendar
+                      </div>
+                    )}
                   </div>
                   <iframe
                     src={`https://www.google.com/maps/embed${getGoogleMapIframe(info.address)}`}
@@ -474,14 +476,16 @@ function Schedule() {
                           </svg>
                           {item.time}
                         </div>
-                        <div
-                          className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
-                          onClick={() => {
-                            handleClickGoogleCalendar(item);
-                          }}>
-                          <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
-                          Add to calendar
-                        </div>
+                        {new Date(item.date) > new Date() && (
+                          <div
+                            className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                            onClick={() => {
+                              handleClickGoogleCalendar(item);
+                            }}>
+                            <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
+                            Add to calendar
+                          </div>
+                        )}
                         <iframe
                           src={`https://www.google.com/maps/embed${getGoogleMapIframe(item.address)}`}
                           className='w-full h-56 sm:h-72 lg:h-80 mt-6 lg:mt-8 rounded-2xl'
