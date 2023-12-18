@@ -16,9 +16,9 @@ interface OrderType {
 }
 
 const email = {
-  notifyNewOrder: async (order: OrderType, orderId: string, user: { displayName: string }) => {
+  notifyNewOrder: async (order: OrderType, orderId: string, displayName: string) => {
     const orderParams = {
-      name: user.displayName,
+      name: displayName,
       orderId: orderId,
       kidFirstName: order.kid.firstName,
       kidLastName: order.kid.lastName,
@@ -35,10 +35,10 @@ const email = {
     );
     if (response) console.log(response.status, response.text);
   },
-  orderCreate: async (order: OrderType, orderId: string, user: { displayName: string; email: string }) => {
+  orderCreate: async (order: OrderType, orderId: string, displayName: string, confirmedEmail: string) => {
     const orderParams = {
-      to_email: user.email,
-      name: user.displayName,
+      to_email: confirmedEmail,
+      name: displayName,
       orderId: orderId,
       kidFirstName: order.kid.firstName,
       kidLastName: order.kid.lastName,

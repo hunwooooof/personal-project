@@ -247,7 +247,11 @@ function Schedule() {
                 <div>Friday</div>
                 <div>19:00-21:00</div>
               </div>
-              <div className={tableHeadClass}>Saturday</div>
+              <div className={`flex-col ${tableHeadClass}`}>
+                <div>Saturday</div>
+                <div>Time: Flexible</div>
+              </div>
+              {/* <div className={tableHeadClass}>Saturday</div> */}
               <div className={`flex-col ${tableHeadClass}`}>
                 <div>Sunday</div>
                 <div>16:30-18:30</div>

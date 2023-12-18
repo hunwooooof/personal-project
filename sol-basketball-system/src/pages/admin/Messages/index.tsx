@@ -206,10 +206,13 @@ function Messages() {
                           setUnreadFalse(chat.userID);
                           setInfoShow(false);
                         }}
-                        className={`flex items-center px-5 py-2 cursor-pointer ${
+                        className={`relative lg:static flex items-center px-5 py-2 cursor-pointer ${
                           id === chat.userID ? 'bg-slate-600 hover:bg-slate-600' : 'hover:bg-slate-700'
                         }`}>
                         <img src={chat.userPhoto} alt='' className='h-14 w-14 rounded-full object-cover' />
+                        {chat.unread === true && (
+                          <div className='lg:hidden absolute top-8 right-1 w-2 h-2 rounded-full bg-cyan-400' />
+                        )}
                         <div className='hidden lg:block px-4 w-[calc(100%-56px)]'>
                           <div className={`${chat.unread && 'font-extrabold'} w-full`}>{chat.userName}</div>
                           {chat.lastMessage.timestamp !== 0 && (

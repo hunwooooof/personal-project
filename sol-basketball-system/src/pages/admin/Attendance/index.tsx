@@ -165,7 +165,9 @@ function Attendance() {
               {attendances.map((attendance: AttendanceType) => {
                 const { name } = attendance;
                 return (
-                  <div className='shrink-0 w-40 mt-3 font-bold tracking-wide py-1 px-2' key={name}>
+                  <div
+                    className='shrink-0 w-40 mt-3 bg-white font-bold tracking-wide py-1 px-2 truncate hover:max-w-[none] hover:overflow-visible rounded-lg'
+                    key={name}>
                     {name.replace('-', ' ')}
                   </div>
                 );

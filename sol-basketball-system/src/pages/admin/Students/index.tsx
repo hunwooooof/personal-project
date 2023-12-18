@@ -58,7 +58,7 @@ function Student() {
                   src={student.photoURL}
                   className='w-24 h-24 object-cover rounded-full my-2 absolute -top-14 border-2 border-white'
                 />
-                <div className='text-xl text-black mt-14 font-bold'>
+                <div className='text-xl text-black mt-14 font-bold truncate max-w-[80%] hover:bg-zinc-100 hover:max-w-[200%] hover:z-20 hover:px-1 hover:shadow-md rounded-lg'>
                   {student.firstName} {student.lastName}
                 </div>
                 <div className=' text-black mb-4 font-semibold'>{student.chineseName}</div>

@@ -18,11 +18,16 @@ import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import email from '../../utils/emailJS';
 import { db, doc, firestore, serverTimestamp } from '../../utils/firestore';
+import {
+  formatTimestampToTime,
+  formatTimestampToYYYYMMDD,
+  formatTimestampToYYYYslashMMslashDD,
+} from '../../utils/helpers';
 
 function Purchase() {
   const navigate = useNavigate();
   const { setCurrentNav, user, userRef, kids, isLogin, getUserProfile } = useStore();
-  const [newEmail, setNewEmail] = useState(user.email);
+  const [confirmedEmail, setConfirmedEmail] = useState(user.email as string);
   const [selectPlanId, setSelectPlanId] = useState('01');
   const plans = [
     { id: '01', title: 'Single Session', price: 1000, priceText: '$ 1,000' },
@@ -58,13 +63,13 @@ function Purchase() {
     const userConfirmed = confirm('Confirm Order?');
     if (userRef && userConfirmed) {
       const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = today.getMonth() + 1;
-      const dd = today.getDate();
+      const currentTimestamp = today.getTime();
+      const date = formatTimestampToYYYYMMDD(currentTimestamp);
+      const showDate = formatTimestampToYYYYslashMMslashDD(currentTimestamp);
+      const time = formatTimestampToTime(currentTimestamp);
       const hour = today.getHours();
-      const min = today.getMinutes();
       const ms = today.getMilliseconds();
-      const orderId = `${yyyy}${mm}${dd}${hour}${ms}${order.method}${order.plan}`;
+      const orderId = `${date}${hour}${ms}${order.method}${order.plan}`;
       firestore.setDoc('orders', orderId, { ...order, timestamp: serverTimestamp(), id: orderId });
       firestore.getDoc('credits', order.kid.docId).then((user) => {
         if (!user) {
@@ -83,18 +88,12 @@ function Purchase() {
         setCurrentNav('order');
         toast.success('Order placed successfully');
       });
-      email.notifyNewOrder(
-        { ...order, time: `${yyyy}/${mm}/${dd} ${hour}:${min}` },
-        orderId,
-        user as { displayName: string },
-      );
-      email.orderCreate(
-        { ...order, time: `${yyyy}/${mm}/${dd} ${hour}:${min}` },
-        orderId,
-        user as { displayName: string; email: string },
-      );
+      email.notifyNewOrder({ ...order, time: `${showDate} ${time}` }, orderId, user.displayName as string);
+      email.orderCreate({ ...order, time: `${showDate} ${time}` }, orderId, user.displayName as string, confirmedEmail);
     }
   };
+
+  const isInvalidEmail = !/^[A-Za-z0-9._%+-]+@[^@\s]+\.[^@\s]+$/.test(confirmedEmail) && confirmedEmail.length > 0;
 
   return (
     <div className='custom-main-container pt-6 lg:pt-14'>
@@ -173,10 +172,13 @@ function Purchase() {
           <Input
             aria-label='email'
             type='email'
-            value={newEmail}
+            value={confirmedEmail}
             size='sm'
-            onChange={(e) => setNewEmail(e.target.value)}
+            onChange={(e) => setConfirmedEmail(e.target.value)}
             className='w-80'
+            isInvalid={isInvalidEmail}
+            color={isInvalidEmail ? 'danger' : 'default'}
+            errorMessage={isInvalidEmail && 'Please enter a valid email.'}
             description='Order details will be sent to your email address. Please confirm that your email address is correct.'
           />
         </div>
@@ -186,7 +188,10 @@ function Purchase() {
             aria-label='Payment'
             defaultValue='cash'
             onChange={(e) => setOrder({ ...order, method: e.target.value })}>
-            <Radio value='cash' className='mb-2'>
+            <Radio
+              value='cash'
+              className='mb-2'
+              description='When selecting cash payment, you can conveniently hand the cash to the coach during the class.'>
               <span className='text-white'>By Cash</span>
             </Radio>
             <Radio value='tran' description='Account: (808) 0624-979-171404'>
@@ -194,7 +199,7 @@ function Purchase() {
             </Radio>
           </RadioGroup>
         </div>
-        <Button isDisabled={order.kid.docId.length === 0} color='primary' onClick={handleSubmitOrder}>
+        <Button isDisabled={order.kid.docId.length === 0 || isInvalidEmail} color='primary' onClick={handleSubmitOrder}>
           Confirm
         </Button>
       </div>
