@@ -2,6 +2,7 @@ import { Tab, Tabs, Tooltip } from '@nextui-org/react';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { Key, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import LoadingAnimation from '../../components/LoadingAnimation';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { firestore } from '../../utils/firestore';
@@ -26,7 +27,7 @@ interface OrderType {
 
 function Order() {
   const navigate = useNavigate();
-  const { setCurrentNav, user, isLogin } = useStore();
+  const { setCurrentNav, user, isLogin, isLoading, setLoading } = useStore();
   const [tag, setTag] = useState('all');
   const [orders, setOrders] = useState<OrderType[]>([]);
 
@@ -39,6 +40,7 @@ function Order() {
     const sortByTimestamp = (a: OrderType, b: OrderType) => b.timestamp.seconds - a.timestamp.seconds;
     orders.sort(sortByTimestamp);
     setOrders(orders as OrderType[]);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -55,6 +57,7 @@ function Order() {
 
   return (
     <div className='custom-main-container'>
+      {isLoading && <LoadingAnimation />}
       <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14 pb-14'>
         <PageTitle title='Orders' />
         <div className='flex flex-col mr-0 md:mr-12 lg:mr-20'>

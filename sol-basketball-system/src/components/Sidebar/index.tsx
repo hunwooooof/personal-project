@@ -116,7 +116,10 @@ function Sidebar() {
               <Link
                 to='/order'
                 id='order'
-                onClick={() => setCurrentNav('order')}
+                onClick={() => {
+                  setLoading(true);
+                  setCurrentNav('order');
+                }}
                 className={currentNav === 'order' ? activeNavClass : normalNavClass}>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'

@@ -1,3 +1,4 @@
+import { ScrollShadow } from '@nextui-org/react';
 import { DocumentData, DocumentReference, arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -184,8 +185,18 @@ function Messages() {
     }
   };
 
+  const adminMessagesTemplate = [
+    'Thanks!',
+    'Cool!',
+    '😆😆',
+    'I have confirmed your order, please check.',
+    'The bank account is (808) 0624-979-171404.',
+    'Looking forward to see you!',
+    'No problem.',
+  ];
+
   return (
-    <div className='custom-main-container'>
+    <div className='custom-main-container max-h-screen'>
       {isLoading && <LoadingAnimation />}
       {!isLoading && (
         <div className='flex bg-slate-800 text-white'>
@@ -193,7 +204,7 @@ function Messages() {
             <div className='hidden lg:block font-bold text-2xl sm:text-3xl pl-0 md:pl-12 lg:pl-20 whitespace-nowrap pt-6 lg:pt-14 pb-14'>
               Messages
             </div>
-            <div className='overflow-y-auto h-[calc(100vh-148px)]'>
+            <div className='overflow-y-auto h-[calc(100vh-183px)]'>
               {chats &&
                 chats
                   .sort((a, b) => b.lastMessage.timestamp - a.lastMessage.timestamp)
@@ -248,8 +259,8 @@ function Messages() {
             </div>
           )}
           {id !== 'inbox' && (
-            <div className='w-8/12 flex' onClick={() => setUnreadFalse(id as string)}>
-              <div className='flex-1'>
+            <div className='w-[calc(100%-100px)] lg:w-8/12 flex' onClick={() => setUnreadFalse(id as string)}>
+              <div className={`flex-1 w-full ${isInfoShow && 'w-[55%]'}`}>
                 {chats &&
                   chats
                     .filter((chat) => chat.userID === id)
@@ -296,7 +307,7 @@ function Messages() {
                           </div>
                           <div
                             id='chatBox'
-                            className='flex flex-col w-full px-4 h-[calc(100vh-139px)] overflow-y-auto overflow-x-hidden'>
+                            className='flex flex-col w-full px-4 h-[calc(100vh-185px)] overflow-y-auto overflow-x-hidden'>
                             <div className='self-center pt-6 pb-4 flex flex-col items-center'>
                               <img
                                 src={currentChat.userPhoto}
@@ -341,17 +352,26 @@ function Messages() {
                               })}
                           </div>
                           <div className='w-full px-4 py-4 relative'>
+                            <ScrollShadow orientation='horizontal' className='flex gap-3 overflow-x-auto pb-2'>
+                              {adminMessagesTemplate.map((faq) => (
+                                <div
+                                  className='rounded-full cursor-pointer px-2 py-1 text-gray-500 border border-gray-700 whitespace-nowrap hover:bg-gray-700 hover:text-gray-300'
+                                  onClick={() => setNewMessage(faq)}>
+                                  {faq}
+                                </div>
+                              ))}
+                            </ScrollShadow>
                             <input
                               type='text'
                               value={newMessage}
                               placeholder='Message...'
-                              className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full'
+                              className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full mt-1'
                               onChange={(e) => setNewMessage(e.target.value)}
                               onKeyDown={handleEnterDown}
                             />
                             {newMessage.trim() && (
                               <button
-                                className='absolute top-5 right-8 text-blue-500 hover:text-white'
+                                className='absolute bottom-5 right-8 text-blue-500 hover:text-white'
                                 onClick={handleSendMessage}>
                                 Send
                               </button>
@@ -365,11 +385,13 @@ function Messages() {
                 <div className='w-full py-5 pl-5 text-lg font-semibold'>User details</div>
                 {userDetail && (
                   <div className='py-4 w-full'>
-                    <div className='flex items-center px-4 gap-4'>
+                    <div className='flex items-center px-4 gap-4 w-full'>
                       <img src={userDetail.photoURL} alt='user photo' className='h-10 w-10 rounded-full' />
-                      <div className='flex flex-col'>
+                      <div className='flex flex-col w-[calc(100%-40px)]'>
                         <div className='font-bold text-md text-gray-200'>{userDetail.displayName}</div>
-                        <div className='text-sm text-gray-400'>{userDetail.email}</div>
+                        <div className='text-sm text-gray-400 truncate w-full hover:overflow-visible'>
+                          {userDetail.email}
+                        </div>
                       </div>
                     </div>
                     <div className='w-full text-sm mt-6 px-4 text-gray-200'>
