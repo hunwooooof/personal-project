@@ -145,7 +145,7 @@ function Profile() {
                       />
                       {isInvalidName && (
                         <div className='absolute -bottom-5 -right-5 text-red-500 text-sm scale-80 whitespace-nowrap'>
-                          Exceeded the word limit.
+                          Exceeds the maximum character limit.
                         </div>
                       )}
                     </div>
@@ -202,12 +202,16 @@ function Profile() {
               )}
             </div>
           </div>
-          <div className='border-t border-gray-600 pt-4 lg:pt-8'>
-            <PageTitle title='Kids' />
-          </div>
-          <div className='mx-0 md:mx-12 lg:mx-20 flex items-center pt-4 pb-4'>
-            <Kids />
-          </div>
+          {user.role === 'user' && (
+            <div>
+              <div className='border-t border-gray-600 pt-4 lg:pt-8'>
+                <PageTitle title='Kids' />
+              </div>
+              <div className='mx-0 md:mx-12 lg:mx-20 flex items-center pt-4 pb-4'>
+                <Kids />
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

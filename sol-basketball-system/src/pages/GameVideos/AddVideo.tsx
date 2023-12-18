@@ -117,7 +117,7 @@ function AddVideo() {
                 type='date'
                 id='date'
                 label='Date'
-                placeholder='2023-11-11'
+                placeholder='0'
                 value={newVideo.date}
                 onChange={handleChangeInput}
               />
