@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import CalendarButton from '../../components/CalendarButton';
 import PageTitle from '../../components/PageTitle';
-import { firestore } from '../../utils/firestore';
+import { collection, db, firestore, onSnapshot } from '../../utils/firestore';
 
 interface PropsType {
   currentKidId: string;
@@ -31,13 +31,17 @@ function Attendance({ currentKidId }: PropsType) {
   }, [quarter, year]);
 
   const [showUpDates, setShowUpDates] = useState(['']);
-  async function getAttendanceDoc() {
-    const kidAttendance = await firestore.getDoc('attendance', currentKidId);
-    if (kidAttendance) setShowUpDates(kidAttendance.showUpDate);
-  }
   useEffect(() => {
-    getAttendanceDoc();
-  }, [quarter, year, currentKidId]);
+    const unsubscribe = onSnapshot(collection(db, 'attendance'), (docSnaps) => {
+      docSnaps.forEach((docSnap) => {
+        const doc = docSnap.data();
+        if (doc.docId === currentKidId) {
+          setShowUpDates(doc.showUpDate);
+        }
+      });
+    });
+    return () => unsubscribe();
+  }, []);
 
   const renderCheck = () => {
     return (

@@ -66,12 +66,11 @@ function Saturday({ date, quarter, year }: PropsType) {
 
   const [isEdit, setEdit] = useState<boolean>(false);
 
-  const unScheduledClass = `text-gray-600 relative px-12 py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-400 tracking-wider ${
+  const unScheduledClass = `text-gray-600 relative text-sm sm:text-base sm:px-12 py-2 sm:py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-400 tracking-wider ${
     Object.values(todaySchedule)[0].length > 0
       ? 'hover:[&:not(:has(*:hover))]:bg-slate-500 hover:cursor-pointer'
       : 'hover:cursor-auto hover:bg-slate-800'
   }`;
-  const isScheduledClass = `relative px-12 py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider text-black cursor-pointer bg-slate-400 hover:bg-slate-400`;
 
   const handleClickAdd = () => {
     firestore.getDoc('schedule', `${year}Q${quarter}`, 'saturday', date).then((schedule) => {
@@ -119,7 +118,9 @@ function Saturday({ date, quarter, year }: PropsType) {
                   e.stopPropagation();
                   setEdit(true);
                 }}>
-                {Edit('absolute right-8 w-6 h-6 inline-block text-gray-600 cursor-pointer hover:text-gray-200')}
+                {Edit(
+                  'absolute bg-white sm:bg-transparent rounded-full p-1 sm:p-0 -top-2 sm:top-auto right-0 sm:right-8 w-5 sm:w-6 h-5 sm:h-6 inline-block text-gray-600 cursor-pointer hover:text-gray-200',
+                )}
               </span>
             </>
           )}
@@ -128,12 +129,19 @@ function Saturday({ date, quarter, year }: PropsType) {
               className='fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-60 z-10'
               onClick={() => setEdit(false)}>
               <div
-                className='z-20 bg-white w-5/12 mx-auto mt-24 rounded-2xl py-4 cursor-default font-sans relative'
+                className='z-20 bg-white max-w-[600px] mx-auto mt-24 rounded-2xl py-4 cursor-default font-sans relative'
                 onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => setEdit(false)}
-                  className='hover:bg-gray-300 px-2 py-1 rounded-full cursor-pointer absolute right-4 top-4'>
-                  Ｘ
+                  className='hover:bg-gray-300 px-1 py-1 rounded-full cursor-pointer absolute right-4 top-4'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                    className='w-5 h-5 stroke-[1.5]'>
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+                  </svg>
                 </button>
                 <div className='text-gray-500 text-xl mb-4'>{`${date} (${
                   Object.values(todaySchedule)[0].length
@@ -159,10 +167,10 @@ function Saturday({ date, quarter, year }: PropsType) {
                   </div>
                 )}
                 <div className='mt-2 text-sm'>
-                  <label htmlFor='time' className='inline-block mr-10 w-1/12 text-center'>
+                  <label htmlFor='time' className='inline-block ml-1 text-center'>
                     Time
                   </label>
-                  <span className='inline-block w-6/12'>
+                  <span className='inline-block w-7/12'>
                     <Input
                       isRequired
                       type='time'
@@ -181,14 +189,21 @@ function Saturday({ date, quarter, year }: PropsType) {
                         });
                       }}
                     />
-                    <span className='inline-block w-2/12'>～</span>
+                    <span className='inline-block w-1/12'>～</span>
                     <Input
                       isRequired
                       type='time'
                       name='end'
                       id='end'
                       aria-label='end'
+                      isInvalid={detail.time.slice(0, 5) > detail.time.slice(6)}
+                      color={detail.time.slice(0, 5) > detail.time.slice(6) ? 'danger' : 'default'}
+                      errorMessage={
+                        detail.time.slice(0, 5) > detail.time.slice(6) &&
+                        'The end time should not precede the start time.'
+                      }
                       className='w-5/12 inline-block'
+                      classNames={{ errorMessage: 'whitespace-nowrap absolute right-0' }}
                       size='sm'
                       value={detail.time.slice(6)}
                       onChange={(e) => {
@@ -279,7 +294,7 @@ function Saturday({ date, quarter, year }: PropsType) {
       )}
       {scheduledDates.includes(date) && (
         <div
-          className={isScheduledClass}
+          className='isScheduledClass relative bg-slate-400 hover:bg-slate-400'
           onClick={() => {
             firestore
               .updateDocArrayRemove('schedule', `${year}Q${quarter}`, 'all', date)

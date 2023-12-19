@@ -1,3 +1,4 @@
+import { ScrollShadow } from '@nextui-org/react';
 import { arrayUnion, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -92,27 +93,37 @@ function Message() {
     stopPropagation: () => void;
   }) => {
     const pressedKey = e.key.toUpperCase();
-    if (pressedKey === 'ENTER') {
+    if (pressedKey === 'ENTER' && newMessage.trim()) {
       if (e.nativeEvent.isComposing) {
         e.preventDefault();
         e.stopPropagation();
       }
-      if (!e.nativeEvent.isComposing && newMessage.trim()) {
+      if (!e.nativeEvent.isComposing) {
         handleSendMessage();
         e.preventDefault();
       }
     }
   };
 
+  const userMessagesTemplate = [
+    'Thanks!',
+    '😆😆',
+    'I have completed the bank transfer. Please verify for me.',
+    'I have questions about my course enrollment.',
+    'Pleas provide information on the payment process.',
+    'I have questions about the courses offered.',
+    'I need help.',
+  ];
+
   return (
-    <div className='custom-main-container'>
+    <div className='custom-main-container max-h-screen'>
       <div className='w-full bg-slate-800 text-white'>
         <div className='lg:max-w-[700px] mx-auto lg:border-r lg:border-l border-gray-600 flex flex-col'>
           <div className='flex justify-between items-center px-4 py-4 border-b border-gray-600'>
             <img src={adminPhoto} alt='user photo' className='h-10 w-10 rounded-full' />
             <div className='ml-3 mr-auto font-bold'>admin</div>
           </div>
-          <div id='chatBox' className='flex flex-col w-full px-4 h-[calc(100vh-139px)] overflow-y-auto'>
+          <div id='chatBox' className='flex flex-col w-full px-4 h-[calc(100vh-190px)] overflow-y-auto'>
             <div className='self-center pt-6 pb-4'>
               <img src={adminPhoto} alt='user photo' className='h-20 w-20 rounded-full' />
               <div className='text-center mt-2 font-bold'>admin</div>
@@ -155,7 +166,7 @@ function Message() {
           {!chat && (
             <div className='w-full flex justify-center py-4'>
               <button
-                className='px-4 py-1 text-center border rounded-full hover:bg-slate-600'
+                className='px-4 py-1 my-4 text-center border rounded-full hover:bg-slate-600'
                 onClick={() => {
                   const newDoc = {
                     lastMessage: { timestamp: 0 },
@@ -173,16 +184,27 @@ function Message() {
           )}
           {chat && (
             <div className='w-full px-4 py-4 relative'>
+              <ScrollShadow orientation='horizontal' className='flex gap-3 overflow-x-auto pb-2'>
+                {userMessagesTemplate.map((faq) => (
+                  <div
+                    className='rounded-full cursor-pointer px-2 py-1 text-gray-400 border border-gray-700 whitespace-nowrap hover:bg-gray-700'
+                    onClick={() => setNewMessage(faq)}>
+                    {faq}
+                  </div>
+                ))}
+              </ScrollShadow>
               <input
                 type='text'
                 value={newMessage}
                 placeholder='Message...'
-                className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full'
+                className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full mt-2'
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={handleEnterDown}
               />
               {newMessage.trim() && (
-                <button className='absolute top-5 right-8 text-blue-500 hover:text-white' onClick={handleSendMessage}>
+                <button
+                  className='absolute bottom-5 right-8 text-blue-500 hover:text-white'
+                  onClick={handleSendMessage}>
                   Send
                 </button>
               )}

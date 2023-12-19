@@ -1,4 +1,4 @@
-import { Button, Input } from '@nextui-org/react';
+import { Button, Input, Spinner } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import googleLogoUrl from '../../assets/google-logo.png';
@@ -14,7 +14,7 @@ const emptyAccount = {
 
 function Login() {
   const navigate = useNavigate();
-  const { nativeLogin, googleLogin, isLogin, userRef, getUserProfile, setLoading } = useStore();
+  const { nativeLogin, googleLogin, isLogin, userRef, getUserProfile, isLoading, setLoading } = useStore();
   const [account, setAccount] = useState(emptyAccount);
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
@@ -32,19 +32,26 @@ function Login() {
     }
   }, [isLogin]);
 
+  const isInvalidEmail = !/^[A-Za-z0-9._%+-]+@[^@\s]+\.[^@\s]+$/.test(account.email) && account.email.length > 0;
+  const isInvalidPassword = account.password.length < 6 && account.password.length > 0;
+
   return (
     <div className='custom-main-container pt-14'>
       <div className='mt-20 mx-auto w-5/12 flex items-center flex-col'>
         <img src={logoUrl} alt='sign-up-icon' className='w-20 mb-5 rounded-full bg-white' />
         <div className='flex flex-col gap-5 w-full p-8 rounded-3xl mb-8 text-black'>
-          <div className='text-2xl text-gray-300 text-center'>Sign in</div>
+          <div className='text-2xl text-gray-300 text-center'>Welcome back!</div>
           <Input
             isRequired
             type='email'
             label='Email'
             id='email'
             placeholder='Enter your email'
+            isInvalid={isInvalidEmail}
+            color={isInvalidEmail ? 'danger' : 'default'}
+            errorMessage={isInvalidEmail && 'Please enter a valid email.'}
             className='mx-auto max-w-sm'
+            classNames={{ errorMessage: 'text-red-400' }}
             value={account.email}
             onChange={handleInputChange}
           />
@@ -53,10 +60,21 @@ function Login() {
             id='password'
             label='Password'
             placeholder='Enter your password'
+            isInvalid={isInvalidPassword}
+            color={isInvalidPassword ? 'danger' : 'default'}
+            errorMessage={isInvalidPassword && 'Password should be at least 6 characters.'}
             value={account.password}
             onChange={handleInputChange}
+            onKeyDown={(e) => {
+              const pressedKey = e.key.toUpperCase();
+              if (pressedKey === 'ENTER') {
+                setLoading(true);
+                nativeLogin(account);
+              }
+            }}
             type={isVisible ? 'text' : 'password'}
             className='mx-auto max-w-sm'
+            classNames={{ errorMessage: 'text-red-400' }}
             endContent={
               <button className='focus:outline-none' type='button' onClick={toggleVisibility}>
                 {isVisible ? (
@@ -75,6 +93,7 @@ function Login() {
               setLoading(true);
               nativeLogin(account);
             }}>
+            {isLoading && <Spinner color='default' size='sm' />}
             SIGN IN
           </Button>
           <Link to='/signup' className='text-sm mx-auto underline mt-2 text-blue-400 hover:scale-105 duration-150'>

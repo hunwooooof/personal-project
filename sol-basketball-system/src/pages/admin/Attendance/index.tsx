@@ -22,6 +22,7 @@ interface CreditDocType {
 function Attendance() {
   const { user, isLogin, setCurrentNav } = useStore();
   const navigate = useNavigate();
+
   useEffect(() => {
     if (user.role === 'user' || !isLogin) {
       navigate('/');
@@ -33,7 +34,7 @@ function Attendance() {
 
   const currentDate = new Date();
   function getCurrentQuarter(currentDate: Date) {
-    const currentMonth = currentDate.getMonth() + 1; // JavaScript 中月份是從 0 開始的
+    const currentMonth = currentDate.getMonth() + 1;
     const currentQuarter = Math.ceil(currentMonth / 3);
     return currentQuarter;
   }
@@ -76,17 +77,22 @@ function Attendance() {
       <svg
         id={date}
         onClick={(e) => {
-          firestore
-            .updateDocArrayUnion('attendance', docId, 'showUpDate', e.currentTarget.id)
-            .then(() => getAttendances())
-            .then(() => {
-              firestore.getDoc('attendance', docId).then((attendance) => {
-                if (attendance) {
-                  const countShowUp = attendance.showUpDate.length;
-                  firestore.updateDoc('credits', docId, { used: countShowUp }).then(() => getCredits());
-                }
-              });
-            });
+          const targetId = e.currentTarget.id;
+          firestore.getDoc('credits', docId).then((result) => {
+            if (result) {
+              firestore
+                .updateDocArrayUnion('attendance', docId, 'showUpDate', targetId)
+                .then(() => getAttendances())
+                .then(() => {
+                  firestore.getDoc('attendance', docId).then((attendance) => {
+                    if (attendance) {
+                      const countShowUp = attendance.showUpDate.length;
+                      firestore.updateDoc('credits', docId, { used: countShowUp }).then(() => getCredits());
+                    }
+                  });
+                });
+            }
+          });
         }}
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
@@ -159,7 +165,9 @@ function Attendance() {
               {attendances.map((attendance: AttendanceType) => {
                 const { name } = attendance;
                 return (
-                  <div className='shrink-0 w-40 mt-3 font-bold tracking-wide py-1 px-2' key={name}>
+                  <div
+                    className='shrink-0 w-40 mt-3 bg-white font-bold tracking-wide py-1 px-2 truncate hover:max-w-[none] hover:overflow-visible rounded-lg'
+                    key={name}>
                     {name.replace('-', ' ')}
                   </div>
                 );
@@ -167,7 +175,7 @@ function Attendance() {
             </div>
             <ScrollShadow orientation='horizontal' className='w-full h-full'>
               <div className='py-6'>
-                <div className='flex mb-5 py-2 font-bold text-gray-500 bg-gray-100 w-[2000px]'>
+                <div className='flex mb-5 py-2 font-bold text-gray-500 bg-gray-100 w-[1800px]'>
                   {dates.map((date: string) => {
                     const formateDate = date.substring(5).replace('-', '/');
                     return (

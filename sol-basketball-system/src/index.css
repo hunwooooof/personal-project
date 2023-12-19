@@ -20,13 +20,13 @@ html {
 }
 
 .unScheduledClass {
-  @apply px-12 py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-600 tracking-wider;
+  @apply text-sm sm:text-base sm:px-12 py-2 sm:py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-600 tracking-wider;
 }
 
 .isScheduledClass {
-  @apply px-12 py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider cursor-pointer text-black;
+  @apply text-sm sm:text-base sm:px-12 py-2 sm:py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider cursor-pointer text-black;
 }
 
 .kidCard {
-  @apply mt-8 flex flex-col shrink-0 rounded-3xl relative items-center w-60 h-[320px];
+  @apply mt-8 flex flex-col shrink-0 rounded-3xl relative items-center w-60 h-[340px];
 }

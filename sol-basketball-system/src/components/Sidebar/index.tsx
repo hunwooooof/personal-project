@@ -1,17 +1,18 @@
 import { Tooltip } from '@nextui-org/react';
+import { Toaster } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import logoUrl from '../../assets/sol-logo.png';
 import { useStore } from '../../store/store';
 
 function Sidebar() {
   const navigate = useNavigate();
-  const { currentNav, setCurrentNav, isLogin, user, setLogOut, setLoading } = useStore();
+  const { currentNav, setCurrentNav, isLogin, user, setLogOut, setLoading, hasNotification } = useStore();
   const activeNavClass = 'flex items-center gap-2 text-lg text-white px-2 lg:px-0 lg:pl-3 py-2';
   const normalNavClass =
     'flex items-center gap-2 text-lg text-slate-500 rounded-xl hover:bg-slate-800 px-2 lg:px-0 lg:pl-3 py-2';
 
   return (
-    <div className='lg:w-60 h-full fixed border-r border-gray-600 top-0 bg-slate-900 px-1'>
+    <div className='lg:w-60 h-screen fixed border-r border-gray-600 top-0 bg-slate-900 px-1'>
       <Link to='/' className='block my-3' onClick={() => setCurrentNav('schedules')}>
         <img src={logoUrl} alt='sol-basketball-logo' className='w-16 lg:w-24 p-1 lg:p-4' />
       </Link>
@@ -62,52 +63,33 @@ function Sidebar() {
             <span className='hidden lg:inline'>Game Videos</span>
           </Link>
         </Tooltip>
+        <Tooltip content='Profile' placement='right' className='lg:hidden'>
+          <Link
+            to='/profile'
+            id='profile'
+            onClick={() => {
+              setLoading(true);
+              setCurrentNav('profile');
+            }}
+            className={currentNav === 'profile' ? activeNavClass : normalNavClass}>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              fill='none'
+              viewBox='0 0 24 24'
+              strokeWidth={1.5}
+              stroke='currentColor'
+              className='w-7 h-7'>
+              <path
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                d='M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'
+              />
+            </svg>
+            <span className='hidden lg:inline'>Profile</span>
+          </Link>
+        </Tooltip>
         {isLogin && user && user.role === 'user' && (
           <>
-            <Tooltip content='Profile' placement='right' className='lg:hidden'>
-              <Link
-                to='/profile'
-                id='profile'
-                onClick={() => setCurrentNav('profile')}
-                className={currentNav === 'profile' ? activeNavClass : normalNavClass}>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth={1.5}
-                  stroke='currentColor'
-                  className='w-7 h-7'>
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'
-                  />
-                </svg>
-                <span className='hidden lg:inline'>Profile</span>
-              </Link>
-            </Tooltip>
-            {/* {kids.length > 0 && (
-              <Link
-                to='/session'
-                id='session'
-                onClick={() => setCurrentNav('session')}
-                className={currentNav === 'session' ? activeNavClass : normalNavClass}>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth={1.5}
-                  stroke='currentColor'
-                  className='w-7 h-7'>
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3'
-                  />
-                </svg>
-                <span className='hidden lg:inline'>Session</span>
-              </Link>
-            )} */}
             <Tooltip content='Purchase' placement='right' className='lg:hidden'>
               <Link
                 to='/purchase'
@@ -134,7 +116,10 @@ function Sidebar() {
               <Link
                 to='/order'
                 id='order'
-                onClick={() => setCurrentNav('order')}
+                onClick={() => {
+                  setLoading(true);
+                  setCurrentNav('order');
+                }}
                 className={currentNav === 'order' ? activeNavClass : normalNavClass}>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
@@ -171,7 +156,7 @@ function Sidebar() {
                     d='M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z'
                   />
                 </svg>
-                <span className='hidden lg:inline'>Message</span>
+                <span className='hidden lg:inline'>Message</span>{' '}
               </Link>
             </Tooltip>
           </>
@@ -271,7 +256,7 @@ function Sidebar() {
                 to='/messages/inbox'
                 id='messages'
                 onClick={() => setCurrentNav('messages')}
-                className={currentNav === 'messages' ? activeNavClass : normalNavClass}>
+                className={`relative ${currentNav === 'messages' ? activeNavClass : normalNavClass}`}>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
@@ -286,6 +271,7 @@ function Sidebar() {
                   />
                 </svg>
                 <span className='hidden lg:inline'>Messages</span>
+                {hasNotification && <div className='absolute top-2 left-2 w-2 h-2 rounded-full bg-red-500' />}
               </Link>
             </Tooltip>
           </>
@@ -340,6 +326,7 @@ function Sidebar() {
           </button>
         )}
       </div>
+      <Toaster position='top-right' />
     </div>
   );
 }

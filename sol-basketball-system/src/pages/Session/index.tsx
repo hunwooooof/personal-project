@@ -65,14 +65,14 @@ function Session() {
   };
 
   return (
-    <div className='custom-main-container'>
+    <div className='custom-main-container pt-6 lg:pt-14'>
       {isLoading && <LoadingAnimation />}
-      <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14'>
+      <div className='flex flex-col md:flex-row justify-between items-center'>
         <div className='flex items-center gap-3'>
           {role === 'user' && (
             <Link
               to='/profile'
-              className='-mt-1 font-bold text-2xl sm:text-3xl ml-0 md:ml-12 lg:ml-20 whitespace-nowrap text-gray-400 hover:text-white'>
+              className='mb-1 font-bold text-2xl sm:text-3xl ml-0 md:ml-12 lg:ml-20 whitespace-nowrap text-gray-400 hover:text-white'>
               Profile
             </Link>
           )}
@@ -94,7 +94,7 @@ function Session() {
             }
           })}
         </div>
-        {role === 'user' && (
+        {role === 'user' && kids.length > 1 && (
           <div className='min-w-36 flex flex-col mr-0 md:mr-12 lg:mr-20'>
             <Tabs aria-label='kid' selectedKey={id}>
               {kids.map((kid) => (

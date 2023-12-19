@@ -6,7 +6,7 @@ export function formatTimestampToYYYYMMDD(timestamp: number) {
   const dd = timeObject.getDate();
   const formattedDd = dd < 10 ? `0${dd}` : String(dd);
   const date = `${yyyy}${formattedMm}${formattedDd}`;
-  return date;
+  return date; // 20231201
 }
 
 export function formatTimestampToYYYYslashMMslashDD(timestamp: number) {
@@ -17,7 +17,7 @@ export function formatTimestampToYYYYslashMMslashDD(timestamp: number) {
   const dd = timeObject.getDate();
   const formattedDd = dd < 10 ? `0${dd}` : String(dd);
   const showDate = `${yyyy}/${formattedMm}/${formattedDd}`;
-  return showDate;
+  return showDate; // 2023/12/01
 }
 
 export function formatTimestampToTime(timestamp: number) {
@@ -27,5 +27,5 @@ export function formatTimestampToTime(timestamp: number) {
   const min = timeObject.getMinutes();
   const formattedMin = min < 10 ? `0${min}` : String(min);
   const time = `${formattedHour}:${formattedMin}`;
-  return time;
+  return time; // 07:30
 }

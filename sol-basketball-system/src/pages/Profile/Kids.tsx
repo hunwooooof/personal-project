@@ -1,8 +1,10 @@
 import { Button, Input } from '@nextui-org/react';
 import { useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { db, doc, firestore } from '../../utils/firestore';
+import { formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
 import Card from './Card';
 
 interface KidType {
@@ -30,6 +32,12 @@ function Kids() {
     birthday: '',
     id: '',
     school: '',
+    // firstName: 'Diego',
+    // lastName: 'Tsai',
+    // chineseName: '蔡明德',
+    // birthday: '2013-09-12',
+    // id: 'A214478690',
+    // school: '重陽國小',
     parentID: userID || '',
     photoURL: defaultPhotoURL,
   };
@@ -76,6 +84,7 @@ function Kids() {
             .then(() => {
               setAddingKid(false);
               setLoading(false);
+              toast.success('Creation successful!');
             });
         });
         setNewProfileImg(undefined);
@@ -93,14 +102,22 @@ function Kids() {
           .then(() => {
             setAddingKid(false);
             setLoading(false);
+            toast.success('Creation successful!');
           });
       }
       setNewKid(emptyNewKid);
     } else {
-      alert('Something miss!');
       setLoading(false);
     }
   };
+
+  const currenTime = new Date();
+  const isFirstNameInvalid = newKid.firstName.length > 16;
+  const isLastNameInvalid = newKid.lastName.length > 20;
+  const isChineseNameInvalid = newKid.chineseName.length > 10;
+  const isIDInvalid = newKid.id.length > 0 && (newKid.id.length < 10 || newKid.id.length > 12);
+  const isSchoolInvalid = newKid.school.length > 10;
+  const isBirthdayInvalid = new Date().getTime() - new Date(newKid.birthday).getTime() < 94608000000;
 
   return (
     <div className='flex gap-8 items-center overflow-x-auto pt-4 pb-10'>
@@ -156,10 +173,14 @@ function Kids() {
               type='text'
               id='firstName'
               placeholder='John'
-              classNames={{
-                inputWrapper: ['h-9', 'py-0', 'px-2'],
-              }}
               value={newKid.firstName}
+              classNames={{
+                inputWrapper: 'h-9 py-0 px-2',
+                errorMessage: 'whitespace-nowrap absolute top-0',
+              }}
+              isInvalid={isFirstNameInvalid}
+              color={isFirstNameInvalid ? 'danger' : 'default'}
+              errorMessage={isFirstNameInvalid && 'Exceeds maximum limit.'}
               onChange={handleChangeNewKidProfile}
             />
             <Input
@@ -169,10 +190,14 @@ function Kids() {
               type='text'
               id='lastName'
               placeholder='Wang'
-              classNames={{
-                inputWrapper: ['h-9', 'py-0', 'px-2'],
-              }}
               value={newKid.lastName}
+              classNames={{
+                inputWrapper: 'h-9 py-0 px-2',
+                errorMessage: 'whitespace-nowrap absolute right-0 top-0',
+              }}
+              isInvalid={isLastNameInvalid}
+              color={isLastNameInvalid ? 'danger' : 'default'}
+              errorMessage={isLastNameInvalid && 'Exceeds maximum limit.'}
               onChange={handleChangeNewKidProfile}
             />
           </div>
@@ -183,61 +208,73 @@ function Kids() {
             type='text'
             id='chineseName'
             className='my-2'
-            classNames={{
-              inputWrapper: ['h-9', 'py-0', 'mx-4', 'w-auto'],
-            }}
             value={newKid.chineseName}
+            classNames={{
+              inputWrapper: 'h-9 py-0 mx-4 w-auto',
+              errorMessage: 'whitespace-nowrap absolute left-5 top-0',
+            }}
+            isInvalid={isChineseNameInvalid}
+            color={isChineseNameInvalid ? 'danger' : 'default'}
+            errorMessage={isChineseNameInvalid && 'Exceeds maximum limit.'}
             onChange={handleChangeNewKidProfile}
           />
-          <div className={`flex flex-col w-full items-center text-sm ${isAddingKid && 'px-4'}`}>
-            <div className='w-full flex items-center mb-2 text-black justify-between'>
-              <span className='inline-block w-4/12 mr-2 text-gray-500'>ID</span>
-              <Input
-                isRequired
-                size='sm'
-                type='text'
-                id='id'
-                placeholder='A123456789'
-                className='inline-block w-7/12'
-                classNames={{
-                  inputWrapper: ['h-6', 'py-0', 'px-2'],
-                }}
-                value={newKid.id}
-                onChange={handleChangeNewKidProfile}
-              />
-            </div>
-            <div className='w-full flex items-center mb-2 text-black justify-between'>
-              <span className='inline-block w-4/12 mr-2 text-gray-500'>School</span>
-              <Input
-                isRequired
-                size='sm'
-                type='text'
-                id='school'
-                className='inline-block w-7/12'
-                classNames={{
-                  inputWrapper: ['h-6', 'py-0', 'px-2'],
-                }}
-                value={newKid.school}
-                onChange={handleChangeNewKidProfile}
-              />
-            </div>
-            <div className='w-full flex items-center mb-2 text-black justify-between'>
-              <span className='inline-block w-4/12 mr-2 text-gray-500'>Birthday</span>
-              <Input
-                isRequired
-                size='sm'
-                type='date'
-                id='birthday'
-                className='inline-block w-7/12'
-                classNames={{
-                  inputWrapper: ['h-6', 'py-0', 'px-2'],
-                }}
-                value={newKid.birthday}
-                onChange={handleChangeNewKidProfile}
-              />
-            </div>
-          </div>
-          <div className='px-4 w-full flex mt-2 justify-between items-center'>
+          <Input
+            isRequired
+            size='sm'
+            type='text'
+            id='id'
+            label='ID'
+            placeholder='A123456789'
+            className='mb-2'
+            value={newKid.id}
+            classNames={{
+              inputWrapper: 'h-9 py-0 mx-4 w-auto',
+              errorMessage: 'whitespace-nowrap absolute left-5 top-0',
+            }}
+            isInvalid={isIDInvalid}
+            color={isIDInvalid ? 'danger' : 'default'}
+            errorMessage={isIDInvalid && '10 ~ 12 characters limit.'}
+            onChange={handleChangeNewKidProfile}
+          />
+          <Input
+            isRequired
+            size='sm'
+            type='text'
+            id='school'
+            label='School'
+            value={newKid.school}
+            className='mb-2'
+            classNames={{
+              inputWrapper: 'h-9 py-0 mx-4 w-auto',
+              errorMessage: 'whitespace-nowrap absolute left-5 top-0',
+            }}
+            isInvalid={isSchoolInvalid}
+            color={isSchoolInvalid ? 'danger' : 'default'}
+            errorMessage={isSchoolInvalid && 'Exceeds maximum limit.'}
+            onChange={handleChangeNewKidProfile}
+          />
+          <Input
+            isRequired
+            size='sm'
+            type='date'
+            id='birthday'
+            label='Birthday'
+            placeholder='0'
+            value={newKid.birthday}
+            className='mb-2 text-gray-500'
+            classNames={{
+              inputWrapper: 'h-9 py-0 mx-4 w-auto',
+              errorMessage: 'whitespace-nowrap absolute left-5 top-0',
+            }}
+            isInvalid={isBirthdayInvalid}
+            color={isBirthdayInvalid ? 'danger' : 'default'}
+            errorMessage={
+              isBirthdayInvalid &&
+              `出生日期不可晚於 ${formatTimestampToYYYYslashMMslashDD(currenTime.getTime() - 94608000000)}`
+            }
+            onChange={handleChangeNewKidProfile}
+          />
+          <div className='absolute bottom-4 px-4 w-full flex justify-between items-center'>
             <Button
               isIconOnly
               color='default'
@@ -261,6 +298,13 @@ function Kids() {
               isIconOnly
               color='success'
               aria-label='save'
+              isDisabled={
+                Object.values(newKid).some((item) => item.length === 0) ||
+                isBirthdayInvalid ||
+                isFirstNameInvalid ||
+                isLastNameInvalid ||
+                isChineseNameInvalid
+              }
               className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
               onClick={() => {
                 setLoading(true);

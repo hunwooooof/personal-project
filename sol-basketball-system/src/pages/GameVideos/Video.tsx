@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import { useStore } from '../../store/store';
 import { firestore } from '../../utils/firestore';
 
@@ -9,7 +10,6 @@ interface PropsType {
     youtubeId: string;
   };
   type: string;
-  getVideo: () => void;
 }
 
 interface VideoType {
@@ -19,12 +19,22 @@ interface VideoType {
   youtubeId: string;
 }
 
-function Video({ video, type, getVideo }: PropsType) {
+function Video({ video, type }: PropsType) {
   const { user } = useStore();
 
-  const handleDelete = (video: VideoType, type: string, getVideo: () => void) => {
+  const handleDelete = (video: VideoType, type: string) => {
     const userConfirm = confirm('Are you sure you want to delete this video?');
-    if (userConfirm) firestore.deleteDoc('videos', 'roadrunners', type, video.youtubeId).then(() => getVideo());
+    if (userConfirm) {
+      firestore
+        .deleteDoc('videos', 'roadrunners', type, video.youtubeId)
+        .then(() => {
+          toast.success('Deletion successful');
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error('Deletion failed');
+        });
+    }
   };
 
   return (
@@ -43,7 +53,7 @@ function Video({ video, type, getVideo }: PropsType) {
         <div className='flex justify-between items-center'>
           <div className='font-bold w-72'>{video.title}</div>
           {user.role === 'admin' && (
-            <button className='text-gray-400 hover:text-red-500' onClick={() => handleDelete(video, type, getVideo)}>
+            <button className='text-gray-400 hover:text-red-500' onClick={() => handleDelete(video, type)}>
               Delete
             </button>
           )}

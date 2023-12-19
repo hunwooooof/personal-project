@@ -10,12 +10,13 @@ interface DetailType {
 
 interface PropsType {
   date: string;
+  isInfoShow: boolean;
   setInfoShow: (arg0: boolean) => void;
   setInfo: (arg0: DetailType) => void;
   info: DetailType | undefined;
 }
 
-function Sunday({ date, setInfoShow, setInfo, info }: PropsType) {
+function Sunday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
   const { scheduledDates } = useStore();
   const showDate = date.slice(5).replace('-', '/');
   const detail: DetailType = {
@@ -34,8 +35,12 @@ function Sunday({ date, setInfoShow, setInfo, info }: PropsType) {
             info?.date === date ? 'bg-white hover:bg-white' : 'bg-slate-400 hover:bg-slate-200'
           }`}
           onClick={() => {
-            setInfoShow(true);
-            setInfo(detail);
+            if (info?.date === date && isInfoShow) {
+              setInfoShow(false);
+            } else {
+              setInfoShow(true);
+              setInfo(detail);
+            }
           }}>
           {showDate}
         </div>

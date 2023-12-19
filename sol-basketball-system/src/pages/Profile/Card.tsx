@@ -1,9 +1,11 @@
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input } from '@nextui-org/react';
 import { useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { firebaseStorage } from '../../utils/firebaseStorage';
 import { db, doc, firestore } from '../../utils/firestore';
+import { formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
 
 interface PropsType {
   kid: {
@@ -67,6 +69,7 @@ function Card({ kid }: PropsType) {
         .then(() => {
           setLoading(false);
           setEdit(false);
+          toast.success('Changes saved successfully');
         });
       setNewProfileImg(undefined);
     } else if (userRef) {
@@ -76,6 +79,7 @@ function Card({ kid }: PropsType) {
         .then(() => {
           setLoading(false);
           setEdit(false);
+          toast.success('Changes saved successfully');
         });
     }
     firestore.setDoc('attendance', docId, {
@@ -94,14 +98,22 @@ function Card({ kid }: PropsType) {
     return Math.abs(age.getUTCFullYear() - 1970);
   };
 
+  const currenTime = new Date();
+  const isFirstNameInvalid = newKid.firstName.length > 16;
+  const isLastNameInvalid = newKid.lastName.length > 20;
+  const isChineseNameInvalid = newKid.chineseName.length > 10;
+  const isIDInvalid = newKid.id.length > 0 && (newKid.id.length < 10 || newKid.id.length > 12);
+  const isSchoolInvalid = newKid.school.length > 10;
+  const isBirthdayInvalid = new Date().getTime() - new Date(newKid.birthday).getTime() < 94608000000;
+
   return (
     <div className='kidCard bg-white'>
-      <div className='absolute right-1 top-2'>
+      <div className='absolute left-2 top-2'>
         {!isEdit && (
           <Dropdown
             className='z-10'
             classNames={{
-              trigger: ['min-w-unit-0', 'bg-white', 'rounded-full', 'px-unit-0', 'w-8', 'h-8', 'hover:bg-gray-100'],
+              trigger: 'min-w-unit-0 bg-white rounded-full px-unit-0 w-8 h-8',
             }}>
             <DropdownTrigger>
               <Button>
@@ -112,7 +124,7 @@ function Card({ kid }: PropsType) {
                   strokeWidth={1.5}
                   stroke='currentColor'
                   onClick={() => setListShow(!isListShow)}
-                  className='w-6 h-6 text-gray-300 cursor-pointer hover:scale-125 duration-150 hover:text-gray-400'>
+                  className='w-6 h-6 text-gray-400 cursor-pointer hover:scale-125 duration-150 hover:text-gray-800'>
                   <path
                     strokeLinecap='round'
                     strokeLinejoin='round'
@@ -147,6 +159,7 @@ function Card({ kid }: PropsType) {
                   const userConfirmed = confirm('Are you sure you want to delete?');
                   if (userConfirmed && userRef) {
                     firestore.deleteDoc('students', kid.docId);
+                    toast.success('Deletion successful');
                     firestore.updateDocArrayRemoveByRef(userRef, 'kids', doc(db, 'students', kid.docId));
                     getUserProfile(userRef);
                   }
@@ -157,6 +170,21 @@ function Card({ kid }: PropsType) {
           </Dropdown>
         )}
       </div>
+      {!isEdit && (
+        <Link to={`/session/${id}`} className='absolute top-3 right-3 hover:scale-110 duration-150'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            className='w-5 h-5 stroke-gray-400 hover:stroke-gray-800 stroke-[1.5]'>
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              d='M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25'
+            />
+          </svg>
+        </Link>
+      )}
       <img
         src={isEdit ? newKid.photoURL : kid.photoURL}
         className='w-24 h-24 object-cover rounded-full my-2 absolute -top-14 border-2 border-white'
@@ -191,7 +219,7 @@ function Card({ kid }: PropsType) {
         </div>
       )}
       {!isEdit && (
-        <div className='text-xl text-black mt-14 font-bold'>
+        <div className='text-xl text-black mt-16 font-bold truncate max-w-[80%] hover:bg-zinc-100 hover:max-w-[200%] hover:z-20 hover:px-1 hover:shadow-md rounded-lg'>
           {kid.firstName} {kid.lastName}
         </div>
       )}
@@ -203,10 +231,14 @@ function Card({ kid }: PropsType) {
             label='First name'
             type='text'
             id='firstName'
-            classNames={{
-              inputWrapper: ['h-9', 'py-0', 'px-2'],
-            }}
             value={newKid.firstName}
+            classNames={{
+              inputWrapper: 'h-9 py-0 px-2',
+              errorMessage: 'whitespace-nowrap absolute top-0',
+            }}
+            isInvalid={isFirstNameInvalid}
+            color={isFirstNameInvalid ? 'danger' : 'default'}
+            errorMessage={isFirstNameInvalid && 'Exceeds maximum limit.'}
             onChange={handleChangeKidProfile}
           />
           <Input
@@ -215,10 +247,14 @@ function Card({ kid }: PropsType) {
             label='Last name'
             type='text'
             id='lastName'
-            classNames={{
-              inputWrapper: ['h-9', 'py-0', 'px-2'],
-            }}
             value={newKid.lastName}
+            classNames={{
+              inputWrapper: 'h-9 py-0 px-2',
+              errorMessage: 'whitespace-nowrap absolute right-0 top-0',
+            }}
+            isInvalid={isLastNameInvalid}
+            color={isLastNameInvalid ? 'danger' : 'default'}
+            errorMessage={isLastNameInvalid && 'Exceeds maximum limit.'}
             onChange={handleChangeKidProfile}
           />
         </div>
@@ -232,10 +268,14 @@ function Card({ kid }: PropsType) {
           type='text'
           id='chineseName'
           className='my-2'
-          classNames={{
-            inputWrapper: ['h-9', 'py-0', 'mx-4', 'w-auto'],
-          }}
           value={newKid.chineseName}
+          classNames={{
+            inputWrapper: 'h-9 py-0 mx-4 w-auto',
+            errorMessage: 'whitespace-nowrap absolute left-5 top-0',
+          }}
+          isInvalid={isChineseNameInvalid}
+          color={isChineseNameInvalid ? 'danger' : 'default'}
+          errorMessage={isChineseNameInvalid && 'Exceeds maximum limit.'}
           onChange={handleChangeKidProfile}
         />
       )}
@@ -251,10 +291,14 @@ function Card({ kid }: PropsType) {
               type='text'
               id='id'
               className='inline-block w-7/12'
-              classNames={{
-                inputWrapper: ['h-6', 'py-0', 'px-2'],
-              }}
               value={newKid.id}
+              classNames={{
+                inputWrapper: 'h-6 py-0 px-2',
+                errorMessage: 'whitespace-nowrap absolute right-0 top-0',
+              }}
+              isInvalid={isIDInvalid}
+              color={isIDInvalid ? 'danger' : 'default'}
+              errorMessage={isIDInvalid && '10 ~ 12 characters limit.'}
               onChange={handleChangeKidProfile}
             />
           )}
@@ -270,16 +314,22 @@ function Card({ kid }: PropsType) {
               type='text'
               id='school'
               className='inline-block w-7/12'
-              classNames={{
-                inputWrapper: ['h-6', 'py-0', 'px-2'],
-              }}
               value={newKid.school}
+              classNames={{
+                inputWrapper: 'h-6 py-0 px-2',
+                errorMessage: 'whitespace-nowrap absolute right-0 top-0',
+              }}
+              isInvalid={isSchoolInvalid}
+              color={isSchoolInvalid ? 'danger' : 'default'}
+              errorMessage={isSchoolInvalid && 'Exceeds maximum limit.'}
               onChange={handleChangeKidProfile}
             />
           )}
         </div>
         <div
-          className={`w-full flex items-center mb-2 text-black ${isEdit ? 'justify-between' : 'justify-start gap-2'}`}>
+          className={`relative w-full flex items-center mb-2 text-black ${
+            isEdit ? 'justify-between' : 'justify-start gap-2'
+          }`}>
           <span className='inline-block w-4/12 mr-2 text-gray-500'>Birthday</span>
           {!isEdit && kid.birthday}
           {isEdit && (
@@ -288,11 +338,18 @@ function Card({ kid }: PropsType) {
               size='sm'
               type='date'
               id='birthday'
-              className='inline-block w-7/12'
-              classNames={{
-                inputWrapper: ['h-6', 'py-0', 'px-2'],
-              }}
               value={newKid.birthday}
+              className='inline-block w-7/12 rounded-lg'
+              classNames={{
+                inputWrapper: 'h-6 py-0 px-2',
+                errorMessage: 'whitespace-nowrap absolute right-0 top-0',
+              }}
+              isInvalid={isBirthdayInvalid}
+              color={isBirthdayInvalid ? 'danger' : 'default'}
+              errorMessage={
+                isBirthdayInvalid &&
+                `出生日期不可晚於 ${formatTimestampToYYYYslashMMslashDD(currenTime.getTime() - 94608000000)}`
+              }
               onChange={handleChangeKidProfile}
             />
           )}
@@ -303,23 +360,8 @@ function Card({ kid }: PropsType) {
             {calculate_age(kid.birthday)}
           </div>
         )}
-        {!isEdit && (
-          <Link to={`/session/${id}`} className='self-end -mr-4 hover:scale-110 duration-150'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              className='w-5 h-5 stroke-black stroke-[1.5]'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25'
-              />
-            </svg>
-          </Link>
-        )}
         {isEdit && (
-          <div className='w-full flex mt-2 justify-between items-center'>
+          <div className='absolute bottom-4 px-4 w-full flex justify-between items-center'>
             <Button
               isIconOnly
               color='default'
@@ -343,6 +385,13 @@ function Card({ kid }: PropsType) {
               isIconOnly
               color='success'
               aria-label='save'
+              isDisabled={
+                Object.values(newKid).some((item) => item.length === 0) ||
+                isBirthdayInvalid ||
+                isFirstNameInvalid ||
+                isLastNameInvalid ||
+                isChineseNameInvalid
+              }
               className='rounded-full min-w-unit-8 w-unit-8 h-unit-8'
               onClick={() => {
                 setLoading(true);

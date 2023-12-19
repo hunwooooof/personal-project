@@ -16,7 +16,7 @@ function Bubble({ message }: PropsType) {
   return (
     <div
       className={`cursor-pointer mt-4 rounded-2xl text-sm px-3 py-1 relative ${
-        message.sender === 'user' ? 'bg-slate-600 self-start mr-24' : 'bg-blue-500 self-end ml-24'
+        message.sender === 'user' ? 'bg-slate-600 self-start mr-28' : 'bg-blue-500 self-end ml-28'
       }`}>
       {message.content}
       <div

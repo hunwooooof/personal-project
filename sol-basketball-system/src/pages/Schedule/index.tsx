@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import CalendarButton from '../../components/CalendarButton';
 import PageTitle from '../../components/PageTitle';
@@ -124,8 +125,8 @@ function Schedule() {
     getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
-  const boxClass = `text-gray-600 px-12 py-5 rounded-3xl mt-4 font-bold border border-slate-800`;
   const tableHeadClass = 'flex justify-center items-center w-4/12 bg-gray-100 text-black py-2 rounded-t-2xl';
+  const boxClass = `text-sm sm:text-base sm:px-12 py-2 sm:py-5 text-gray-600 rounded-3xl mt-4 font-bold border border-slate-800`;
 
   // ==================
   //  More Information
@@ -220,10 +221,11 @@ function Schedule() {
       });
     }
   };
+
   return (
     <div className='custom-main-container'>
-      <div className='flex flex-col lg:flex-row'>
-        <div className={isInfoShow ? 'w-[calc(100%-350px)]' : 'w-full'}>
+      <div className='flex flex-col lg:flex-row w-full lg:w-auto'>
+        <div className={`duration-150 px-4 sm:px-0 ${isInfoShow ? 'lg:w-[calc(100%-350px)]' : 'lg:w-full'}`}>
           <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14'>
             <PageTitle title='Schedule' />
             <CalendarButton
@@ -237,15 +239,18 @@ function Schedule() {
           </div>
 
           <div
-            className={`mx-0 md:mx-12 lg:mx-20 flex flex-col lg:py-6 pb-0 ${
-              isInfoShow ? 'h-[calc(100vh-540px)] lg:h-auto' : 'h-auto'
+            className={`flex flex-col lg:py-6 pb-0 ${
+              isInfoShow ? 'mx-0 md:mx-12 lg:h-[calc(100vh-540px)] h-auto' : 'mx-0 md:mx-12 lg:mx-20 h-auto'
             }`}>
             <div className='flex gap-3 text-sm sm:text-base lg:text-lg font-semibold tracking-wider my-4'>
               <div className={`flex-col ${tableHeadClass}`}>
                 <div>Friday</div>
                 <div>19:00-21:00</div>
               </div>
-              <div className={tableHeadClass}>Saturday</div>
+              <div className={`flex-col ${tableHeadClass}`}>
+                <div>Saturday</div>
+                <div>Flexible</div>
+              </div>
               <div className={`flex-col ${tableHeadClass}`}>
                 <div>Sunday</div>
                 <div>16:30-18:30</div>
@@ -261,6 +266,7 @@ function Schedule() {
                         <Friday
                           key={date}
                           date={date}
+                          isInfoShow={isInfoShow}
                           setInfoShow={setInfoShow}
                           setInfo={setInfo}
                           info={info as DetailType}
@@ -275,6 +281,7 @@ function Schedule() {
                         <Saturday
                           key={date}
                           date={date}
+                          isInfoShow={isInfoShow}
                           setInfoShow={setInfoShow}
                           setInfo={setInfo}
                           info={info as DetailType[]}
@@ -288,6 +295,7 @@ function Schedule() {
                         <Sunday
                           key={date}
                           date={date}
+                          isInfoShow={isInfoShow}
                           setInfoShow={setInfoShow}
                           setInfo={setInfo}
                           info={info as DetailType}
@@ -296,125 +304,164 @@ function Schedule() {
                     })}
                   </div>
                 </div>
-                <div className='h-20' />
+                <div className='sm:h-20' />
               </div>
             )}
           </div>
         </div>
-        {isInfoShow && info && (
-          <div className='w-[350px] text-white border-t lg:border-t-0 lg:border-l border-gray-600 pb-4 min-h-screen max-h-[calc(100vh-100px)] overflow-y-auto overflow-x-hidden'>
-            <div className='w-[350px] px-8 pt-14 pb-8 flex items-center justify-between text-lg'>
-              <div className='text-2xl font-semibold'>Detail</div>
-              <button
-                onClick={() => setInfoShow(false)}
-                className='hover:scale-125 hover:text-white duration-150 text-gray-300 px-2 py-1 cursor-pointer font-bold'>
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth={1.5}
-                  stroke='currentColor'
-                  className='w-6 h-6'>
-                  <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
-                </svg>
-              </button>
-            </div>
-            {!Array.isArray(info) && (
-              <div className='px-8 py-5'>
-                <div className='font-bold text-xl lg:mb-2 py-2'>{renderTitle(info.title)}</div>
-                <div className='text-sm text-gray-200 lg:text-base flex flex-col sm:flex-row gap-0 sm:gap-5 lg:gap-0 lg:flex-col'>
-                  <div className='mt-4 flex gap-2 items-center tracking-wider'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='w-5 h-5'>
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        d='M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5'
-                      />
-                    </svg>
-                    {info.date.replace('-', '/').replace('-', '/')}
-                  </div>
-                  <div className='mt-4 flex gap-2 items-center tracking-wider'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='w-5 h-5'>
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M15 10.5a3 3 0 11-6 0 3 3 0 016 0z' />
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        d='M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z'
-                      />
-                    </svg>
-                    {renderAddress(info.address)}
-                  </div>
-                  <div className='mt-4 flex gap-2 items-center tracking-wider'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='w-5 h-5'>
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        d='M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z'
-                      />
-                    </svg>
-                    {info.time}
-                  </div>
-                  <div className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'>
-                    <img
-                      src={googleCalendarIco}
-                      alt='google-calendar-icon'
-                      className='w-5 h-5'
-                      onClick={() => {
-                        handleClickGoogleCalendar(info);
-                      }}
-                    />
-                    Add to calendar
-                  </div>
-                </div>
-                <iframe
-                  src={`https://www.google.com/maps/embed${getGoogleMapIframe(info.address)}`}
-                  className='w-full h-56 sm:h-72 lg:h-80 mt-6 lg:mt-8 rounded-2xl'
-                  loading='lazy'
-                />
+        <AnimatePresence>
+          {isInfoShow && info && (
+            <motion.div
+              key='infoBox'
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.2, type: 'tween' }}
+              className='lg:w-[350px] text-white border-t lg:border-t-0 lg:border-l border-gray-600 pb-4 lg:min-h-screen lg:max-h-[calc(100vh-100px)] overflow-y-auto overflow-x-hidden'>
+              <div className='lg:w-[350px] px-8 pt-4 sm:pt-14 sm:pb-8 flex items-center justify-between text-lg'>
+                <div className='sm:text-2xl font-semibold text-zinc-300'>Course Detail</div>
+                <button
+                  onClick={() => setInfoShow(false)}
+                  className='hover:scale-125 hover:text-white duration-150 text-gray-300 px-2 py-1 cursor-pointer font-bold'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                    className='w-6 h-6 stroke-[1.5]'>
+                    <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+                  </svg>
+                </button>
               </div>
-            )}
-            {Array.isArray(info) &&
-              info.map((item, index) => {
-                return (
-                  <div>
-                    {index > 0 && <div className='w-full border border-gray-600 my-8' />}
-                    <div key={index} className='px-8 py-5'>
-                      <div className='font-bold text-xl lg:mb-2 py-2'>{renderTitle(item.title)}</div>
-                      <div className='mt-4 flex text-gray-200 gap-2 items-center tracking-wider'>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          fill='none'
-                          viewBox='0 0 24 24'
-                          strokeWidth={1.5}
-                          stroke='currentColor'
-                          className='w-5 h-5'>
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            d='M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5'
-                          />
-                        </svg>
-                        {item.date.replace('-', '/').replace('-', '/')}
+              {!Array.isArray(info) && (
+                <div className='px-8 py-5'>
+                  <div className='font-bold text-xl lg:mb-2 py-2'>{renderTitle(info.title)}</div>
+                  <div className='text-sm text-gray-200 lg:text-base flex flex-col sm:flex-row gap-0 sm:gap-5 lg:gap-0 lg:flex-col'>
+                    <div className='mt-4 flex gap-2 items-center tracking-wider'>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        strokeWidth={1.5}
+                        stroke='currentColor'
+                        className='w-5 h-5'>
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          d='M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5'
+                        />
+                      </svg>
+                      {info.date.replace('-', '/').replace('-', '/')}
+                    </div>
+                    <div className='mt-4 flex gap-2 items-center tracking-wider'>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        strokeWidth={1.5}
+                        stroke='currentColor'
+                        className='w-5 h-5'>
+                        <path strokeLinecap='round' strokeLinejoin='round' d='M15 10.5a3 3 0 11-6 0 3 3 0 016 0z' />
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          d='M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z'
+                        />
+                      </svg>
+                      {renderAddress(info.address)}
+                    </div>
+                    <div className='mt-4 flex gap-2 items-center tracking-wider'>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='none'
+                        viewBox='0 0 24 24'
+                        strokeWidth={1.5}
+                        stroke='currentColor'
+                        className='w-5 h-5'>
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          d='M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z'
+                        />
+                      </svg>
+                      {info.time}
+                    </div>
+                    {new Date(info.date) > new Date() && (
+                      <div
+                        className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                        onClick={() => {
+                          handleClickGoogleCalendar(info);
+                        }}>
+                        <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
+                        Add to calendar
                       </div>
-                      {item.tag && (
+                    )}
+                  </div>
+                  <iframe
+                    src={`https://www.google.com/maps/embed${getGoogleMapIframe(info.address)}`}
+                    className='w-full h-56 sm:h-72 lg:h-80 mt-6 lg:mt-8 rounded-2xl'
+                    loading='lazy'
+                  />
+                </div>
+              )}
+              {Array.isArray(info) &&
+                info.map((item, index) => {
+                  return (
+                    <div>
+                      {index > 0 && <div className='w-full border border-gray-600 my-8' />}
+                      <div key={index} className='px-8 py-5'>
+                        <div className='font-bold text-xl lg:mb-2 py-2'>{renderTitle(item.title)}</div>
+                        <div className='mt-4 flex text-gray-200 gap-2 items-center tracking-wider'>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={1.5}
+                            stroke='currentColor'
+                            className='w-5 h-5'>
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5'
+                            />
+                          </svg>
+                          {item.date.replace('-', '/').replace('-', '/')}
+                        </div>
+                        {item.tag && (
+                          <div className='mt-4 flex gap-2 items-center tracking-wider'>
+                            <svg
+                              xmlns='http://www.w3.org/2000/svg'
+                              fill='none'
+                              viewBox='0 0 24 24'
+                              strokeWidth={1.5}
+                              stroke='currentColor'
+                              className='w-5 h-5'>
+                              <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                d='M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z'
+                              />
+                            </svg>
+                            {renderTeam(item.tag)}
+                          </div>
+                        )}
+                        <div className='mt-4 flex gap-2 items-center tracking-wider'>
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={1.5}
+                            stroke='currentColor'
+                            className='w-5 h-5'>
+                            <path strokeLinecap='round' strokeLinejoin='round' d='M15 10.5a3 3 0 11-6 0 3 3 0 016 0z' />
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z'
+                            />
+                          </svg>
+                          {renderAddress(item.address)}
+                        </div>
                         <div className='mt-4 flex gap-2 items-center tracking-wider'>
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
@@ -426,67 +473,33 @@ function Schedule() {
                             <path
                               strokeLinecap='round'
                               strokeLinejoin='round'
-                              d='M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z'
+                              d='M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z'
                             />
                           </svg>
-                          {renderTeam(item.tag)}
+                          {item.time}
                         </div>
-                      )}
-                      <div className='mt-4 flex gap-2 items-center tracking-wider'>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          fill='none'
-                          viewBox='0 0 24 24'
-                          strokeWidth={1.5}
-                          stroke='currentColor'
-                          className='w-5 h-5'>
-                          <path strokeLinecap='round' strokeLinejoin='round' d='M15 10.5a3 3 0 11-6 0 3 3 0 016 0z' />
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            d='M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z'
-                          />
-                        </svg>
-                        {renderAddress(item.address)}
-                      </div>
-                      <div className='mt-4 flex gap-2 items-center tracking-wider'>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          fill='none'
-                          viewBox='0 0 24 24'
-                          strokeWidth={1.5}
-                          stroke='currentColor'
-                          className='w-5 h-5'>
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            d='M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z'
-                          />
-                        </svg>
-                        {item.time}
-                      </div>
-                      <div className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'>
-                        <img
-                          src={googleCalendarIco}
-                          alt='google-calendar-icon'
-                          className='w-5 h-5'
-                          onClick={() => {
-                            handleClickGoogleCalendar(item);
-                          }}
+                        {new Date(item.date) > new Date() && (
+                          <div
+                            className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                            onClick={() => {
+                              handleClickGoogleCalendar(item);
+                            }}>
+                            <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
+                            Add to calendar
+                          </div>
+                        )}
+                        <iframe
+                          src={`https://www.google.com/maps/embed${getGoogleMapIframe(item.address)}`}
+                          className='w-full h-56 sm:h-72 lg:h-80 mt-6 lg:mt-8 rounded-2xl'
+                          loading='lazy'
                         />
-                        Add to calendar
                       </div>
-                      <iframe
-                        src={`https://www.google.com/maps/embed${getGoogleMapIframe(item.address)}`}
-                        className='w-full h-56 sm:h-72 lg:h-80 mt-6 lg:mt-8 rounded-2xl'
-                        loading='lazy'
-                      />
                     </div>
-                  </div>
-                );
-              })}
-          </div>
-        )}
+                  );
+                })}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
