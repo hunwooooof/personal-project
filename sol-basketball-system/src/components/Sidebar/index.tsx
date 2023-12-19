@@ -12,7 +12,7 @@ function Sidebar() {
     'flex items-center gap-2 text-lg text-slate-500 rounded-xl hover:bg-slate-800 px-2 lg:px-0 lg:pl-3 py-2';
 
   return (
-    <div className='lg:w-60 h-full fixed border-r border-gray-600 top-0 bg-slate-900 px-1'>
+    <div className='lg:w-60 h-screen fixed border-r border-gray-600 top-0 bg-slate-900 px-1'>
       <Link to='/' className='block my-3' onClick={() => setCurrentNav('schedules')}>
         <img src={logoUrl} alt='sol-basketball-logo' className='w-16 lg:w-24 p-1 lg:p-4' />
       </Link>

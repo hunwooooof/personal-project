@@ -125,8 +125,8 @@ function Schedule() {
     getSaturdaySchedules(year, quarter);
   }, [quarter, year]);
 
-  const boxClass = `text-gray-600 px-12 py-5 rounded-3xl mt-4 font-bold border border-slate-800`;
   const tableHeadClass = 'flex justify-center items-center w-4/12 bg-gray-100 text-black py-2 rounded-t-2xl';
+  const boxClass = `text-sm sm:text-base sm:px-12 py-2 sm:py-5 text-gray-600 rounded-3xl mt-4 font-bold border border-slate-800`;
 
   // ==================
   //  More Information
@@ -224,8 +224,8 @@ function Schedule() {
 
   return (
     <div className='custom-main-container'>
-      <div className='flex flex-col lg:flex-row'>
-        <div className={`duration-150 ${isInfoShow ? 'w-[calc(100%-350px)]' : 'w-full'}`}>
+      <div className='flex flex-col lg:flex-row w-full lg:w-auto'>
+        <div className={`duration-150 px-4 sm:px-0 ${isInfoShow ? 'lg:w-[calc(100%-350px)]' : 'lg:w-full'}`}>
           <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14'>
             <PageTitle title='Schedule' />
             <CalendarButton
@@ -240,7 +240,7 @@ function Schedule() {
 
           <div
             className={`flex flex-col lg:py-6 pb-0 ${
-              isInfoShow ? 'mx-0 md:mx-12 h-[calc(100vh-540px)] lg:h-auto' : 'mx-0 md:mx-12 lg:mx-20 h-auto'
+              isInfoShow ? 'mx-0 md:mx-12 lg:h-[calc(100vh-540px)] h-auto' : 'mx-0 md:mx-12 lg:mx-20 h-auto'
             }`}>
             <div className='flex gap-3 text-sm sm:text-base lg:text-lg font-semibold tracking-wider my-4'>
               <div className={`flex-col ${tableHeadClass}`}>
@@ -249,9 +249,8 @@ function Schedule() {
               </div>
               <div className={`flex-col ${tableHeadClass}`}>
                 <div>Saturday</div>
-                <div>Time: Flexible</div>
+                <div>Flexible</div>
               </div>
-              {/* <div className={tableHeadClass}>Saturday</div> */}
               <div className={`flex-col ${tableHeadClass}`}>
                 <div>Sunday</div>
                 <div>16:30-18:30</div>
@@ -305,7 +304,7 @@ function Schedule() {
                     })}
                   </div>
                 </div>
-                <div className='h-20' />
+                <div className='sm:h-20' />
               </div>
             )}
           </div>
@@ -318,9 +317,9 @@ function Schedule() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.2, type: 'tween' }}
-              className='w-[350px] text-white border-t lg:border-t-0 lg:border-l border-gray-600 pb-4 min-h-screen max-h-[calc(100vh-100px)] overflow-y-auto overflow-x-hidden'>
-              <div className='w-[350px] px-8 pt-14 pb-8 flex items-center justify-between text-lg'>
-                <div className='text-2xl font-semibold'>Detail</div>
+              className='lg:w-[350px] text-white border-t lg:border-t-0 lg:border-l border-gray-600 pb-4 lg:min-h-screen lg:max-h-[calc(100vh-100px)] overflow-y-auto overflow-x-hidden'>
+              <div className='lg:w-[350px] px-8 pt-4 sm:pt-14 sm:pb-8 flex items-center justify-between text-lg'>
+                <div className='sm:text-2xl font-semibold text-zinc-300'>Course Detail</div>
                 <button
                   onClick={() => setInfoShow(false)}
                   className='hover:scale-125 hover:text-white duration-150 text-gray-300 px-2 py-1 cursor-pointer font-bold'>
@@ -328,9 +327,8 @@ function Schedule() {
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
                     viewBox='0 0 24 24'
-                    strokeWidth={1.5}
                     stroke='currentColor'
-                    className='w-6 h-6'>
+                    className='w-6 h-6 stroke-[1.5]'>
                     <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
                   </svg>
                 </button>

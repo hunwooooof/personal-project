@@ -26,7 +26,7 @@ function AdminSchedule() {
   }, [isLogin]);
 
   const getCurrentQuarter = (currentDate: Date) => {
-    const currentMonth = currentDate.getMonth() + 1; // JavaScript 中月份是從 0 開始的
+    const currentMonth = currentDate.getMonth() + 1;
     const currentQuarter = Math.ceil(currentMonth / 3);
     return currentQuarter;
   };
@@ -108,7 +108,7 @@ function AdminSchedule() {
   }, [quarter, year]);
 
   const tableHeadClass = 'flex justify-center items-center w-4/12 bg-gray-100 text-black py-2 rounded-t-2xl';
-  const boxClass = `text-gray-600 px-12 py-5 rounded-3xl mt-4 font-bold border border-slate-800`;
+  const boxClass = `text-sm sm:text-base sm:px-12 py-2 sm:py-5 text-gray-600 rounded-3xl mt-4 font-bold border border-slate-800`;
 
   return (
     <div className='custom-main-container'>
@@ -124,7 +124,7 @@ function AdminSchedule() {
         />
       </div>
 
-      <div className='mx-0 md:mx-12 lg:mx-20 flex flex-col'>
+      <div className='mx-0 md:mx-12 lg:mx-20 flex flex-col px-4 sm:px-0'>
         <div className='w-full flex flex-col py-6 pb-0'>
           <div className='flex gap-3 text-sm sm:text-base lg:text-lg font-semibold tracking-wider my-4'>
             <div className={`flex-col ${tableHeadClass}`}>

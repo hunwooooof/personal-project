@@ -25,14 +25,11 @@ function Friday({ date, quarter, year }: PropsType) {
     title: 'skills-training',
   };
 
-  const unScheduledClass = `px-12 py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-600 tracking-wider cursor-pointer hover:bg-slate-500`;
-  const isScheduledClass = `px-12 py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider cursor-pointer bg-slate-400 hover:bg-slate-400 text-black`;
-
   return (
     <div>
       {!scheduledDates.includes(date) && (
         <div
-          className={unScheduledClass}
+          className='unScheduledClass cursor-pointer hover:bg-slate-500'
           onClick={() => {
             firestore
               .getDoc('schedule', `${year}Q${quarter}`)
@@ -53,7 +50,7 @@ function Friday({ date, quarter, year }: PropsType) {
       )}
       {scheduledDates.includes(date) && (
         <div
-          className={isScheduledClass}
+          className='isScheduledClass bg-slate-400 hover:bg-slate-400'
           onClick={() => {
             firestore
               .updateDocArrayRemove('schedule', `${year}Q${quarter}`, 'all', date)

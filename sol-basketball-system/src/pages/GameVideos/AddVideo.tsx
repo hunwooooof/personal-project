@@ -15,16 +15,16 @@ interface VideoType {
 function AddVideo() {
   const selectBox = useRef(null);
   const [newVideo, setNewVideo] = useState<VideoType>({
-    // tag: '',
-    // date: '2023-11-25',
-    // title: 'Hoopboyz vs Roadrunners Rookies',
-    // youtubeLink: 'https://www.youtube.com/watch?v=Iqs4n-2UWvo',
-    // type: '',
     tag: '',
-    date: '',
-    title: '',
-    youtubeLink: '',
+    date: '2023-11-25',
+    title: 'Hoopboyz vs Roadrunners Rookies',
+    youtubeLink: 'https://www.youtube.com/watch?v=Iqs4n-2UWvo',
     type: '',
+    // tag: '',
+    // date: '',
+    // title: '',
+    // youtubeLink: '',
+    // type: '',
   });
 
   const types = [
@@ -89,7 +89,7 @@ function AddVideo() {
             e.stopPropagation();
             handleSubmit();
           }}>
-          <div className={`${inputClass} w-[360px] xl:w-[420px]`}>
+          <div className={`${inputClass} max-w-[360px] xl:w-[420px]`}>
             <Select
               ref={selectBox}
               isRequired
@@ -144,7 +144,7 @@ function AddVideo() {
               </Select>
             </div>
           </div>
-          <div className={`${inputClass} w-[360px] xl:w-[420px]`}>
+          <div className={`${inputClass} max-w-[360px] xl:w-[420px]`}>
             <Input
               isRequired
               type='text'
@@ -156,7 +156,7 @@ function AddVideo() {
               onChange={handleChangeInput}
             />
           </div>
-          <div className={`${inputClass} w-[360px] xl:w-[420px]`}>
+          <div className={`${inputClass} max-w-[360px] xl:w-[420px]`}>
             <Input
               isRequired
               type='text'
@@ -164,9 +164,9 @@ function AddVideo() {
               id='title'
               label='Title'
               placeholder='Roadrunners vs TOP'
-              isInvalid={newVideo.title.length > 30}
-              color={newVideo.title.length > 30 ? 'danger' : 'default'}
-              errorMessage={newVideo.title.length > 30 && 'Exceeds the maximum character limit.'}
+              isInvalid={newVideo.title.length > 40}
+              color={newVideo.title.length > 40 ? 'danger' : 'default'}
+              errorMessage={newVideo.title.length > 40 && 'Exceeds the maximum character limit.'}
               value={newVideo.title}
               onChange={handleChangeInput}
             />
@@ -178,7 +178,7 @@ function AddVideo() {
             Add Video
           </button>
         </form>
-        <div className='w-[350px] lg:w-[400px] flex-shrink-0 bg-gray-100 rounded-xl' id='video-demonstrate'>
+        <div className='max-w-[350px] lg:w-[400px] flex-shrink-0 bg-gray-100 rounded-xl' id='video-demonstrate'>
           <iframe
             src={`https://www.youtube.com/embed/${extractVideoId(newVideo.youtubeLink.trim())}`}
             title='YouTube video player'

@@ -1,5 +1,3 @@
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { NextUIProvider } from '@nextui-org/react';
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
@@ -34,10 +32,8 @@ function App() {
 
   return (
     <NextUIProvider>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Sidebar />
-        <Outlet />
-      </LocalizationProvider>
+      <Sidebar />
+      <Outlet />
     </NextUIProvider>
   );
 }

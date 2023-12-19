@@ -20,11 +20,11 @@ html {
 }
 
 .unScheduledClass {
-  @apply px-12 py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-600 tracking-wider;
+  @apply text-sm sm:text-base sm:px-12 py-2 sm:py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-600 tracking-wider;
 }
 
 .isScheduledClass {
-  @apply px-12 py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider cursor-pointer text-black;
+  @apply text-sm sm:text-base sm:px-12 py-2 sm:py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider cursor-pointer text-black;
 }
 
 .kidCard {
