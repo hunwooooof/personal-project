@@ -89,7 +89,7 @@ function AddVideo() {
             e.stopPropagation();
             handleSubmit();
           }}>
-          <div className={`${inputClass} max-w-[360px] xl:w-[420px]`}>
+          <div className={`${inputClass} max-w-[360px] sm:max-w-none w-[360px] xl:w-[420px]`}>
             <Select
               ref={selectBox}
               isRequired
@@ -144,7 +144,7 @@ function AddVideo() {
               </Select>
             </div>
           </div>
-          <div className={`${inputClass} max-w-[360px] xl:w-[420px]`}>
+          <div className={`${inputClass} max-w-[360px] sm:max-w-none w-[360px] xl:w-[420px]`}>
             <Input
               isRequired
               type='text'
@@ -156,7 +156,7 @@ function AddVideo() {
               onChange={handleChangeInput}
             />
           </div>
-          <div className={`${inputClass} max-w-[360px] xl:w-[420px]`}>
+          <div className={`${inputClass} max-w-[360px] sm:max-w-none w-[360px] xl:w-[420px]`}>
             <Input
               isRequired
               type='text'
