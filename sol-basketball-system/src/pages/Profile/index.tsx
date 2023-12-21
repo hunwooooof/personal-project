@@ -16,7 +16,7 @@ interface NewProfileType {
 
 function Profile() {
   const navigate = useNavigate();
-  const { setCurrentNav, user, userRef, isLogin, getUserProfile, isLoading, setLoading } = useStore();
+  const { setCurrentNav, user, userID, userRef, isLogin, getUserProfile, isLoading, setLoading } = useStore();
   const [isEditProfile, setEditProfile] = useState(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -41,8 +41,7 @@ function Profile() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const image = e.target.files[0];
-      const unitTime = Date.now();
-      const storageReferenceRoot = `temporary-folder/${unitTime}${image.name}`;
+      const storageReferenceRoot = `temporary-folder/${userID}`;
       firebaseStorage
         .uploadAndGetDownloadURL(storageReferenceRoot, image)
         .then((url) => setNewProfile({ ...newProfile, photoURL: url }));
@@ -59,9 +58,8 @@ function Profile() {
   };
 
   const handleSaveProfile = () => {
-    const unitTime = Date.now();
     if (newProfileImg && userRef) {
-      const storageReferenceRoot = `users-photo/${unitTime}${newProfileImg.name}`;
+      const storageReferenceRoot = `users-photo/${userID}`;
       firebaseStorage
         .uploadAndGetDownloadURL(storageReferenceRoot, newProfileImg)
         .then((url) => {

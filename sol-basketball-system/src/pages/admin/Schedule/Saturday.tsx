@@ -3,20 +3,13 @@ import { useEffect, useState } from 'react';
 import { Edit } from '../../../components/Icon';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
+import { DetailType } from '../../../utils/types';
 import SatItem from './SatItem';
 
 interface PropsType {
   date: string;
   quarter: number;
   year: number;
-}
-
-interface DetailType {
-  address: string;
-  date: string;
-  tag: string;
-  time: string;
-  title: string;
 }
 
 const detailSelection = {
@@ -93,6 +86,7 @@ function Saturday({ date, quarter, year }: PropsType) {
           className={unScheduledClass}
           onClick={() => {
             if (!isEdit && Object.values(todaySchedule)[0].length > 0) {
+              // do something
               firestore
                 .getDoc('schedule', `${year}Q${quarter}`)
                 .then((schedule) => {
@@ -182,7 +176,6 @@ function Saturday({ date, quarter, year }: PropsType) {
                       value={detail.time.slice(0, 5)}
                       onChange={(e) => {
                         const id = e.target.value;
-                        console.log(id);
                         setDetail({
                           ...detail,
                           time: `${id}-${id}`,

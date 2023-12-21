@@ -26,18 +26,12 @@ function Kids() {
   const defaultPhotoURL =
     'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/default-avatar-profile.png?alt=media&token=2ca8bd76-a025-4b94-a2f6-d5d39210289c';
   const emptyNewKid = {
-    // firstName: '',
-    // lastName: '',
-    // chineseName: '',
-    // birthday: '',
-    // id: '',
-    // school: '',
-    firstName: 'Diego',
-    lastName: 'Tsai',
-    chineseName: '蔡明德',
-    birthday: '2013-09-12',
-    id: 'A214478690',
-    school: '重陽國小',
+    firstName: '',
+    lastName: '',
+    chineseName: '',
+    birthday: '',
+    id: '',
+    school: '',
     parentID: userID || '',
     photoURL: defaultPhotoURL,
   };

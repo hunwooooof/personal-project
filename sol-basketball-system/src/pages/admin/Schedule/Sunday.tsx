@@ -1,18 +1,11 @@
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
+import { DetailType } from '../../../utils/types';
 
 interface PropsType {
   date: string;
   quarter: number;
   year: number;
-}
-
-interface DetailType {
-  address: 'blessed-imeldas-school';
-  date: string;
-  tag?: string;
-  time: '19:00-21:00';
-  title: 'team-practice';
 }
 
 function Sunday({ date, quarter, year }: PropsType) {

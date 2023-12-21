@@ -21,7 +21,7 @@ interface PropsType {
 }
 
 function Card({ kid }: PropsType) {
-  const { userRef, getUserProfile, setLoading } = useStore();
+  const { userID, userRef, getUserProfile, setLoading } = useStore();
   const [isEdit, setEdit] = useState(false);
   const inputFileRef = useRef(null);
   const { docId, id } = kid;
@@ -42,11 +42,9 @@ function Card({ kid }: PropsType) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const image = e.target.files[0];
-      const unitTime = Date.now();
-      const storageReferenceRoot = `temporary-folder/${unitTime}${image.name}`;
-      firebaseStorage.uploadAndGetDownloadURL(storageReferenceRoot, image).then((url) => {
-        setNewKid({ ...newKid, photoURL: url });
-      });
+      firebaseStorage
+        .uploadAndGetDownloadURL(`temporary-folder/${userID}`, image)
+        .then((url) => setNewKid({ ...newKid, photoURL: url }));
       setNewProfileImg(image);
     } else {
       setNewKid({ ...newKid, photoURL: kid.photoURL });
@@ -59,11 +57,9 @@ function Card({ kid }: PropsType) {
   };
 
   const handleSaveKid = () => {
-    const unitTime = Date.now();
     if (newProfileImg && userRef) {
-      const storageReferenceRoot = `users-photo/${unitTime}${newProfileImg.name}`;
       firebaseStorage
-        .uploadAndGetDownloadURL(storageReferenceRoot, newProfileImg)
+        .uploadAndGetDownloadURL(`users-photo/${userID}`, newProfileImg)
         .then((url) => firestore.updateDoc('students', docId, { ...newKid, photoURL: url }))
         .then(() => getUserProfile(userRef))
         .then(() => {

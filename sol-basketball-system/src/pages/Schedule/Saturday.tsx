@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
+import { DetailType } from '../../utils/types';
 
 interface PropsType {
   date: string;
@@ -7,14 +8,6 @@ interface PropsType {
   setInfoShow: (arg0: boolean) => void;
   setInfo: (arg0: DetailType) => void;
   info: DetailType[] | undefined;
-}
-
-interface DetailType {
-  address: string;
-  date: string;
-  tag?: string;
-  time: string;
-  title: string;
 }
 
 function Saturday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
@@ -49,7 +42,6 @@ function Saturday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
         <div
           className={isScheduledClass}
           onClick={() => {
-            console.log(date);
             if (Object.keys(todaySchedule)[0] == date && isInfoShow) {
               setInfoShow(false);
             } else {

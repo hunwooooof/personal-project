@@ -67,9 +67,8 @@ function Purchase() {
       const date = formatTimestampToYYYYMMDD(currentTimestamp);
       const showDate = formatTimestampToYYYYslashMMslashDD(currentTimestamp);
       const time = formatTimestampToTime(currentTimestamp);
-      const hour = today.getHours();
       const ms = today.getMilliseconds();
-      const orderId = `${date}${hour}${ms}${order.method}${order.plan}`;
+      const orderId = `${date}${time}${ms}${order.method}${order.plan}`;
       firestore.setDoc('orders', orderId, { ...order, timestamp: serverTimestamp(), id: orderId });
       firestore.getDoc('credits', order.kid.docId).then((user) => {
         if (!user) {

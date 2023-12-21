@@ -1,12 +1,5 @@
 import { useStore } from '../../store/store';
-
-interface DetailType {
-  address: string;
-  date: string;
-  tag?: string;
-  time: string;
-  title: string;
-}
+import { DetailType } from '../../utils/types';
 
 interface PropsType {
   date: string;

@@ -3,15 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import CalendarButton from '../../../components/CalendarButton';
 import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
+import { AllDatesType } from '../../../utils/types';
 import Friday from './Friday';
 import Saturday from './Saturday';
 import Sunday from './Sunday';
 
-interface AllDatesType {
-  friday: string[];
-  saturday: string[];
-  sunday: string[];
-}
 function AdminSchedule() {
   const { setCurrentNav, isLogin, getScheduledDates, getSaturdaySchedules } = useStore();
 

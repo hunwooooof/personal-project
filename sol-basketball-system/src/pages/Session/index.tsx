@@ -26,14 +26,16 @@ function Session() {
       navigate('/');
       setCurrentNav('schedules');
       setLoading(false);
-    } else if (isLogin) {
+    }
+    if (isLogin) {
       if (role === 'user' && kids) {
         if (!kids.some((kid) => kid.id === id)) {
           navigate('/profile');
         }
         setCurrentNav('profile');
         setLoading(false);
-      } else if (role === 'admin') {
+      }
+      if (role === 'admin') {
         kids.pop();
         setCurrentNav('admin-students');
         if (kids.length === 0) {

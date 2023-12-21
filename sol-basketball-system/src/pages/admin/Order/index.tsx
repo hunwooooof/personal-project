@@ -1,27 +1,11 @@
 import { Tab, Tabs } from '@nextui-org/react';
-import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { Key, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
 import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
-
-interface OrderType {
-  id: string;
-  userRef: DocumentReference<DocumentData, DocumentData>;
-  kid: {
-    docId: string;
-    firstName: string;
-    lastName: string;
-  };
-  plan: '01' | '08' | '10' | '12';
-  method: 'cash' | 'tran';
-  status: 'SUCCESS' | 'IN_PROCESS' | 'FAILED';
-  timestamp: {
-    seconds: number;
-  };
-  price: 1000 | 7200 | 8250 | 9000;
-}
+import { formatTimestampToTime, formatTimestampToYYYYslashMMslashDD } from '../../../utils/helpers';
+import { AdminOrderType } from '../../../utils/types';
 
 function AdminOrder() {
   const navigate = useNavigate();
@@ -36,15 +20,15 @@ function AdminOrder() {
   }, [isLogin]);
 
   const [tag, setTag] = useState('all');
-  const [orders, setOrders] = useState<OrderType[]>([]);
+  const [orders, setOrders] = useState<AdminOrderType[]>([]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'orders'), (docSnaps) => {
-      const ordersArray: OrderType[] = [];
-      const sortByTimestamp = (a: OrderType, b: OrderType) => b.timestamp.seconds - a.timestamp.seconds;
+      const ordersArray: AdminOrderType[] = [];
+      const sortByTimestamp = (a: AdminOrderType, b: AdminOrderType) => b.timestamp.seconds - a.timestamp.seconds;
       docSnaps.forEach((docSnap) => {
         const doc = docSnap.data();
-        ordersArray.push(doc as OrderType);
+        ordersArray.push(doc as AdminOrderType);
       });
       ordersArray.sort(sortByTimestamp);
       setOrders(ordersArray);
@@ -67,9 +51,7 @@ function AdminOrder() {
         xmlns='http://www.w3.org/2000/svg'
         fill='none'
         viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
-        className='h-6 cursor-pointer text-slate-400 hover:text-green-500 hover:scale-125 duration-150'>
+        className='stroke-[1.5] stroke-current h-6 cursor-pointer text-slate-400 hover:text-green-500 hover:scale-125 duration-150'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -85,13 +67,11 @@ function AdminOrder() {
         id={orderId}
         xmlns='http://www.w3.org/2000/svg'
         viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
         fill='none'
         onClick={() => {
           firestore.updateDoc('orders', orderId, { status: 'FAILED' });
         }}
-        className='h-6 cursor-pointer text-slate-400 hover:text-red-500 hover:scale-125 duration-150'>
+        className='stroke-[1.5] stroke-current h-6 cursor-pointer text-slate-400 hover:text-red-500 hover:scale-125 duration-150'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -108,12 +88,10 @@ function AdminOrder() {
         fill='none'
         id={orderId}
         viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
         onClick={() => {
           firestore.updateDoc('orders', orderId, { status: 'IN_PROCESS' });
         }}
-        className='h-5 cursor-pointer text-slate-400 hover:text-black hover:scale-125 duration-150'>
+        className='stroke-[1.5] stroke-current h-5 cursor-pointer text-slate-400 hover:text-black hover:scale-125 duration-150'>
         <path
           strokeLinecap='round'
           strokeLinejoin='round'
@@ -148,19 +126,12 @@ function AdminOrder() {
           {orders.length > 0 &&
             orders.map((order) => {
               const { seconds } = order.timestamp;
+              const showDate = formatTimestampToYYYYslashMMslashDD(seconds * 1000);
+              const time = formatTimestampToTime(seconds * 1000);
               const timestamp = new Date(seconds * 1000);
-              const yyyy = timestamp.getFullYear();
-              const mm = timestamp.getMonth() + 1;
-              const formattedMm = mm < 10 ? `0${mm}` : String(mm);
-              const dd = timestamp.getDate();
-              const formattedDd = dd < 10 ? `0${dd}` : String(dd);
-              const hour = timestamp.getHours();
-              const formattedHour = hour < 10 ? `0${hour}` : String(hour);
-              const min = timestamp.getMinutes();
-              const formattedMin = min < 10 ? `0${min}` : String(min);
               const sec = timestamp.getSeconds();
               const formattedSec = sec < 10 ? `0${sec}` : String(sec);
-              const dateTime = `${yyyy}/${formattedMm}/${formattedDd} ${formattedHour}:${formattedMin}:${formattedSec}`;
+              const dateTime = `${showDate} ${time}:${formattedSec}`;
               if (tag === 'all' || (tag === 'inProcess' && order.status === 'IN_PROCESS'))
                 return (
                   <div

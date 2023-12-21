@@ -7,23 +7,7 @@ import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { firestore } from '../../utils/firestore';
 import { formatTimestampToTime, formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
-
-interface OrderType {
-  id?: string;
-  userRef?: DocumentReference<DocumentData, DocumentData>;
-  kid: {
-    docId?: string;
-    firstName?: string;
-    lastName?: string;
-  };
-  plan?: '01' | '08' | '10' | '12';
-  method?: 'cash' | 'tran';
-  status?: 'SUCCESS' | 'IN_PROCESS';
-  timestamp: {
-    seconds: number;
-  };
-  price?: 1000 | 7200 | 8250 | 9000;
-}
+import { OrderType } from '../../utils/types';
 
 function Order() {
   const navigate = useNavigate();
