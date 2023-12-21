@@ -5,19 +5,11 @@ import CalendarButton from '../../components/CalendarButton';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { apiCalendar } from '../../utils/googleCalendar';
-import { AllDatesType } from '../../utils/types';
+import { AllDatesType, DetailType } from '../../utils/types';
 import Friday from './Friday';
 import Saturday from './Saturday';
 import Sunday from './Sunday';
 import googleCalendarIco from './google-calendar_icon.png';
-
-interface DetailType {
-  address: string;
-  date: string;
-  tag?: string;
-  time: string;
-  title: string;
-}
 
 interface EventType {
   end: {

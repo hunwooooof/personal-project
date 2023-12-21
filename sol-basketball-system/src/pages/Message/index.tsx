@@ -5,13 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import { db, doc, firestore, onSnapshot } from '../../utils/firestore';
 import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
+import { MessageType } from '../../utils/types';
 import Bubble from './Bubble';
 
-interface MessageType {
-  timestamp: number;
-  content: string;
-  sender: string;
-}
 interface ChatType {
   messages: MessageType[];
   unread: boolean;

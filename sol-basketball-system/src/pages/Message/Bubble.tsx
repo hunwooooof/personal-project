@@ -1,10 +1,5 @@
 import { formatTimestampToTime } from '../../utils/helpers';
-
-interface MessageType {
-  timestamp: number;
-  content: string;
-  sender: string;
-}
+import { MessageType } from '../../utils/types';
 
 interface PropsType {
   message: MessageType;

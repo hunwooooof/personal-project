@@ -6,14 +6,10 @@ import LoadingAnimation from '../../../components/LoadingAnimation';
 import { useStore } from '../../../store/store';
 import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
 import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../../utils/helpers';
+import { KidType, MessageType, UserType } from '../../../utils/types';
 import Bubble from './Bubble';
 import KidInfo from './KidInfo';
 
-interface MessageType {
-  timestamp: number;
-  content: string;
-  sender: string;
-}
 interface ChatType {
   messages: MessageType[];
   unread: boolean;
@@ -26,26 +22,6 @@ interface ChatType {
     sender: string;
     timestamp: number;
   };
-}
-
-interface KidType {
-  docId: string;
-  birthday: string;
-  chineseName: string;
-  firstName: string;
-  id: string;
-  lastName: string;
-  school: string;
-  photoURL?: string;
-}
-interface UserType {
-  photoURL?: string;
-  email?: string;
-  kids?: DocumentReference<DocumentData, DocumentData>[];
-  displayName?: string | undefined;
-  phoneNumber?: string;
-  registrationDate?: string;
-  role?: string;
 }
 
 function Messages() {

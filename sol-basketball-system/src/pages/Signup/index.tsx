@@ -6,10 +6,11 @@ import logoUrl from '../../assets/sol-logo.png';
 import { EyeFilledIcon } from '../../components/EyeFilledIcon';
 import { EyeSlashFilledIcon } from '../../components/EyeSlashFilledIcon';
 import { useStore } from '../../store/store';
+
 const emptyAccount = {
-  name: 'Susan',
-  email: 'susan0708@gmail.com',
-  password: '123456',
+  name: '',
+  email: '',
+  password: '',
 };
 
 function Signup() {

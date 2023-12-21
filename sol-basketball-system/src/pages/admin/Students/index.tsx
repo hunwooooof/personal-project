@@ -3,21 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
-
-interface StudentProfile {
-  birthday: string;
-  chineseName: string;
-  docId: string;
-  firstName: string;
-  id: string;
-  lastName: string;
-  photoURL: string;
-  school: string;
-}
+import { KidType } from '../../../utils/types';
 
 function Student() {
   const { setCurrentNav, isLogin } = useStore();
-  const [students, setStudents] = useState<StudentProfile[]>([]);
+  const [students, setStudents] = useState<KidType[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,7 +21,7 @@ function Student() {
 
   const getStudentsProfile = async () => {
     const studentsProfiles = await firestore.getDocs('students');
-    setStudents(studentsProfiles as StudentProfile[]);
+    setStudents(studentsProfiles as KidType[]);
   };
 
   useEffect(() => {

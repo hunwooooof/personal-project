@@ -3,28 +3,7 @@ import toast from 'react-hot-toast';
 import { create } from 'zustand';
 import { UserCredential, firebaseAuth } from '../utils/firebaseAuth';
 import { db, doc, firestore } from '../utils/firestore';
-
-interface UserType {
-  photoURL?: string;
-  email?: string;
-  kids?: DocumentReference<DocumentData, DocumentData>[];
-  ordersRef?: DocumentReference<DocumentData, DocumentData>[];
-  displayName?: string | undefined;
-  phoneNumber?: string;
-  registrationDate?: string;
-  role?: string;
-}
-
-interface KidType {
-  docId: string;
-  birthday: string;
-  chineseName: string;
-  firstName: string;
-  id: string;
-  lastName: string;
-  school: string;
-  photoURL?: string;
-}
+import { KidType, UserType } from '../utils/types';
 
 interface AccountType {
   name?: string;

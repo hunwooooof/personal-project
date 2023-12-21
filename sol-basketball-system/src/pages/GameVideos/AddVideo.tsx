@@ -3,28 +3,16 @@ import React, { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import PageTitle from '../../components/PageTitle';
 import { firestore } from '../../utils/firestore';
-
-interface VideoType {
-  tag: string;
-  date: string;
-  title: string;
-  youtubeLink: string;
-  type?: string;
-}
+import { NewVideoType } from '../../utils/types';
 
 function AddVideo() {
   const selectBox = useRef(null);
-  const [newVideo, setNewVideo] = useState<VideoType>({
+  const [newVideo, setNewVideo] = useState<NewVideoType>({
     tag: '',
-    date: '2023-11-25',
-    title: 'Hoopboyz vs Roadrunners Rookies',
-    youtubeLink: 'https://www.youtube.com/watch?v=Iqs4n-2UWvo',
+    date: '',
+    title: '',
+    youtubeLink: '',
     type: '',
-    // tag: '',
-    // date: '',
-    // title: '',
-    // youtubeLink: '',
-    // type: '',
   });
 
   const types = [
