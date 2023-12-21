@@ -30,6 +30,7 @@ function Profile() {
     if (!isLogin) {
       navigate('/login');
       setCurrentNav('');
+      setLoading(false);
     } else if (isLogin) {
       setCurrentNav('profile');
       setLoading(false);
@@ -41,7 +42,6 @@ function Profile() {
     if (e.target.files && e.target.files[0]) {
       const image = e.target.files[0];
       const unitTime = Date.now();
-
       const storageReferenceRoot = `temporary-folder/${unitTime}${image.name}`;
       firebaseStorage
         .uploadAndGetDownloadURL(storageReferenceRoot, image)

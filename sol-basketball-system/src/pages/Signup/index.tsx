@@ -7,9 +7,9 @@ import { EyeFilledIcon } from '../../components/EyeFilledIcon';
 import { EyeSlashFilledIcon } from '../../components/EyeSlashFilledIcon';
 import { useStore } from '../../store/store';
 const emptyAccount = {
-  name: '',
-  email: '',
-  password: '',
+  name: 'Susan',
+  email: 'susan0708@gmail.com',
+  password: '123456',
 };
 
 function Signup() {
@@ -28,8 +28,8 @@ function Signup() {
   useEffect(() => {
     if (isLogin) {
       getUserProfile(userRef);
-      navigate('/');
-      setCurrentNav('/schedules');
+      navigate('/profile');
+      setCurrentNav('/profile');
     }
     setLoading(false);
   }, [isLogin]);

@@ -173,12 +173,14 @@ function AddVideo() {
           </div>
           <button
             className='flex items-center justify-center font-semibold rounded-full bg-gray-700 text-white mt-4 py-2 hover:scale-110 duration-150 disabled:scale-100 disabled:cursor-auto disabled:text-gray-600'
-            disabled={Object.values(newVideo).some((item) => item.length === 0) || newVideo.title.length > 30}
+            disabled={Object.values(newVideo).some((item) => item.length === 0) || newVideo.title.length > 40}
             type='submit'>
             Add Video
           </button>
         </form>
-        <div className='max-w-[350px] lg:w-[400px] flex-shrink-0 bg-gray-100 rounded-xl' id='video-demonstrate'>
+        <div
+          className='max-w-[350px] xl:max-w-none lg:w-[400px] flex-shrink-0 bg-gray-100 rounded-xl'
+          id='video-demonstrate'>
           <iframe
             src={`https://www.youtube.com/embed/${extractVideoId(newVideo.youtubeLink.trim())}`}
             title='YouTube video player'
@@ -187,19 +189,19 @@ function AddVideo() {
           />
           <div className='flex flex-col px-4 gap-3 mt-3 pb-4 text-black'>
             <div className='flex justify-between items-center'>
-              <div className='tracking-wider'>{newVideo.date}</div>
-              <div className='ml-auto mr-1 px-2 h-[26px] border border-gray-600 rounded-full'>
+              <div className='text-sm xl:text-base tracking-wider'>{newVideo.date}</div>
+              <div className='text-sm xl:text-base ml-auto mr-1 px-2 h-[26px] border border-gray-600 rounded-full'>
                 {newVideo.type === 'top-league'
                   ? 'Top League'
                   : newVideo.type === 'friendly-game'
                     ? 'Friendly Game'
                     : 'Please select game type'}
               </div>
-              <div className='px-2 h-[26px] border border-gray-600 rounded-full'>
+              <div className='text-sm xl:text-base px-2 h-[26px] border border-gray-600 rounded-full'>
                 {newVideo.tag === 'u10' ? 'U10' : newVideo.tag === 'u12' ? 'U12' : 'U'}
               </div>
             </div>
-            <div className='font-bold w-72'>{newVideo.title}</div>
+            <div className='text-sm xl:text-base font-bold w-72'>{newVideo.title}</div>
           </div>
         </div>
       </div>

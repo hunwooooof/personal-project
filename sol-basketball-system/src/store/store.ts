@@ -56,12 +56,12 @@ interface StoreState {
   setNotification: (boolean: boolean) => void;
 }
 
-const solBasketballLogo =
-  'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496';
+const defaultPhotoURL =
+  'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/default-avatar-profile.png?alt=media&token=2ca8bd76-a025-4b94-a2f6-d5d39210289c';
 
 const initialProfile = (user: UserCredential['user'], name?: string | undefined) => {
   return {
-    photoURL: user.photoURL || solBasketballLogo,
+    photoURL: user.photoURL || defaultPhotoURL,
     email: user.email,
     kids: [],
     displayName: name || user.displayName || undefined,
@@ -86,7 +86,7 @@ export const useStore = create<StoreState>((set) => ({
     firebaseAuth
       .createUserWithEmailAndPassword(email.trim(), password.trim())
       .then((user) => {
-        firebaseAuth.updateProfile(name as string, solBasketballLogo);
+        firebaseAuth.updateProfile(name as string, defaultPhotoURL);
         firestore.setDoc('users', user.uid, initialProfile(user, name));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
         set(() => ({ userID: user.uid }));

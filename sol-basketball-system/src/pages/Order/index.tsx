@@ -52,6 +52,9 @@ function Order() {
     }
     if (user.ordersRef) {
       getOrders(user.ordersRef);
+      setLoading(false);
+    } else {
+      setLoading(false);
     }
   }, [isLogin, user]);
 

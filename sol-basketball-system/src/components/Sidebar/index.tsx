@@ -68,7 +68,7 @@ function Sidebar() {
             to='/profile'
             id='profile'
             onClick={() => {
-              setLoading(true);
+              if (currentNav !== 'profile') setLoading(true);
               setCurrentNav('profile');
             }}
             className={currentNav === 'profile' ? activeNavClass : normalNavClass}>

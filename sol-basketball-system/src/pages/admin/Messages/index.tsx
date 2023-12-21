@@ -260,7 +260,7 @@ function Messages() {
           )}
           {id !== 'inbox' && (
             <div className='w-[calc(100%-100px)] lg:w-8/12 flex' onClick={() => setUnreadFalse(id as string)}>
-              <div className={`flex-1 w-full ${isInfoShow && 'w-[55%]'}`}>
+              <div className={`flex-1 ${isInfoShow ? 'w-[55%]' : 'w-full'}`}>
                 {chats &&
                   chats
                     .filter((chat) => chat.userID === id)

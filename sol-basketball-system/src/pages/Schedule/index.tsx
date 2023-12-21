@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import CalendarButton from '../../components/CalendarButton';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
@@ -387,13 +388,21 @@ function Schedule() {
                       {info.time}
                     </div>
                     {new Date(info.date) > new Date() && (
-                      <div
-                        className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
-                        onClick={() => {
-                          handleClickGoogleCalendar(info);
-                        }}>
-                        <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
-                        Add to calendar
+                      <div className=''>
+                        <div
+                          className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                          onClick={() => {
+                            handleClickGoogleCalendar(info);
+                          }}>
+                          <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
+                          Add to calendar
+                        </div>
+                        <Link
+                          to='/login'
+                          className='rounded-full bg-slate-700 py-1 mt-4 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                          onClick={() => setCurrentNav('')}>
+                          Log in to purchase sessions
+                        </Link>
                       </div>
                     )}
                   </div>
