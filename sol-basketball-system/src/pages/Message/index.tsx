@@ -1,10 +1,10 @@
 import { ScrollShadow } from '@nextui-org/react';
+import dateFormat from 'dateformat';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MessageInput from '../../components/MessageInput';
 import { useStore } from '../../store/store';
 import { db, doc, firestore, onSnapshot } from '../../utils/firestore';
-import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
 import { MessageType } from '../../utils/types';
 import Bubble from './Bubble';
 
@@ -79,7 +79,7 @@ function Message() {
     }
   };
 
-  const userMessagesTemplate = [
+  const defaultUserMessages = [
     'Thanks!',
     '😆😆',
     'I have completed the bank transfer. Please verify for me.',
@@ -104,24 +104,22 @@ function Message() {
             </div>
             {chat &&
               sortedMessages?.map((message, index) => {
-                const date = formatTimestampToYYYYMMDD(message.timestamp);
-                const showDate = formatTimestampToYYYYslashMMslashDD(message.timestamp);
-
-                const lastTimestamp = sortedMessages[index - 1]?.timestamp;
-                const lastDate = formatTimestampToYYYYMMDD(lastTimestamp);
-
-                const now = new Date().getTime();
-                const today = formatTimestampToYYYYMMDD(now);
-
+                const date = dateFormat(new Date(message.timestamp), 'yyyymmdd');
+                const previousTimestamp = sortedMessages[index - 1]?.timestamp;
+                const previousDate = previousTimestamp
+                  ? dateFormat(new Date(previousTimestamp), 'yyyymmdd')
+                  : undefined;
+                const today = dateFormat(new Date(), 'yyyymmdd');
+                const isToday = date === today;
+                const isSameAsPreviousDate = date === previousDate;
                 let dateBubble = undefined;
-                if (lastDate === 'NaNNaNNaN' && date !== today) {
-                  dateBubble = showDate;
-                } else if (Number(date) > Number(lastDate)) {
-                  dateBubble = showDate;
+                if ((!previousDate && !isToday) || Number(date) > Number(previousDate)) {
+                  dateBubble = dateFormat(new Date(message.timestamp), 'yyyy/mm/dd');
                 }
-                if (Number(today) - Number(date) === 1 && date !== lastDate) {
+                if (Number(today) - Number(date) === 1 && !isSameAsPreviousDate) {
                   dateBubble = 'Yesterday';
-                } else if (date === today && date !== lastDate) {
+                }
+                if (isToday && !isSameAsPreviousDate) {
                   dateBubble = 'Today';
                 }
 
@@ -159,11 +157,11 @@ function Message() {
           {chat && (
             <div className='w-full px-4 py-4 relative'>
               <ScrollShadow orientation='horizontal' className='flex gap-3 overflow-x-auto pb-2'>
-                {userMessagesTemplate.map((faq) => (
+                {defaultUserMessages.map((message) => (
                   <div
                     className='rounded-full cursor-pointer px-2 py-1 text-gray-400 border border-gray-700 whitespace-nowrap hover:bg-gray-700'
-                    onClick={() => setNewMessage(faq)}>
-                    {faq}
+                    onClick={() => setNewMessage(message)}>
+                    {message}
                   </div>
                 ))}
               </ScrollShadow>

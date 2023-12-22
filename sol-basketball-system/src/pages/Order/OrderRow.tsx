@@ -1,6 +1,6 @@
 import { Tooltip } from '@nextui-org/react';
+import dateFormat from 'dateformat';
 import { Link } from 'react-router-dom';
-import { formatTimestampToTime, formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
 import { CompleteOrderType } from '../../utils/types';
 
 interface PropsType {
@@ -10,12 +10,7 @@ interface PropsType {
 
 function OrderRow({ order, tag }: PropsType) {
   const { seconds } = order.timestamp;
-  const showDate = formatTimestampToYYYYslashMMslashDD(seconds * 1000);
-  const time = formatTimestampToTime(seconds * 1000);
-  const timestamp = new Date(seconds * 1000);
-  const sec = timestamp.getSeconds();
-  const formattedSec = sec < 10 ? `0${sec}` : String(sec);
-  const dateTime = `${showDate} ${time}:${formattedSec}`;
+  const dateTime = dateFormat(new Date(seconds * 1000), 'yyyy/mm/dd HH:MM:ss');
 
   const planMap = {
     '01': 'Single Session',

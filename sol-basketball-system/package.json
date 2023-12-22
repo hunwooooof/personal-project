@@ -13,6 +13,7 @@
     "@emailjs/browser": "^3.11.0",
     "@nextui-org/react": "^2.2.9",
     "@nextui-org/select": "^2.1.20",
+    "dateformat": "^5.0.3",
     "firebase": "^10.6.0",
     "framer-motion": "^10.16.14",
     "lottie-react": "^2.4.0",
@@ -24,6 +25,7 @@
     "zustand": "^4.4.6"
   },
   "devDependencies": {
+    "@types/dateformat": "^5.0.2",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",

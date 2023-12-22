@@ -1,4 +1,5 @@
 import { ScrollShadow } from '@nextui-org/react';
+import dateFormat from 'dateformat';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -6,7 +7,6 @@ import LoadingAnimation from '../../../components/LoadingAnimation';
 import MessageInput from '../../../components/MessageInput';
 import { useStore } from '../../../store/store';
 import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
-import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../../utils/helpers';
 import { KidType, MessageType, UserType } from '../../../utils/types';
 import Bubble from './Bubble';
 import UserInfo from './UserInfo';
@@ -93,53 +93,49 @@ function Messages() {
   const sortByTimestamp = (a: MessageType, b: MessageType) => a.timestamp - b.timestamp;
 
   const setUnreadFalse = (id: string) => {
-    if (id) {
-      firestore.updateDoc('messages', id, { unread: false });
-    }
+    if (!id) return;
+    firestore.updateDoc('messages', id, { unread: false });
   };
 
   const handleSendMessage = () => {
     const currentTimestamp = new Date().getTime();
-    if (id) {
-      firestore.updateDocArrayUnion('messages', id, 'messages', {
+    if (!id) return;
+    firestore.updateDocArrayUnion('messages', id, 'messages', {
+      sender: 'admin',
+      timestamp: currentTimestamp,
+      content: newMessage.trim(),
+    });
+    firestore.updateDoc('messages', id, {
+      lastMessage: {
         sender: 'admin',
         timestamp: currentTimestamp,
         content: newMessage.trim(),
-      });
-      firestore.updateDoc('messages', id, {
-        lastMessage: {
-          sender: 'admin',
-          timestamp: currentTimestamp,
-          content: newMessage.trim(),
-        },
-      });
-      setNewMessage('');
-    }
+      },
+    });
+    setNewMessage('');
   };
 
   const [userDetail, setUserDetail] = useState<UserType>();
   const [userKids, setUserKids] = useState<KidType[]>();
 
   useEffect(() => {
-    if (id) {
-      firestore
-        .getDoc('users', id)
-        .then((result) => {
-          if (result) {
-            setUserDetail(result);
-            return result.kids;
-          }
-        })
-        .then((kidsRefs) => {
-          const emptyArray: KidType[] = [];
-          kidsRefs.forEach((kidRef: DocumentReference<DocumentData, DocumentData>) => {
-            firestore.getDocByRef(kidRef).then((result) => emptyArray.push(result as KidType));
-          });
-          setTimeout(() => {
-            setUserKids(emptyArray);
-          }, 200);
+    if (!id) return;
+    firestore
+      .getDoc('users', id)
+      .then((result) => {
+        if (!result) return;
+        setUserDetail(result);
+        return result.kids;
+      })
+      .then((kidsRefs) => {
+        const emptyArray: KidType[] = [];
+        kidsRefs.forEach((kidRef: DocumentReference<DocumentData, DocumentData>) => {
+          firestore.getDocByRef(kidRef).then((result) => emptyArray.push(result as KidType));
         });
-    }
+        setTimeout(() => {
+          setUserKids(emptyArray);
+        }, 200);
+      });
   }, [id]);
 
   const renderInfoIcon = () => (
@@ -170,7 +166,7 @@ function Messages() {
     </svg>
   );
 
-  const adminMessagesTemplate = [
+  const defaultAdminMessages = [
     'Thanks!',
     'Cool!',
     '😆😆',
@@ -232,11 +228,7 @@ function Messages() {
           </div>
           {id === 'inbox' && (
             <div className='w-8/12 h-screen flex flex-col items-center justify-center text-slate-500'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                viewBox='0 0 24 24'
-                fill='currentColor'
-                className='w-20 h-20 block mb-4'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' className='w-20 h-20 block mb-4 fill-current'>
                 <path d='M4.913 2.658c2.075-.27 4.19-.408 6.337-.408 2.147 0 4.262.139 6.337.408 1.922.25 3.291 1.861 3.405 3.727a4.403 4.403 0 00-1.032-.211 50.89 50.89 0 00-8.42 0c-2.358.196-4.04 2.19-4.04 4.434v4.286a4.47 4.47 0 002.433 3.984L7.28 21.53A.75.75 0 016 21v-4.03a48.527 48.527 0 01-1.087-.128C2.905 16.58 1.5 14.833 1.5 12.862V6.638c0-1.97 1.405-3.718 3.413-3.979z' />
                 <path d='M15.75 7.5c-1.376 0-2.739.057-4.086.169C10.124 7.797 9 9.103 9 10.609v4.285c0 1.507 1.128 2.814 2.67 2.94 1.243.102 2.5.157 3.768.165l2.782 2.781a.75.75 0 001.28-.53v-2.39l.33-.026c1.542-.125 2.67-1.433 2.67-2.94v-4.286c0-1.505-1.125-2.811-2.664-2.94A49.392 49.392 0 0015.75 7.5z' />
               </svg>
@@ -274,24 +266,23 @@ function Messages() {
                             </div>
                             {currentChat.messages.length > 0 &&
                               currentChat.messages.sort(sortByTimestamp).map((message, index) => {
-                                const date = formatTimestampToYYYYMMDD(message.timestamp);
-                                const showDate = formatTimestampToYYYYslashMMslashDD(message.timestamp);
-
-                                const lastTimestamp = currentChat.messages.sort(sortByTimestamp)[index - 1]?.timestamp;
-                                const lastDate = formatTimestampToYYYYMMDD(lastTimestamp);
-
-                                const now = new Date().getTime();
-                                const today = formatTimestampToYYYYMMDD(now);
-
+                                const date = dateFormat(new Date(message.timestamp), 'yyyymmdd');
+                                const previousTimestamp =
+                                  currentChat.messages.sort(sortByTimestamp)[index - 1]?.timestamp;
+                                const previousDate = previousTimestamp
+                                  ? dateFormat(new Date(previousTimestamp), 'yyyymmdd')
+                                  : undefined;
+                                const today = dateFormat(new Date(), 'yyyymmdd');
+                                const isToday = date === today;
+                                const isSameAsPreviousDate = date === previousDate;
                                 let dateBubble = undefined;
-                                if (lastDate === 'NaNNaNNaN' && date !== today) {
-                                  dateBubble = showDate;
-                                } else if (Number(date) > Number(lastDate)) {
-                                  dateBubble = showDate;
+                                if ((!previousDate && !isToday) || Number(date) > Number(previousDate)) {
+                                  dateBubble = dateFormat(new Date(message.timestamp), 'yyyy/mm/dd');
                                 }
-                                if (Number(today) - Number(date) === 1 && date !== lastDate) {
+                                if (Number(today) - Number(date) === 1 && !isSameAsPreviousDate) {
                                   dateBubble = 'Yesterday';
-                                } else if (date === today && date !== lastDate) {
+                                }
+                                if (isToday && !isSameAsPreviousDate) {
                                   dateBubble = 'Today';
                                 }
 
@@ -309,11 +300,11 @@ function Messages() {
                           </div>
                           <div className='w-full px-4 py-4 relative'>
                             <ScrollShadow orientation='horizontal' className='flex gap-3 overflow-x-auto pb-2'>
-                              {adminMessagesTemplate.map((faq) => (
+                              {defaultAdminMessages.map((message) => (
                                 <div
                                   className='rounded-full cursor-pointer px-2 py-1 text-gray-500 border border-gray-700 whitespace-nowrap hover:bg-gray-700 hover:text-gray-300'
-                                  onClick={() => setNewMessage(faq)}>
-                                  {faq}
+                                  onClick={() => setNewMessage(message)}>
+                                  {message}
                                 </div>
                               ))}
                             </ScrollShadow>

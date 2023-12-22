@@ -1,5 +1,5 @@
+import dateFormat from 'dateformat';
 import { firestore } from '../../../utils/firestore';
-import { formatTimestampToTime, formatTimestampToYYYYslashMMslashDD } from '../../../utils/helpers';
 import { CompleteOrderType } from '../../../utils/types';
 
 interface PropsType {
@@ -10,12 +10,7 @@ interface PropsType {
 function OrderRow({ order, tag }: PropsType) {
   const isTagInProcess = tag === 'inProcess';
   const { seconds } = order.timestamp;
-  const showDate = formatTimestampToYYYYslashMMslashDD(seconds * 1000);
-  const time = formatTimestampToTime(seconds * 1000);
-  const timestamp = new Date(seconds * 1000);
-  const sec = timestamp.getSeconds();
-  const formattedSec = sec < 10 ? `0${sec}` : String(sec);
-  const dateTime = `${showDate} ${time}:${formattedSec}`;
+  const dateTime = dateFormat(new Date(seconds * 1000), 'yyyy/mm/dd HH:MM:ss');
 
   const setOrderSuccess = (orderId: string, docId: string, plan: string) => {
     const credit = parseInt(plan);

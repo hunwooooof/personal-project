@@ -112,11 +112,8 @@ function Profile() {
                       className='absolute left-0 top-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full flex opacity-0 hover:opacity-100 hover:bg-gray-600/70 cursor-pointer items-center justify-center duration-150'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
                         viewBox='0 0 24 24'
-                        strokeWidth={1.5}
-                        stroke='currentColor'
-                        className='w-6 h-6'>
+                        className='w-6 h-6 stroke-[1.5] stroke-current fill-none'>
                         <path
                           strokeLinecap='round'
                           strokeLinejoin='round'

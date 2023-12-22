@@ -10,7 +10,7 @@ interface PropsType {
 function Attendance({ currentKidId }: PropsType) {
   const currentDate = new Date();
   function getCurrentQuarter(currentDate: Date) {
-    const currentMonth = currentDate.getMonth() + 1; // JavaScript 中月份是從 0 開始的
+    const currentMonth = currentDate.getMonth() + 1;
     const currentQuarter = Math.ceil(currentMonth / 3);
     return currentQuarter;
   }
@@ -47,9 +47,8 @@ function Attendance({ currentKidId }: PropsType) {
     return (
       <svg
         xmlns='http://www.w3.org/2000/svg'
-        fill='none'
         viewBox='0 0 24 24'
-        className='h-6 px-4 text-green-500 stroke-[1.5] stroke-current'>
+        className='h-6 px-4 text-green-500 stroke-[1.5] stroke-current fill-none'>
         <path strokeLinecap='round' strokeLinejoin='round' d='M4.5 12.75l6 6 9-13.5' />
       </svg>
     );
@@ -58,9 +57,8 @@ function Attendance({ currentKidId }: PropsType) {
     return (
       <svg
         xmlns='http://www.w3.org/2000/svg'
-        fill='none'
         viewBox='0 0 24 24'
-        className='w-6 h-6 px-2 text-gray-700 stroke-[1.5] stroke-current'>
+        className='w-6 h-6 px-2 text-gray-700 stroke-[1.5] stroke-current fill-none'>
         <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 12h-15' />
       </svg>
     );

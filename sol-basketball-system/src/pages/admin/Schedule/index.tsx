@@ -1,3 +1,4 @@
+import dateFormat from 'dateformat';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CalendarButton from '../../../components/CalendarButton';
@@ -32,38 +33,35 @@ function AdminSchedule() {
   const [quarter, setQuarter] = useState(currentQuarter);
   const [year, setYear] = useState(currentYear);
 
-  const firstDate = () => {
-    switch (quarter) {
-      case 1:
-        return '-01-01';
-      case 2:
-        return '-04-01';
-      case 3:
-        return '-07-01';
-      case 4:
-        return '-010-01';
-      default:
-        return '-01-01';
+  const getDateRangeForQuarter = (quarter: number) => {
+    if (quarter === 1) {
+      return {
+        firstDate: '-01-01',
+        lastDate: '-03-31',
+      };
+    }
+    if (quarter === 2) {
+      return {
+        firstDate: '-04-01',
+        lastDate: '-06-30',
+      };
+    }
+    if (quarter === 3) {
+      return {
+        firstDate: '-07-01',
+        lastDate: '-09-30',
+      };
+    }
+    if (quarter === 4) {
+      return {
+        firstDate: '-10-01',
+        lastDate: '-12-31',
+      };
     }
   };
 
-  const lastDate = () => {
-    switch (quarter) {
-      case 1:
-        return '-03-31';
-      case 2:
-        return '-06-30';
-      case 3:
-        return '-09-30';
-      case 4:
-        return '-12-31';
-      default:
-        return '-03-31';
-    }
-  };
-
-  const startDate = new Date(`${year}${firstDate()}`);
-  const endDate = new Date(`${year}${lastDate()}`);
+  const startDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.firstDate}`);
+  const endDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.lastDate}`);
 
   const getValidDate = (firstDate: Date, lastDate: Date) => {
     const allDates: AllDatesType = {
@@ -77,20 +75,13 @@ function AdminSchedule() {
       currentDate.setDate(currentDate.getDate() + 1)
     ) {
       const day = currentDate.getDay();
-      const yyyy = currentDate.getFullYear();
-      const mm = currentDate.getMonth() + 1;
-      const formattedMm = mm < 10 ? `0${mm}` : String(mm);
-      const dd = currentDate.getDate();
-      const formattedDd = dd < 10 ? `0${dd}` : String(dd);
-      const dateString = `${yyyy}-${formattedMm}-${formattedDd}`;
-      if (day === 0) {
-        allDates.sunday.push(dateString);
-      } else if (day === 5) {
-        allDates.friday.push(dateString);
-      }
-      if (day === 6) {
-        allDates.saturday.push(dateString);
-      }
+      const dateString = dateFormat(currentDate, 'isoDate');
+      const isFriday = day === 5;
+      const isSaturday = day === 6;
+      const isSunday = day === 0;
+      if (isSunday) allDates.sunday.push(dateString);
+      if (isFriday) allDates.friday.push(dateString);
+      if (isSaturday) allDates.saturday.push(dateString);
     }
     return allDates;
   };

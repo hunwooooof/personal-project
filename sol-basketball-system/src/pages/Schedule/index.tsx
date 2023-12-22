@@ -1,3 +1,4 @@
+import dateFormat from 'dateformat';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -42,47 +43,35 @@ function Schedule() {
     setCurrentNav('schedules');
   }, []);
 
-  const firstDate = () => {
-    switch (quarter) {
-      case 1:
-        return '-01-01';
-      case 2:
-        return '-04-01';
-      case 3:
-        return '-07-01';
-      case 4:
-        return '-10-01';
-      default:
-        return '-01-01';
+  const getDateRangeForQuarter = (quarter: number) => {
+    if (quarter === 1) {
+      return {
+        firstDate: '-01-01',
+        lastDate: '-03-31',
+      };
+    }
+    if (quarter === 2) {
+      return {
+        firstDate: '-04-01',
+        lastDate: '-06-30',
+      };
+    }
+    if (quarter === 3) {
+      return {
+        firstDate: '-07-01',
+        lastDate: '-09-30',
+      };
+    }
+    if (quarter === 4) {
+      return {
+        firstDate: '-10-01',
+        lastDate: '-12-31',
+      };
     }
   };
 
-  const lastDate = () => {
-    switch (quarter) {
-      case 1:
-        return '-03-31';
-      case 2:
-        return '-06-30';
-      case 3:
-        return '-09-30';
-      case 4:
-        return '-12-31';
-      default:
-        return '-03-31';
-    }
-  };
-
-  const startDate = new Date(`${year}${firstDate()}`);
-  const endDate = new Date(`${year}${lastDate()}`);
-
-  const formatDate = (date: Date): string => {
-    const yyyy = date.getFullYear();
-    const mm = date.getMonth() + 1;
-    const formattedMm = mm < 10 ? `0${mm}` : String(mm);
-    const dd = date.getDate();
-    const formattedDd = dd < 10 ? `0${dd}` : String(dd);
-    return `${yyyy}-${formattedMm}-${formattedDd}`;
-  };
+  const startDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.firstDate}`);
+  const endDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.lastDate}`);
 
   const getValidDate = (firstDate: Date, lastDate: Date) => {
     const allDates: AllDatesType = {
@@ -96,7 +85,7 @@ function Schedule() {
       currentDate.setDate(currentDate.getDate() + 1)
     ) {
       const day = currentDate.getDay();
-      const dateString = formatDate(currentDate);
+      const dateString = dateFormat(currentDate, 'isoDate');
       const isFriday = day === 5;
       const isSaturday = day === 6;
       const isSunday = day === 0;
