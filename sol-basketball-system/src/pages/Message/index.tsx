@@ -1,7 +1,7 @@
 import { ScrollShadow } from '@nextui-org/react';
-import { arrayUnion, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MessageInput from '../../components/MessageInput';
 import { useStore } from '../../store/store';
 import { db, doc, firestore, onSnapshot } from '../../utils/firestore';
 import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
@@ -43,7 +43,8 @@ function Message() {
     if (!isLogin || user.role === 'admin') {
       navigate('/');
       setCurrentNav('schedules');
-    } else if (isLogin) {
+    }
+    if (user.role === 'user') {
       setCurrentNav('message');
     }
   }, [isLogin, user]);
@@ -61,43 +62,20 @@ function Message() {
   const handleSendMessage = () => {
     const currentTimestamp = new Date().getTime();
     if (userID) {
-      updateDoc(doc(db, 'messages', userID), {
-        messages: arrayUnion({
-          sender: 'user',
-          timestamp: currentTimestamp,
-          content: newMessage.trim(),
-        }),
+      firestore.updateDocArrayUnion('messages', userID, 'messages', {
+        sender: 'user',
+        timestamp: currentTimestamp,
+        content: newMessage.trim(),
       });
-      updateDoc(doc(db, 'messages', userID), {
+      firestore.updateDoc('messages', userID, {
         lastMessage: {
           sender: 'user',
           timestamp: currentTimestamp,
           content: newMessage.trim(),
         },
       });
-      updateDoc(doc(db, 'messages', userID), {
-        unread: true,
-      });
+      firestore.updateDoc('messages', userID, { unread: true });
       setNewMessage('');
-    }
-  };
-
-  const handleEnterDown = (e: {
-    key: string;
-    nativeEvent: { isComposing: boolean };
-    preventDefault: () => void;
-    stopPropagation: () => void;
-  }) => {
-    const pressedKey = e.key.toUpperCase();
-    if (pressedKey === 'ENTER' && newMessage.trim()) {
-      if (e.nativeEvent.isComposing) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      if (!e.nativeEvent.isComposing) {
-        handleSendMessage();
-        e.preventDefault();
-      }
     }
   };
 
@@ -119,7 +97,7 @@ function Message() {
             <img src={adminPhoto} alt='user photo' className='h-10 w-10 rounded-full' />
             <div className='ml-3 mr-auto font-bold'>admin</div>
           </div>
-          <div id='chatBox' className='flex flex-col w-full px-4 h-[calc(100vh-190px)] overflow-y-auto'>
+          <div id='chatBox' className='flex flex-col px-4 h-[calc(100vh-190px)] overflow-y-auto'>
             <div className='self-center pt-6 pb-4'>
               <img src={adminPhoto} alt='user photo' className='h-20 w-20 rounded-full' />
               <div className='text-center mt-2 font-bold'>admin</div>
@@ -189,21 +167,11 @@ function Message() {
                   </div>
                 ))}
               </ScrollShadow>
-              <input
-                type='text'
-                value={newMessage}
-                placeholder='Message...'
-                className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full mt-2'
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={handleEnterDown}
+              <MessageInput
+                newMessage={newMessage}
+                setNewMessage={setNewMessage}
+                handleSendMessage={handleSendMessage}
               />
-              {newMessage.trim() && (
-                <button
-                  className='absolute bottom-5 right-8 text-blue-500 hover:text-white'
-                  onClick={handleSendMessage}>
-                  Send
-                </button>
-              )}
             </div>
           )}
         </div>

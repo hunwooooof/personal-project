@@ -1,14 +1,15 @@
 import { ScrollShadow } from '@nextui-org/react';
-import { DocumentData, DocumentReference, arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import LoadingAnimation from '../../../components/LoadingAnimation';
+import MessageInput from '../../../components/MessageInput';
 import { useStore } from '../../../store/store';
 import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
 import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../../utils/helpers';
 import { KidType, MessageType, UserType } from '../../../utils/types';
 import Bubble from './Bubble';
-import KidInfo from './KidInfo';
+import UserInfo from './UserInfo';
 
 interface ChatType {
   messages: MessageType[];
@@ -36,7 +37,8 @@ function Messages() {
     if (!isLogin || user.role === 'user') {
       navigate('/');
       setCurrentNav('schedules');
-    } else if (isLogin) {
+    }
+    if (user.role === 'admin') {
       setCurrentNav('messages');
     }
   }, [isLogin, user]);
@@ -92,21 +94,19 @@ function Messages() {
 
   const setUnreadFalse = (id: string) => {
     if (id) {
-      updateDoc(doc(db, 'messages', id), { unread: false });
+      firestore.updateDoc('messages', id, { unread: false });
     }
   };
 
   const handleSendMessage = () => {
     const currentTimestamp = new Date().getTime();
     if (id) {
-      updateDoc(doc(db, 'messages', id), {
-        messages: arrayUnion({
-          sender: 'admin',
-          timestamp: currentTimestamp,
-          content: newMessage.trim(),
-        }),
+      firestore.updateDocArrayUnion('messages', id, 'messages', {
+        sender: 'admin',
+        timestamp: currentTimestamp,
+        content: newMessage.trim(),
       });
-      updateDoc(doc(db, 'messages', id), {
+      firestore.updateDoc('messages', id, {
         lastMessage: {
           sender: 'admin',
           timestamp: currentTimestamp,
@@ -142,24 +142,33 @@ function Messages() {
     }
   }, [id]);
 
-  const handleEnterDown = (e: {
-    key: string;
-    nativeEvent: { isComposing: boolean };
-    preventDefault: () => void;
-    stopPropagation: () => void;
-  }) => {
-    const pressedKey = e.key.toUpperCase();
-    if (pressedKey === 'ENTER') {
-      if (e.nativeEvent.isComposing) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      if (!e.nativeEvent.isComposing && newMessage.trim()) {
-        handleSendMessage();
-        e.preventDefault();
-      }
-    }
-  };
+  const renderInfoIcon = () => (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+      className='w-7 h-7 cursor-pointer stroke-[1.5] stroke-current fill-none'
+      onClick={() => setInfoShow(true)}>
+      <path
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        d='M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z'
+      />
+    </svg>
+  );
+
+  const renderFilledInfoIcon = () => (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+      className='w-7 h-7 cursor-pointer fill-current'
+      onClick={() => setInfoShow(false)}>
+      <path
+        fillRule='evenodd'
+        d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z'
+        clipRule='evenodd'
+      />
+    </svg>
+  );
 
   const adminMessagesTemplate = [
     'Thanks!',
@@ -250,36 +259,7 @@ function Messages() {
                               className='h-10 w-10 rounded-full object-cover'
                             />
                             <div className='ml-3 mr-auto font-bold'>{currentChat.userName}</div>
-                            {!isInfoShow && (
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='none'
-                                viewBox='0 0 24 24'
-                                strokeWidth={1.5}
-                                stroke='currentColor'
-                                className='w-7 h-7 cursor-pointer'
-                                onClick={() => setInfoShow(true)}>
-                                <path
-                                  strokeLinecap='round'
-                                  strokeLinejoin='round'
-                                  d='M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z'
-                                />
-                              </svg>
-                            )}
-                            {isInfoShow && (
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                viewBox='0 0 24 24'
-                                fill='currentColor'
-                                className='w-7 h-7 cursor-pointer'
-                                onClick={() => setInfoShow(false)}>
-                                <path
-                                  fillRule='evenodd'
-                                  d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z'
-                                  clipRule='evenodd'
-                                />
-                              </svg>
-                            )}
+                            {isInfoShow ? renderFilledInfoIcon() : renderInfoIcon()}
                           </div>
                           <div
                             id='chatBox'
@@ -337,71 +317,17 @@ function Messages() {
                                 </div>
                               ))}
                             </ScrollShadow>
-                            <input
-                              type='text'
-                              value={newMessage}
-                              placeholder='Message...'
-                              className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full mt-1'
-                              onChange={(e) => setNewMessage(e.target.value)}
-                              onKeyDown={handleEnterDown}
+                            <MessageInput
+                              newMessage={newMessage}
+                              setNewMessage={setNewMessage}
+                              handleSendMessage={handleSendMessage}
                             />
-                            {newMessage.trim() && (
-                              <button
-                                className='absolute bottom-5 right-8 text-blue-500 hover:text-white'
-                                onClick={handleSendMessage}>
-                                Send
-                              </button>
-                            )}
                           </div>
                         </div>
                       );
                     })}
               </div>
-              <div className={`${isInfoShow ? 'flex' : 'hidden'} flex-col w-4/12 border-l border-gray-700`}>
-                <div className='w-full py-5 pl-5 text-lg font-semibold'>User details</div>
-                {userDetail && (
-                  <div className='py-4 w-full'>
-                    <div className='flex items-center px-4 gap-4 w-full'>
-                      <img src={userDetail.photoURL} alt='user photo' className='h-10 w-10 rounded-full' />
-                      <div className='flex flex-col w-[calc(100%-40px)]'>
-                        <div className='font-bold text-md text-gray-200'>{userDetail.displayName}</div>
-                        <div className='text-sm text-gray-400 truncate w-full hover:overflow-visible'>
-                          {userDetail.email}
-                        </div>
-                      </div>
-                    </div>
-                    <div className='w-full text-sm mt-6 px-4 text-gray-200'>
-                      Registration Date
-                      <div className='text-gray-400'>{userDetail.registrationDate?.slice(0, 16)}</div>
-                    </div>
-                  </div>
-                )}
-                {userKids && userKids.length > 0 && (
-                  <div className='w-full border-t border-gray-700'>
-                    <div className='w-full py-5 pl-5 text-lg font-semibold'>Kids</div>
-                    <div className='w-full'>
-                      {userKids.map((kid) => {
-                        return <KidInfo kid={kid} key={kid.docId} />;
-                      })}
-                    </div>
-                  </div>
-                )}
-                <div
-                  className='mt-auto w-full border-t border-gray-700'
-                  onClick={() => {
-                    const userConfirm = confirm('Permanently delete previous messages?');
-                    if (userConfirm && id) {
-                      updateDoc(doc(db, 'messages', id), {
-                        messages: [],
-                      });
-                      updateDoc(doc(db, 'messages', id), {
-                        lastMessage: { timestamp: 0 },
-                      });
-                    }
-                  }}>
-                  <div className='w-full my-4 pl-4 text-red-500 cursor-pointer'>Delete messages</div>
-                </div>
-              </div>
+              {isInfoShow && <UserInfo userDetail={userDetail as UserType} userKids={userKids as KidType[]} />}
             </div>
           )}
         </div>

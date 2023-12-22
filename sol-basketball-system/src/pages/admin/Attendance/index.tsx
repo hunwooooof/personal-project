@@ -27,7 +27,8 @@ function Attendance() {
     if (user.role === 'user' || !isLogin) {
       navigate('/');
       setCurrentNav('schedules');
-    } else if (isLogin) {
+    }
+    if (user.role === 'admin') {
       setCurrentNav('admin-attendance');
     }
   }, [isLogin]);

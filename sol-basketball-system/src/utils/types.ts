@@ -25,7 +25,7 @@ export interface DetailType {
   title: string;
 }
 
-export interface AdminOrderType {
+export interface CompleteOrderType {
   id: string;
   userRef: DocumentReference<DocumentData, DocumentData>;
   kid: {
