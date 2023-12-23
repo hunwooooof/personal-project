@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
+import { formatShowDate } from '../../utils/helpers';
 import { DetailType } from '../../utils/types';
 
 interface PropsType {
@@ -12,8 +13,10 @@ interface PropsType {
 
 function Saturday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
   const { scheduledDates, saturdaySchedules } = useStore();
-  const showDate = date.slice(5).replace('-', '/');
   const [todaySchedule, setTodaySchedule] = useState<object>({ [date]: [] });
+  const isScheduled = scheduledDates.includes(date);
+
+  const showDate = formatShowDate(date);
 
   const getTodaySchedule = (date: string) => {
     const theDay = saturdaySchedules.find((dateEvents) => {
@@ -37,8 +40,8 @@ function Saturday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
 
   return (
     <div>
-      {!scheduledDates.includes(date) && <div className={unScheduledClass}>{showDate}</div>}
-      {scheduledDates.includes(date) && (
+      {!isScheduled && <div className={unScheduledClass}>{showDate}</div>}
+      {isScheduled && (
         <div
           className={isScheduledClass}
           onClick={() => {

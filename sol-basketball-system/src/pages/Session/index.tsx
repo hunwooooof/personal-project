@@ -2,7 +2,6 @@ import { Tab, Tabs } from '@nextui-org/react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowRight } from '../../components/Icon';
 import LoadingAnimation from '../../components/LoadingAnimation';
 import { useStore } from '../../store/store';
 import { db } from '../../utils/firestore';
@@ -59,6 +58,15 @@ function Session() {
     }
   }, [isLogin, kids]);
 
+  const ArrowRight = () => (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+      className={`fill-none stroke-current w-8 h-8 stroke-[1]`}>
+      <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
+    </svg>
+  );
+
   const calculate_age = (birthday: string) => {
     const dateOfBirth = new Date(birthday);
     const diff = Date.now() - dateOfBirth.getTime();
@@ -85,7 +93,7 @@ function Session() {
               Students
             </Link>
           )}
-          {ArrowRight('w-8 h-8 stroke-[1]')}
+          {ArrowRight()}
           {kids.map((kid) => {
             if (kid.id === id) {
               return (

@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import {
   DocumentData,
   DocumentReference,
+  QuerySnapshot,
   addDoc,
   arrayRemove,
   arrayUnion,
@@ -160,4 +161,5 @@ const firestore = {
   },
 };
 
-export { addDoc, collection, db, doc, firestore, increment, onSnapshot, serverTimestamp };
+export { QuerySnapshot, addDoc, collection, db, doc, firestore, increment, onSnapshot, serverTimestamp };
+export type { DocumentData };

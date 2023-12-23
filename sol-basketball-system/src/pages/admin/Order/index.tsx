@@ -3,7 +3,7 @@ import { Key, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
-import { collection, db, onSnapshot } from '../../../utils/firestore';
+import { DocumentData, QuerySnapshot, collection, db, onSnapshot } from '../../../utils/firestore';
 import { CompleteOrderType } from '../../../utils/types';
 import OrderRow from './OrderRow';
 
@@ -11,7 +11,7 @@ function AdminOrder() {
   const navigate = useNavigate();
   const { user, isLogin, setCurrentNav } = useStore();
 
-  useEffect(() => {
+  const checkUserRoleAndSetNavigation = () => {
     if (user.role === 'user' || !isLogin) {
       navigate('/');
       setCurrentNav('schedules');
@@ -19,22 +19,25 @@ function AdminOrder() {
     if (user.role === 'admin') {
       setCurrentNav('admin-order');
     }
-  }, [isLogin]);
+  };
+  useEffect(checkUserRoleAndSetNavigation, [isLogin]);
 
   const [tag, setTag] = useState('all');
   const [orders, setOrders] = useState<CompleteOrderType[]>([]);
 
-  useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'orders'), (docSnaps) => {
-      const ordersArray: CompleteOrderType[] = [];
-      const sortByTimestamp = (a: CompleteOrderType, b: CompleteOrderType) => b.timestamp.seconds - a.timestamp.seconds;
-      docSnaps.forEach((docSnap) => {
-        const doc = docSnap.data();
-        ordersArray.push(doc as CompleteOrderType);
-      });
-      ordersArray.sort(sortByTimestamp);
-      setOrders(ordersArray);
+  const handleOrdersSnapshot = (docSnaps: QuerySnapshot<DocumentData, DocumentData>) => {
+    const ordersArray: CompleteOrderType[] = [];
+    const sortByTimestamp = (a: CompleteOrderType, b: CompleteOrderType) => b.timestamp.seconds - a.timestamp.seconds;
+    docSnaps.forEach((docSnap) => {
+      const doc = docSnap.data();
+      ordersArray.push(doc as CompleteOrderType);
     });
+    ordersArray.sort(sortByTimestamp);
+    setOrders(ordersArray);
+  };
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'orders'), handleOrdersSnapshot);
     return () => unsubscribe();
   }, []);
 

@@ -1,3 +1,5 @@
+export const formatShowDate = (date: string) => date.slice(5).replace('-', '/');
+
 export function formatTimestampToYYYYMMDD(timestamp: number) {
   const timeObject = new Date(timestamp);
   const yyyy = timeObject.getFullYear();

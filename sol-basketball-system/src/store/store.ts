@@ -31,6 +31,8 @@ interface StoreState {
   getScheduledDates: (year: number, quarter: number) => void;
   saturdaySchedules: object[];
   getSaturdaySchedules: (year: number, quarter: number) => void;
+  hasNotification: boolean;
+  setNotification: (boolean: boolean) => void;
 }
 
 const defaultPhotoURL =
@@ -168,4 +170,6 @@ export const useStore = create<StoreState>((set) => ({
     const saturdaySchedules = await firestore.getDocs('schedule', `${year}Q${quarter}`, 'saturday');
     set(() => ({ saturdaySchedules: saturdaySchedules as object[] }));
   },
+  hasNotification: false,
+  setNotification: (boolean: boolean) => set(() => ({ hasNotification: boolean })),
 }));

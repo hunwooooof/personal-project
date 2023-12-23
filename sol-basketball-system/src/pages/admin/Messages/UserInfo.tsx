@@ -23,10 +23,9 @@ function UserInfo({ userDetail, userKids }: PropsType) {
     }
   };
 
-  return (
-    <div className='flex flex-col w-4/12 border-l border-gray-700'>
-      <div className='w-full py-5 pl-5 text-lg font-semibold'>User details</div>
-      {userDetail && (
+  const renderUserDetails = () => {
+    if (userDetail) {
+      return (
         <div className='py-4 w-full'>
           <div className='flex items-center px-4 gap-4 w-full'>
             <img src={userDetail.photoURL} alt='user photo' className='h-10 w-10 rounded-full' />
@@ -40,8 +39,13 @@ function UserInfo({ userDetail, userKids }: PropsType) {
             <div className='text-gray-400'>{userDetail.registrationDate?.slice(0, 16)}</div>
           </div>
         </div>
-      )}
-      {userKids && userKids.length > 0 && (
+      );
+    }
+  };
+
+  const renderUserKids = () => {
+    if (userKids && userKids.length > 0) {
+      return (
         <div className='w-full border-t border-gray-700'>
           <div className='w-full py-5 pl-5 text-lg font-semibold'>Kids</div>
           <div className='w-full'>
@@ -50,7 +54,15 @@ function UserInfo({ userDetail, userKids }: PropsType) {
             })}
           </div>
         </div>
-      )}
+      );
+    }
+  };
+
+  return (
+    <div className='flex flex-col w-4/12 border-l border-gray-700'>
+      <div className='w-full py-5 pl-5 text-lg font-semibold'>User details</div>
+      {renderUserDetails()}
+      {renderUserKids()}
       <div className='mt-auto w-full border-t border-gray-700' onClick={deletePreviousMessage}>
         <div className='w-full my-4 pl-4 text-red-500 cursor-pointer'>Delete messages</div>
       </div>
