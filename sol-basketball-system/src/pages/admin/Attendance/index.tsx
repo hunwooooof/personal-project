@@ -73,6 +73,14 @@ function Attendance() {
     getCredits();
   }, []);
 
+  const updateAttendance = async (docId: string, targetId: string) => {
+    await firestore.updateDocArrayUnion('attendance', docId, 'showUpDate', targetId);
+  };
+
+  const updateAttendanceToAbsent = async (docId: string, targetId: string) => {
+    await firestore.updateDocArrayRemove('attendance', docId, 'showUpDate', targetId);
+  };
+
   const renderUncheck = (date: string, docId: string) => {
     return (
       <svg
@@ -81,8 +89,7 @@ function Attendance() {
           const targetId = e.currentTarget.id;
           firestore.getDoc('credits', docId).then((result) => {
             if (result) {
-              firestore
-                .updateDocArrayUnion('attendance', docId, 'showUpDate', targetId)
+              updateAttendance(docId, targetId)
                 .then(() => getAttendances())
                 .then(() => {
                   firestore.getDoc('attendance', docId).then((attendance) => {
@@ -112,8 +119,8 @@ function Attendance() {
       <svg
         id={date}
         onClick={(e) => {
-          firestore
-            .updateDocArrayRemove('attendance', docId, 'showUpDate', e.currentTarget.id)
+          const targetId = e.currentTarget.id;
+          updateAttendanceToAbsent(docId, targetId)
             .then(() => getAttendances())
             .then(() => {
               firestore.getDoc('attendance', docId).then((attendance) => {
