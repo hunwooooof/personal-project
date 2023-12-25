@@ -5,6 +5,7 @@ import CalendarButton from '../../../components/CalendarButton';
 import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
+import { getCurrentQuarter } from '../../../utils/helpers';
 
 interface AttendanceType {
   docId: string;
@@ -34,11 +35,7 @@ function Attendance() {
   }, [isLogin]);
 
   const currentDate = new Date();
-  function getCurrentQuarter(currentDate: Date) {
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentQuarter = Math.ceil(currentMonth / 3);
-    return currentQuarter;
-  }
+
   const currentQuarter = getCurrentQuarter(currentDate);
   const currentYear = currentDate.getFullYear();
   const [quarter, setQuarter] = useState(currentQuarter);

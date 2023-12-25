@@ -9,22 +9,22 @@ interface PropsType {
   currentYear: number;
 }
 
-function CalendarButton({ quarter, setQuarter, year, setYear, currentQuarter, currentYear }: PropsType) {
-  const getMonthString = (quarter: number) => {
-    switch (quarter) {
-      case 1:
-        return 'Jan - Mar';
-      case 2:
-        return 'Apr - Jun';
-      case 3:
-        return 'Jul - Sep';
-      case 4:
-        return 'Oct - Dec';
-      default:
-        return 'Jan - Mar';
-    }
-  };
+export const getQuarterRange = (quarter: number) => {
+  switch (quarter) {
+    case 1:
+      return 'Jan - Mar';
+    case 2:
+      return 'Apr - Jun';
+    case 3:
+      return 'Jul - Sep';
+    case 4:
+      return 'Oct - Dec';
+    default:
+      return 'Jan - Mar';
+  }
+};
 
+function CalendarButton({ quarter, setQuarter, year, setYear, currentQuarter, currentYear }: PropsType) {
   const contentClass =
     'relative z-10 whitespace-nowrap mr-2 text-sm select-none text-center transition-colors text-zinc-800 font-semibold';
 
@@ -54,7 +54,7 @@ function CalendarButton({ quarter, setQuarter, year, setYear, currentQuarter, cu
   return (
     <div className='flex sm:p-1 h-7 sm:h-9 gap-2 items-center flex-nowrap bg-zinc-100 rounded-medium mt-2 sm:mt-0 mr-0 md:mr-12 lg:mr-20'>
       <div className='flex items-center py-1 pl-3 justify-end w-32 sm:w-36'>
-        <div className={contentClass}>{getMonthString(quarter)}</div>
+        <div className={contentClass}>{getQuarterRange(quarter)}</div>
         {ArrowLeft(arrowClass, () => {
           if (quarter > 1) setQuarter((n) => n - 1);
           else setQuarter(4);

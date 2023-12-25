@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import CalendarButton from '../../components/CalendarButton';
 import PageTitle from '../../components/PageTitle';
 import { collection, db, firestore, onSnapshot } from '../../utils/firestore';
+import { formatShowDate, getCurrentQuarter } from '../../utils/helpers';
 
 interface PropsType {
   currentKidId: string;
@@ -9,11 +10,6 @@ interface PropsType {
 
 function Attendance({ currentKidId }: PropsType) {
   const currentDate = new Date();
-  function getCurrentQuarter(currentDate: Date) {
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentQuarter = Math.ceil(currentMonth / 3);
-    return currentQuarter;
-  }
   const currentQuarter = getCurrentQuarter(currentDate);
   const currentYear = currentDate.getFullYear();
   const [quarter, setQuarter] = useState(currentQuarter);
@@ -43,6 +39,8 @@ function Attendance({ currentKidId }: PropsType) {
     return () => unsubscribe();
   }, []);
 
+  const isDatesEmpty = dates.length === 0;
+
   const renderCheck = () => {
     return (
       <svg
@@ -64,6 +62,38 @@ function Attendance({ currentKidId }: PropsType) {
     );
   };
 
+  const renderMonths = (targetMonths: string[]) => {
+    return (
+      <>
+        <div className='flex items-center text-gray-500 mt-5'>
+          {dates.map((date: string) => {
+            const currentMonth = date.slice(5, 7);
+            if (targetMonths.includes(currentMonth)) {
+              return (
+                <div key={date} className='shrink-0 w-16 font-bold text-sm tracking-wider text-center py-1 select-none'>
+                  {formatShowDate(date)}
+                </div>
+              );
+            }
+          })}
+        </div>
+        <div className='flex'>
+          {showUpDates.length >= 0 &&
+            dates.map((date: string) => {
+              const currentMonth = date.slice(5, 7);
+              if (targetMonths.includes(currentMonth)) {
+                return (
+                  <div key={date} className='shrink-0 w-16 text-sm py-1 flex justify-center items-center'>
+                    {showUpDates.includes(date) ? renderCheck() : renderMinus()}
+                  </div>
+                );
+              }
+            })}
+        </div>
+      </>
+    );
+  };
+
   return (
     <div>
       <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14'>
@@ -78,106 +108,16 @@ function Attendance({ currentKidId }: PropsType) {
         />
       </div>
       <div className='mx-0 md:mx-12 lg:mx-20 py-5'>
-        {dates.length === 0 && (
+        {isDatesEmpty && (
           <div className='w-full h-72 py-10 my-4 bg-white rounded-3xl text-xl flex items-center justify-center text-gray-400'>
             No data to display.
           </div>
         )}
-        {dates.length > 0 && (
+        {!isDatesEmpty && (
           <div className='w-full h-72 relative overflow-x-auto px-10 py-4 my-4 bg-white rounded-3xl'>
-            <div className='flex items-center text-gray-500 mt-5'>
-              {dates.map((date: string) => {
-                const targetMonths = ['01', '04', '07', '10'];
-                const currentMonth = date.slice(5, 7);
-                if (targetMonths.includes(currentMonth)) {
-                  const formateDate = date.substring(5).replace('-', '/');
-                  return (
-                    <div
-                      key={date}
-                      className='shrink-0 w-16 font-bold text-sm tracking-wider text-center py-1 select-none'>
-                      {formateDate}
-                    </div>
-                  );
-                }
-              })}
-            </div>
-            {showUpDates.length >= 0 && (
-              <div className='flex'>
-                {dates.map((date: string) => {
-                  const targetMonths = ['01', '04', '07', '10'];
-                  const currentMonth = date.slice(5, 7);
-                  if (targetMonths.includes(currentMonth)) {
-                    return (
-                      <div key={date} className='shrink-0 w-16 text-sm py-1 flex justify-center items-center'>
-                        {showUpDates.includes(date) ? renderCheck() : renderMinus()}
-                      </div>
-                    );
-                  }
-                })}
-              </div>
-            )}
-            <div className='flex items-center text-gray-500 mt-5'>
-              {dates.map((date: string) => {
-                const targetMonths = ['02', '05', '08', '11'];
-                const currentMonth = date.slice(5, 7);
-                if (targetMonths.includes(currentMonth)) {
-                  const formateDate = date.substring(5).replace('-', '/');
-                  return (
-                    <div
-                      key={date}
-                      className='shrink-0 w-16 font-bold text-sm tracking-wider text-center py-1 select-none'>
-                      {formateDate}
-                    </div>
-                  );
-                }
-              })}
-            </div>
-            {showUpDates.length >= 0 && (
-              <div className='flex'>
-                {dates.map((date: string) => {
-                  const targetMonths = ['02', '05', '08', '11'];
-                  const currentMonth = date.slice(5, 7);
-                  if (targetMonths.includes(currentMonth)) {
-                    return (
-                      <div key={date} className='shrink-0 w-16 text-sm py-1 flex justify-center items-center'>
-                        {showUpDates.includes(date) ? renderCheck() : renderMinus()}
-                      </div>
-                    );
-                  }
-                })}
-              </div>
-            )}
-            <div className='flex items-center text-gray-500 mt-5'>
-              {dates.map((date: string) => {
-                const targetMonths = ['03', '06', '09', '12'];
-                const currentMonth = date.slice(5, 7);
-                if (targetMonths.includes(currentMonth)) {
-                  const formateDate = date.substring(5).replace('-', '/');
-                  return (
-                    <div
-                      key={date}
-                      className='shrink-0 w-16 font-bold text-sm tracking-wider text-center py-1 select-none'>
-                      {formateDate}
-                    </div>
-                  );
-                }
-              })}
-            </div>
-            {showUpDates.length >= 0 && (
-              <div className='flex'>
-                {dates.map((date: string) => {
-                  const targetMonths = ['03', '06', '09', '12'];
-                  const currentMonth = date.slice(5, 7);
-                  if (targetMonths.includes(currentMonth)) {
-                    return (
-                      <div key={date} className='shrink-0 w-16 text-sm py-1 flex justify-center items-center'>
-                        {showUpDates.includes(date) ? renderCheck() : renderMinus()}
-                      </div>
-                    );
-                  }
-                })}
-              </div>
-            )}
+            {renderMonths(['01', '04', '07', '10'])}
+            {renderMonths(['02', '05', '08', '11'])}
+            {renderMonths(['03', '06', '09', '12'])}
           </div>
         )}
       </div>

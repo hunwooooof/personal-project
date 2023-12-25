@@ -50,7 +50,8 @@ function Purchase() {
     if (!isLogin) {
       navigate('/');
       setCurrentNav('schedules');
-    } else if (isLogin) {
+    }
+    if (isLogin) {
       setCurrentNav('purchase');
     }
   }, [kids, isLogin]);

@@ -31,11 +31,15 @@ export const getDateRangeForQuarter = (quarter: number) => {
       lastDate: '-12-31',
     };
   }
+  return {
+    firstDate: '-01-01',
+    lastDate: '-03-31',
+  };
 };
 
-export const calculate_age = (birthday: string) => {
+export const calculateAge = (birthday: string, currentTime: number = Date.now()) => {
   const dateOfBirth = new Date(birthday);
-  const diff = Date.now() - dateOfBirth.getTime();
+  const diff = currentTime - dateOfBirth.getTime();
   const age = new Date(diff);
   return Math.abs(age.getUTCFullYear() - 1970);
 };

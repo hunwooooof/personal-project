@@ -9,8 +9,8 @@ interface PropsType {
 
 function OrderRow({ order, tag }: PropsType) {
   const isTagInProcess = tag === 'inProcess';
-  const { seconds } = order.timestamp;
-  const dateTime = dateFormat(new Date(seconds * 1000), 'yyyy/mm/dd HH:MM:ss');
+  const orderTimestamp = order.timestamp.seconds * 1000;
+  const dateTime = dateFormat(new Date(orderTimestamp), 'yyyy/mm/dd HH:MM:ss');
 
   const setOrderSuccess = (orderId: string, docId: string, plan: string) => {
     const credit = parseInt(plan);
@@ -97,26 +97,24 @@ function OrderRow({ order, tag }: PropsType) {
     }
   };
 
-  if (tag === 'all' || (isTagInProcess && order.status === 'IN_PROCESS')) {
+  const isInProcessStatus = order.status === 'IN_PROCESS';
+  const isSuccessStatus = order.status === 'SUCCESS';
+
+  if (tag === 'all' || (isTagInProcess && isInProcessStatus)) {
     return (
-      <div
-        className={`flex items-center px-4 py-1 rounded-sm ${
-          order.status === 'IN_PROCESS' ? 'text-black' : 'text-gray-400'
-        }`}>
+      <div className={`flex items-center px-4 py-1 rounded-sm ${isInProcessStatus ? 'text-black' : 'text-gray-400'}`}>
         <div className='flex-1 mr-6'>{dateTime}</div>
         <div className='flex-1'>{sessionType}</div>
         <div className='flex-1'>{order.kid.firstName}</div>
         <div className='flex-1'>{order.method === 'cash' ? 'Cash' : 'Bank transfer'}</div>
-        <div className='flex-1'>
-          {order.status === 'SUCCESS' ? 'Success' : order.status === 'IN_PROCESS' ? 'In process' : 'Failed'}
-        </div>
+        <div className='flex-1'>{isSuccessStatus ? 'Success' : isInProcessStatus ? 'In process' : 'Failed'}</div>
         <div className='flex w-20 items-center justify-center gap-4'>
           {renderButtonByStatus(order)?.hasButton && (
             <button id={order.id} onClick={renderButtonByStatus(order)?.handleClickButton}>
               {renderButtonByStatus(order)?.icon}
             </button>
           )}
-          {order.status === 'IN_PROCESS' && (
+          {isInProcessStatus && (
             <button id={order.id} onClick={() => firestore.updateDoc('orders', order.id, { status: 'FAILED' })}>
               {renderRemoveIcon()}
             </button>
