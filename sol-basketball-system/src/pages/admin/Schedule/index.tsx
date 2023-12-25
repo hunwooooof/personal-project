@@ -1,17 +1,15 @@
+import dateFormat from 'dateformat';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CalendarButton from '../../../components/CalendarButton';
 import PageTitle from '../../../components/PageTitle';
 import { useStore } from '../../../store/store';
+import { getCurrentQuarter, getDateRangeForQuarter } from '../../../utils/helpers';
+import { AllDatesType } from '../../../utils/types';
 import Friday from './Friday';
 import Saturday from './Saturday';
 import Sunday from './Sunday';
 
-interface AllDatesType {
-  friday: string[];
-  saturday: string[];
-  sunday: string[];
-}
 function AdminSchedule() {
   const { setCurrentNav, isLogin, getScheduledDates, getSaturdaySchedules } = useStore();
 
@@ -20,54 +18,20 @@ function AdminSchedule() {
     if (!isLogin) {
       navigate('/');
       setCurrentNav('schedules');
-    } else if (isLogin) {
+    }
+    if (isLogin) {
       setCurrentNav('admin-schedules');
     }
   }, [isLogin]);
 
-  const getCurrentQuarter = (currentDate: Date) => {
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentQuarter = Math.ceil(currentMonth / 3);
-    return currentQuarter;
-  };
   const currentDate = new Date();
   const currentQuarter = getCurrentQuarter(currentDate);
   const currentYear = currentDate.getFullYear();
   const [quarter, setQuarter] = useState(currentQuarter);
   const [year, setYear] = useState(currentYear);
 
-  const firstDate = () => {
-    switch (quarter) {
-      case 1:
-        return '-01-01';
-      case 2:
-        return '-04-01';
-      case 3:
-        return '-07-01';
-      case 4:
-        return '-010-01';
-      default:
-        return '-01-01';
-    }
-  };
-
-  const lastDate = () => {
-    switch (quarter) {
-      case 1:
-        return '-03-31';
-      case 2:
-        return '-06-30';
-      case 3:
-        return '-09-30';
-      case 4:
-        return '-12-31';
-      default:
-        return '-03-31';
-    }
-  };
-
-  const startDate = new Date(`${year}${firstDate()}`);
-  const endDate = new Date(`${year}${lastDate()}`);
+  const startDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.firstDate}`);
+  const endDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.lastDate}`);
 
   const getValidDate = (firstDate: Date, lastDate: Date) => {
     const allDates: AllDatesType = {
@@ -81,20 +45,13 @@ function AdminSchedule() {
       currentDate.setDate(currentDate.getDate() + 1)
     ) {
       const day = currentDate.getDay();
-      const yyyy = currentDate.getFullYear();
-      const mm = currentDate.getMonth() + 1;
-      const formattedMm = mm < 10 ? `0${mm}` : String(mm);
-      const dd = currentDate.getDate();
-      const formattedDd = dd < 10 ? `0${dd}` : String(dd);
-      const dateString = `${yyyy}-${formattedMm}-${formattedDd}`;
-      if (day === 0) {
-        allDates.sunday.push(dateString);
-      } else if (day === 5) {
-        allDates.friday.push(dateString);
-      }
-      if (day === 6) {
-        allDates.saturday.push(dateString);
-      }
+      const dateString = dateFormat(currentDate, 'isoDate');
+      const isFriday = day === 5;
+      const isSaturday = day === 6;
+      const isSunday = day === 0;
+      if (isSunday) allDates.sunday.push(dateString);
+      if (isFriday) allDates.friday.push(dateString);
+      if (isSaturday) allDates.saturday.push(dateString);
     }
     return allDates;
   };

@@ -1,5 +1,8 @@
+import toast from 'react-hot-toast';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
+import { formatShowDate } from '../../../utils/helpers';
+import { DetailType } from '../../../utils/types';
 
 interface PropsType {
   date: string;
@@ -7,17 +10,13 @@ interface PropsType {
   year: number;
 }
 
-interface DetailType {
-  address: 'blessed-imeldas-school';
-  date: string;
-  tag?: string;
-  time: '19:00-21:00';
-  title: 'team-practice';
-}
-
 function Sunday({ date, quarter, year }: PropsType) {
   const { scheduledDates, getScheduledDates } = useStore();
-  const showDate = date.slice(5).replace('-', '/');
+  const showDate = formatShowDate(date);
+  const isScheduled = scheduledDates.includes(date);
+  const ALL = 'all';
+  const SUNDAY = 'sunday';
+
   const detail: DetailType = {
     address: 'blessed-imeldas-school',
     date: date,
@@ -25,41 +24,42 @@ function Sunday({ date, quarter, year }: PropsType) {
     title: 'team-practice',
   };
 
+  const unscheduledClass = 'unScheduledClass cursor-pointer hover:bg-slate-500';
+  const scheduledClass = 'isScheduledClass bg-slate-400 hover:bg-slate-400';
+
+  const handleScheduleUpdate = async () => {
+    if (isScheduled) {
+      firestore.updateDocArrayRemove('schedule', `${year}Q${quarter}`, ALL, date).then(() => {
+        getScheduledDates(year, quarter);
+        toast.error('Unscheduled!');
+      });
+      firestore.deleteDoc('schedule', `${year}Q${quarter}`, SUNDAY, date);
+    }
+    if (!isScheduled) {
+      firestore
+        .getDoc('schedule', `${year}Q${quarter}`)
+        .then((schedule) => {
+          if (schedule) {
+            firestore.updateDocArrayUnion('schedule', `${year}Q${quarter}`, ALL, date);
+            firestore.setDoc('schedule', `${year}Q${quarter}`, detail, SUNDAY, date);
+          } else {
+            firestore.setDoc('schedule', `${year}Q${quarter}`, { all: [date] }).then(() => {
+              firestore.setDoc('schedule', `${year}Q${quarter}`, detail, SUNDAY, date);
+            });
+          }
+        })
+        .then(() => {
+          getScheduledDates(year, quarter);
+          toast.success('Scheduled!');
+        });
+    }
+  };
+
   return (
     <div>
-      {!scheduledDates.includes(date) && (
-        <div
-          className='unScheduledClass cursor-pointer hover:bg-slate-500'
-          onClick={() => {
-            firestore
-              .getDoc('schedule', `${year}Q${quarter}`)
-              .then((schedule) => {
-                if (schedule) {
-                  firestore.updateDocArrayUnion('schedule', `${year}Q${quarter}`, 'all', date);
-                  firestore.setDoc('schedule', `${year}Q${quarter}`, detail, 'sunday', date);
-                } else {
-                  firestore.setDoc('schedule', `${year}Q${quarter}`, { all: [date] }).then(() => {
-                    firestore.setDoc('schedule', `${year}Q${quarter}`, detail, 'sunday', date);
-                  });
-                }
-              })
-              .then(() => getScheduledDates(year, quarter));
-          }}>
-          {showDate}
-        </div>
-      )}
-      {scheduledDates.includes(date) && (
-        <div
-          className='isScheduledClass bg-slate-400 hover:bg-slate-400'
-          onClick={() => {
-            firestore
-              .updateDocArrayRemove('schedule', `${year}Q${quarter}`, 'all', date)
-              .then(() => getScheduledDates(year, quarter));
-            firestore.deleteDoc('schedule', `${year}Q${quarter}`, 'sunday', date);
-          }}>
-          {showDate}
-        </div>
-      )}
+      <div className={isScheduled ? scheduledClass : unscheduledClass} onClick={handleScheduleUpdate}>
+        {showDate}
+      </div>
     </div>
   );
 }

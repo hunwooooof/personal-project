@@ -1,17 +1,13 @@
 import { ScrollShadow } from '@nextui-org/react';
-import { arrayUnion, updateDoc } from 'firebase/firestore';
+import dateFormat from 'dateformat';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import MessageInput from '../../components/MessageInput';
 import { useStore } from '../../store/store';
 import { db, doc, firestore, onSnapshot } from '../../utils/firestore';
-import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../utils/helpers';
+import { MessageType } from '../../utils/types';
 import Bubble from './Bubble';
 
-interface MessageType {
-  timestamp: number;
-  content: string;
-  sender: string;
-}
 interface ChatType {
   messages: MessageType[];
   unread: boolean;
@@ -47,7 +43,8 @@ function Message() {
     if (!isLogin || user.role === 'admin') {
       navigate('/');
       setCurrentNav('schedules');
-    } else if (isLogin) {
+    }
+    if (user.role === 'user') {
       setCurrentNav('message');
     }
   }, [isLogin, user]);
@@ -65,47 +62,24 @@ function Message() {
   const handleSendMessage = () => {
     const currentTimestamp = new Date().getTime();
     if (userID) {
-      updateDoc(doc(db, 'messages', userID), {
-        messages: arrayUnion({
-          sender: 'user',
-          timestamp: currentTimestamp,
-          content: newMessage.trim(),
-        }),
+      firestore.updateDocArrayUnion('messages', userID, 'messages', {
+        sender: 'user',
+        timestamp: currentTimestamp,
+        content: newMessage.trim(),
       });
-      updateDoc(doc(db, 'messages', userID), {
+      firestore.updateDoc('messages', userID, {
         lastMessage: {
           sender: 'user',
           timestamp: currentTimestamp,
           content: newMessage.trim(),
         },
       });
-      updateDoc(doc(db, 'messages', userID), {
-        unread: true,
-      });
+      firestore.updateDoc('messages', userID, { unread: true });
       setNewMessage('');
     }
   };
 
-  const handleEnterDown = (e: {
-    key: string;
-    nativeEvent: { isComposing: boolean };
-    preventDefault: () => void;
-    stopPropagation: () => void;
-  }) => {
-    const pressedKey = e.key.toUpperCase();
-    if (pressedKey === 'ENTER' && newMessage.trim()) {
-      if (e.nativeEvent.isComposing) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      if (!e.nativeEvent.isComposing) {
-        handleSendMessage();
-        e.preventDefault();
-      }
-    }
-  };
-
-  const userMessagesTemplate = [
+  const defaultUserMessages = [
     'Thanks!',
     '😆😆',
     'I have completed the bank transfer. Please verify for me.',
@@ -123,31 +97,29 @@ function Message() {
             <img src={adminPhoto} alt='user photo' className='h-10 w-10 rounded-full' />
             <div className='ml-3 mr-auto font-bold'>admin</div>
           </div>
-          <div id='chatBox' className='flex flex-col w-full px-4 h-[calc(100vh-190px)] overflow-y-auto'>
+          <div id='chatBox' className='flex flex-col px-4 h-[calc(100vh-190px)] overflow-y-auto'>
             <div className='self-center pt-6 pb-4'>
               <img src={adminPhoto} alt='user photo' className='h-20 w-20 rounded-full' />
               <div className='text-center mt-2 font-bold'>admin</div>
             </div>
             {chat &&
               sortedMessages?.map((message, index) => {
-                const date = formatTimestampToYYYYMMDD(message.timestamp);
-                const showDate = formatTimestampToYYYYslashMMslashDD(message.timestamp);
-
-                const lastTimestamp = sortedMessages[index - 1]?.timestamp;
-                const lastDate = formatTimestampToYYYYMMDD(lastTimestamp);
-
-                const now = new Date().getTime();
-                const today = formatTimestampToYYYYMMDD(now);
-
+                const date = dateFormat(new Date(message.timestamp), 'yyyymmdd');
+                const previousTimestamp = sortedMessages[index - 1]?.timestamp;
+                const previousDate = previousTimestamp
+                  ? dateFormat(new Date(previousTimestamp), 'yyyymmdd')
+                  : undefined;
+                const today = dateFormat(new Date(), 'yyyymmdd');
+                const isToday = date === today;
+                const isSameAsPreviousDate = date === previousDate;
                 let dateBubble = undefined;
-                if (lastDate === 'NaNNaNNaN' && date !== today) {
-                  dateBubble = showDate;
-                } else if (Number(date) > Number(lastDate)) {
-                  dateBubble = showDate;
+                if ((!previousDate && !isToday) || Number(date) > Number(previousDate)) {
+                  dateBubble = dateFormat(new Date(message.timestamp), 'yyyy/mm/dd');
                 }
-                if (Number(today) - Number(date) === 1 && date !== lastDate) {
+                if (Number(today) - Number(date) === 1 && !isSameAsPreviousDate) {
                   dateBubble = 'Yesterday';
-                } else if (date === today && date !== lastDate) {
+                }
+                if (isToday && !isSameAsPreviousDate) {
                   dateBubble = 'Today';
                 }
 
@@ -185,29 +157,19 @@ function Message() {
           {chat && (
             <div className='w-full px-4 py-4 relative'>
               <ScrollShadow orientation='horizontal' className='flex gap-3 overflow-x-auto pb-2'>
-                {userMessagesTemplate.map((faq) => (
+                {defaultUserMessages.map((message) => (
                   <div
                     className='rounded-full cursor-pointer px-2 py-1 text-gray-400 border border-gray-700 whitespace-nowrap hover:bg-gray-700'
-                    onClick={() => setNewMessage(faq)}>
-                    {faq}
+                    onClick={() => setNewMessage(message)}>
+                    {message}
                   </div>
                 ))}
               </ScrollShadow>
-              <input
-                type='text'
-                value={newMessage}
-                placeholder='Message...'
-                className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full mt-2'
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={handleEnterDown}
+              <MessageInput
+                newMessage={newMessage}
+                setNewMessage={setNewMessage}
+                handleSendMessage={handleSendMessage}
               />
-              {newMessage.trim() && (
-                <button
-                  className='absolute bottom-5 right-8 text-blue-500 hover:text-white'
-                  onClick={handleSendMessage}>
-                  Send
-                </button>
-              )}
             </div>
           )}
         </div>

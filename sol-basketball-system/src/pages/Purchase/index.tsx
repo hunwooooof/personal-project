@@ -10,6 +10,7 @@ import {
   SelectItem,
   Tooltip,
 } from '@nextui-org/react';
+import dateFormat from 'dateformat';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -18,11 +19,6 @@ import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import email from '../../utils/emailJS';
 import { db, doc, firestore, serverTimestamp } from '../../utils/firestore';
-import {
-  formatTimestampToTime,
-  formatTimestampToYYYYMMDD,
-  formatTimestampToYYYYslashMMslashDD,
-} from '../../utils/helpers';
 
 function Purchase() {
   const navigate = useNavigate();
@@ -62,14 +58,12 @@ function Purchase() {
   const handleSubmitOrder = () => {
     const userConfirmed = confirm('Confirm Order?');
     if (userRef && userConfirmed) {
-      const today = new Date();
-      const currentTimestamp = today.getTime();
-      const date = formatTimestampToYYYYMMDD(currentTimestamp);
-      const showDate = formatTimestampToYYYYslashMMslashDD(currentTimestamp);
-      const time = formatTimestampToTime(currentTimestamp);
-      const hour = today.getHours();
-      const ms = today.getMilliseconds();
-      const orderId = `${date}${hour}${ms}${order.method}${order.plan}`;
+      const now = new Date();
+      const currentDateTime = dateFormat(now, 'YYYYMMDDHHMMss');
+      const showDate = dateFormat(now, 'YYYY/MM/DD');
+      const time = dateFormat(now, 'HH:MM:ss');
+
+      const orderId = `${currentDateTime}${order.method}${order.plan}`;
       firestore.setDoc('orders', orderId, { ...order, timestamp: serverTimestamp(), id: orderId });
       firestore.getDoc('credits', order.kid.docId).then((user) => {
         if (!user) {

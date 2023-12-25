@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Reset } from './Icon';
+import { Reset } from './Icon';
 
 interface PropsType {
   quarter: number;
@@ -10,7 +10,7 @@ interface PropsType {
 }
 
 function CalendarButton({ quarter, setQuarter, year, setYear, currentQuarter, currentYear }: PropsType) {
-  const months = () => {
+  const getMonthString = (quarter: number) => {
     switch (quarter) {
       case 1:
         return 'Jan - Mar';
@@ -31,10 +31,30 @@ function CalendarButton({ quarter, setQuarter, year, setYear, currentQuarter, cu
   const button = 'w-5 sm:w-6 h-5 sm:h-6 stroke-[1.5] text-zinc-700 cursor-pointer bg-white rounded-md shadow p-1';
   const arrowClass = `${button} ml-1 hover:scale-110 sm:hover:scale-125 duration-150 select-none`;
 
+  const ArrowLeft = (className: string, callback: () => void) => (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+      className={`fill-none stroke-current ${className}`}
+      onClick={callback}>
+      <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
+    </svg>
+  );
+
+  const ArrowRight = (className: string, callback?: () => void) => (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+      className={`fill-none stroke-current ${className}`}
+      onClick={callback}>
+      <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
+    </svg>
+  );
+
   return (
     <div className='flex sm:p-1 h-7 sm:h-9 gap-2 items-center flex-nowrap bg-zinc-100 rounded-medium mt-2 sm:mt-0 mr-0 md:mr-12 lg:mr-20'>
       <div className='flex items-center py-1 pl-3 justify-end w-32 sm:w-36'>
-        <div className={contentClass}>{months()}</div>
+        <div className={contentClass}>{getMonthString(quarter)}</div>
         {ArrowLeft(arrowClass, () => {
           if (quarter > 1) setQuarter((n) => n - 1);
           else setQuarter(4);

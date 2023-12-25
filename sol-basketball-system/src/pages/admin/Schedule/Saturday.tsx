@@ -1,22 +1,17 @@
 import { Button, Input, Select, SelectItem } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { Edit } from '../../../components/Icon';
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
+import { formatShowDate } from '../../../utils/helpers';
+import { DetailType } from '../../../utils/types';
 import SatItem from './SatItem';
 
 interface PropsType {
   date: string;
   quarter: number;
   year: number;
-}
-
-interface DetailType {
-  address: string;
-  date: string;
-  tag: string;
-  time: string;
-  title: string;
 }
 
 const detailSelection = {
@@ -39,8 +34,12 @@ const detailSelection = {
 
 function Saturday({ date, quarter, year }: PropsType) {
   const { scheduledDates, getScheduledDates, saturdaySchedules, getSaturdaySchedules } = useStore();
-  const showDate = date.slice(5).replace('-', '/');
+  const showDate = formatShowDate(date);
+  const isScheduled = scheduledDates.includes(date);
   const [todaySchedule, setTodaySchedule] = useState<object>({ [date]: [] });
+  const ALL = 'all';
+  const SATURDAY = 'saturday';
+
   const [detail, setDetail] = useState<DetailType>({
     address: '',
     date: date,
@@ -65,22 +64,23 @@ function Saturday({ date, quarter, year }: PropsType) {
   }, [saturdaySchedules]);
 
   const [isEdit, setEdit] = useState<boolean>(false);
+  const gameCount = Object.values(todaySchedule)[0].length;
 
   const unScheduledClass = `text-gray-600 relative text-sm sm:text-base sm:px-12 py-2 sm:py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-400 tracking-wider ${
-    Object.values(todaySchedule)[0].length > 0
+    gameCount > 0
       ? 'hover:[&:not(:has(*:hover))]:bg-slate-500 hover:cursor-pointer'
       : 'hover:cursor-auto hover:bg-slate-800'
   }`;
 
   const handleClickAdd = () => {
-    firestore.getDoc('schedule', `${year}Q${quarter}`, 'saturday', date).then((schedule) => {
+    firestore.getDoc('schedule', `${year}Q${quarter}`, SATURDAY, date).then((schedule) => {
       if (schedule) {
         firestore
-          .updateDocArrayUnion('schedule', `${year}Q${quarter}`, date, { ...detail }, 'saturday', date)
+          .updateDocArrayUnion('schedule', `${year}Q${quarter}`, date, { ...detail }, SATURDAY, date)
           .then(() => getSaturdaySchedules(year, quarter));
       } else {
         firestore
-          .setDoc('schedule', `${year}Q${quarter}`, { [date]: [{ ...detail }] }, 'saturday', date)
+          .setDoc('schedule', `${year}Q${quarter}`, { [date]: [{ ...detail }] }, SATURDAY, date)
           .then(() => getSaturdaySchedules(year, quarter));
       }
     });
@@ -88,31 +88,31 @@ function Saturday({ date, quarter, year }: PropsType) {
 
   return (
     <div>
-      {!scheduledDates.includes(date) && (
+      {!isScheduled && (
         <div
           className={unScheduledClass}
           onClick={() => {
-            if (!isEdit && Object.values(todaySchedule)[0].length > 0) {
+            if (!isEdit && gameCount > 0) {
               firestore
                 .getDoc('schedule', `${year}Q${quarter}`)
                 .then((schedule) => {
                   if (schedule) {
-                    firestore.updateDocArrayUnion('schedule', `${year}Q${quarter}`, 'all', date);
+                    firestore.updateDocArrayUnion('schedule', `${year}Q${quarter}`, ALL, date);
                   } else {
                     firestore.setDoc('schedule', `${year}Q${quarter}`, { all: [date] }).then(() => {
                       firestore.setDoc('schedule', `${year}Q${quarter}`, { [date]: [detail] }, 'saturday', date);
                     });
                   }
                 })
-                .then(() => getScheduledDates(year, quarter));
+                .then(() => {
+                  getScheduledDates(year, quarter);
+                  toast.success('Scheduled!');
+                });
             }
           }}>
           {!isEdit && (
             <>
-              <span
-                className={
-                  Object.values(todaySchedule)[0].length > 0 ? 'text-gray-300' : 'text-gray-600'
-                }>{`${showDate} (${Object.values(todaySchedule)[0].length})`}</span>
+              <span className={gameCount > 0 ? 'text-gray-300' : 'text-gray-600'}>{`${showDate} (${gameCount})`}</span>
               <span
                 onClick={(e) => {
                   e.stopPropagation();
@@ -143,10 +143,8 @@ function Saturday({ date, quarter, year }: PropsType) {
                     <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
                   </svg>
                 </button>
-                <div className='text-gray-500 text-xl mb-4'>{`${date} (${
-                  Object.values(todaySchedule)[0].length
-                })`}</div>
-                {Object.values(todaySchedule)[0].length > 0 && (
+                <div className='text-gray-500 text-xl mb-4'>{`${date} (${gameCount})`}</div>
+                {gameCount > 0 && (
                   <div>
                     <div id='saturday-schedules'>
                       <div className='shadow-inner max-h-60 overflow-y-auto bg-gray-100 pt-4'>
@@ -182,7 +180,6 @@ function Saturday({ date, quarter, year }: PropsType) {
                       value={detail.time.slice(0, 5)}
                       onChange={(e) => {
                         const id = e.target.value;
-                        console.log(id);
                         setDetail({
                           ...detail,
                           time: `${id}-${id}`,
@@ -292,16 +289,17 @@ function Saturday({ date, quarter, year }: PropsType) {
           )}
         </div>
       )}
-      {scheduledDates.includes(date) && (
+      {isScheduled && (
         <div
           className='isScheduledClass relative bg-slate-400 hover:bg-slate-400'
           onClick={() => {
-            firestore
-              .updateDocArrayRemove('schedule', `${year}Q${quarter}`, 'all', date)
-              .then(() => getScheduledDates(year, quarter));
+            firestore.updateDocArrayRemove('schedule', `${year}Q${quarter}`, 'all', date).then(() => {
+              getScheduledDates(year, quarter);
+              toast.error('Unscheduled!');
+            });
             firestore.updateDocArrayRemove('schedule', `${year}Q${quarter}`, date, detail, 'saturday', date);
           }}>
-          {`${showDate} (${Object.values(todaySchedule)[0].length})`}
+          {`${showDate} (${gameCount})`}
         </div>
       )}
     </div>

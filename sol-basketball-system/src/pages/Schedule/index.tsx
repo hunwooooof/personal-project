@@ -1,27 +1,17 @@
+import dateFormat from 'dateformat';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import CalendarButton from '../../components/CalendarButton';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { apiCalendar } from '../../utils/googleCalendar';
+import { getCurrentQuarter, getDateRangeForQuarter } from '../../utils/helpers';
+import { AllDatesType, DetailType } from '../../utils/types';
 import Friday from './Friday';
 import Saturday from './Saturday';
 import Sunday from './Sunday';
 import googleCalendarIco from './google-calendar_icon.png';
-
-interface AllDatesType {
-  friday: string[];
-  saturday: string[];
-  sunday: string[];
-}
-
-interface DetailType {
-  address: string;
-  date: string;
-  tag?: string;
-  time: string;
-  title: string;
-}
 
 interface EventType {
   end: {
@@ -39,53 +29,17 @@ interface EventType {
 
 function Schedule() {
   const { getScheduledDates, getSaturdaySchedules, setCurrentNav } = useStore();
-  const getCurrentQuarter = (currentDate: Date) => {
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentQuarter = Math.ceil(currentMonth / 3);
-    return currentQuarter;
-  };
+
+  useEffect(() => setCurrentNav('schedules'), []);
+
   const currentDate = new Date();
   const currentQuarter = getCurrentQuarter(currentDate);
   const currentYear = currentDate.getFullYear();
   const [quarter, setQuarter] = useState(currentQuarter);
   const [year, setYear] = useState(currentYear);
 
-  useEffect(() => {
-    setCurrentNav('schedules');
-  }, []);
-
-  const firstDate = () => {
-    switch (quarter) {
-      case 1:
-        return '-01-01';
-      case 2:
-        return '-04-01';
-      case 3:
-        return '-07-01';
-      case 4:
-        return '-10-01';
-      default:
-        return '-01-01';
-    }
-  };
-
-  const lastDate = () => {
-    switch (quarter) {
-      case 1:
-        return '-03-31';
-      case 2:
-        return '-06-30';
-      case 3:
-        return '-09-30';
-      case 4:
-        return '-12-31';
-      default:
-        return '-03-31';
-    }
-  };
-
-  const startDate = new Date(`${year}${firstDate()}`);
-  const endDate = new Date(`${year}${lastDate()}`);
+  const startDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.firstDate}`);
+  const endDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.lastDate}`);
 
   const getValidDate = (firstDate: Date, lastDate: Date) => {
     const allDates: AllDatesType = {
@@ -99,20 +53,13 @@ function Schedule() {
       currentDate.setDate(currentDate.getDate() + 1)
     ) {
       const day = currentDate.getDay();
-      const yyyy = currentDate.getFullYear();
-      const mm = currentDate.getMonth() + 1;
-      const formattedMm = mm < 10 ? `0${mm}` : String(mm);
-      const dd = currentDate.getDate();
-      const formattedDd = dd < 10 ? `0${dd}` : String(dd);
-      const dateString = `${yyyy}-${formattedMm}-${formattedDd}`;
-      if (day === 0) {
-        allDates.sunday.push(dateString);
-      } else if (day === 5) {
-        allDates.friday.push(dateString);
-      }
-      if (day === 6) {
-        allDates.saturday.push(dateString);
-      }
+      const dateString = dateFormat(currentDate, 'isoDate');
+      const isFriday = day === 5;
+      const isSaturday = day === 6;
+      const isSunday = day === 0;
+      if (isSunday) allDates.sunday.push(dateString);
+      if (isFriday) allDates.friday.push(dateString);
+      if (isSaturday) allDates.saturday.push(dateString);
     }
     return allDates;
   };
@@ -240,7 +187,7 @@ function Schedule() {
 
           <div
             className={`flex flex-col lg:py-6 pb-0 ${
-              isInfoShow ? 'mx-0 md:mx-12 lg:h-[calc(100vh-540px)] h-auto' : 'mx-0 md:mx-12 lg:mx-20 h-auto'
+              isInfoShow ? 'mx-0 md:mx-12 h-[calc(100vh-540px)] lg:h-auto' : 'mx-0 md:mx-12 lg:mx-20 h-auto'
             }`}>
             <div className='flex gap-3 text-sm sm:text-base lg:text-lg font-semibold tracking-wider my-4'>
               <div className={`flex-col ${tableHeadClass}`}>
@@ -325,10 +272,8 @@ function Schedule() {
                   className='hover:scale-125 hover:text-white duration-150 text-gray-300 px-2 py-1 cursor-pointer font-bold'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
                     viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    className='w-6 h-6 stroke-[1.5]'>
+                    className='w-6 h-6 stroke-current stroke-[1.5] fill-none'>
                     <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
                   </svg>
                 </button>
@@ -340,11 +285,8 @@ function Schedule() {
                     <div className='mt-4 flex gap-2 items-center tracking-wider'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
                         viewBox='0 0 24 24'
-                        strokeWidth={1.5}
-                        stroke='currentColor'
-                        className='w-5 h-5'>
+                        className='w-5 h-5 stroke-current stroke-[1.5 fill-none'>
                         <path
                           strokeLinecap='round'
                           strokeLinejoin='round'
@@ -356,11 +298,8 @@ function Schedule() {
                     <div className='mt-4 flex gap-2 items-center tracking-wider'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
                         viewBox='0 0 24 24'
-                        strokeWidth={1.5}
-                        stroke='currentColor'
-                        className='w-5 h-5'>
+                        className='w-5 h-5 stroke-current stroke-[1.5] fill-none'>
                         <path strokeLinecap='round' strokeLinejoin='round' d='M15 10.5a3 3 0 11-6 0 3 3 0 016 0z' />
                         <path
                           strokeLinecap='round'
@@ -373,11 +312,8 @@ function Schedule() {
                     <div className='mt-4 flex gap-2 items-center tracking-wider'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
-                        fill='none'
                         viewBox='0 0 24 24'
-                        strokeWidth={1.5}
-                        stroke='currentColor'
-                        className='w-5 h-5'>
+                        className='w-5 h-5 stroke-current stroke-[1.5] fill-none'>
                         <path
                           strokeLinecap='round'
                           strokeLinejoin='round'
@@ -387,13 +323,21 @@ function Schedule() {
                       {info.time}
                     </div>
                     {new Date(info.date) > new Date() && (
-                      <div
-                        className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
-                        onClick={() => {
-                          handleClickGoogleCalendar(info);
-                        }}>
-                        <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
-                        Add to calendar
+                      <div className=''>
+                        <div
+                          className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                          onClick={() => {
+                            handleClickGoogleCalendar(info);
+                          }}>
+                          <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
+                          Add to calendar
+                        </div>
+                        <Link
+                          to='/login'
+                          className='rounded-full bg-slate-700 py-1 mt-4 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                          onClick={() => setCurrentNav('')}>
+                          Log in to purchase sessions
+                        </Link>
                       </div>
                     )}
                   </div>
@@ -414,11 +358,8 @@ function Schedule() {
                         <div className='mt-4 flex text-gray-200 gap-2 items-center tracking-wider'>
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
                             viewBox='0 0 24 24'
-                            strokeWidth={1.5}
-                            stroke='currentColor'
-                            className='w-5 h-5'>
+                            className='w-5 h-5 stroke-current stroke-[1.5] fill-none'>
                             <path
                               strokeLinecap='round'
                               strokeLinejoin='round'
@@ -431,11 +372,8 @@ function Schedule() {
                           <div className='mt-4 flex gap-2 items-center tracking-wider'>
                             <svg
                               xmlns='http://www.w3.org/2000/svg'
-                              fill='none'
                               viewBox='0 0 24 24'
-                              strokeWidth={1.5}
-                              stroke='currentColor'
-                              className='w-5 h-5'>
+                              className='w-5 h-5 stroke-current stroke-[1.5] fill-none'>
                               <path
                                 strokeLinecap='round'
                                 strokeLinejoin='round'
@@ -448,11 +386,8 @@ function Schedule() {
                         <div className='mt-4 flex gap-2 items-center tracking-wider'>
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
                             viewBox='0 0 24 24'
-                            strokeWidth={1.5}
-                            stroke='currentColor'
-                            className='w-5 h-5'>
+                            className='w-5 h-5 stroke-current stroke-[1.5] fill-none'>
                             <path strokeLinecap='round' strokeLinejoin='round' d='M15 10.5a3 3 0 11-6 0 3 3 0 016 0z' />
                             <path
                               strokeLinecap='round'
@@ -465,11 +400,8 @@ function Schedule() {
                         <div className='mt-4 flex gap-2 items-center tracking-wider'>
                           <svg
                             xmlns='http://www.w3.org/2000/svg'
-                            fill='none'
                             viewBox='0 0 24 24'
-                            strokeWidth={1.5}
-                            stroke='currentColor'
-                            className='w-5 h-5'>
+                            className='w-5 h-5 stroke-current stroke-[1.5] fill-none'>
                             <path
                               strokeLinecap='round'
                               strokeLinejoin='round'

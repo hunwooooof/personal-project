@@ -32,12 +32,6 @@ function Kids() {
     birthday: '',
     id: '',
     school: '',
-    // firstName: 'Diego',
-    // lastName: 'Tsai',
-    // chineseName: '蔡明德',
-    // birthday: '2013-09-12',
-    // id: 'A214478690',
-    // school: '重陽國小',
     parentID: userID || '',
     photoURL: defaultPhotoURL,
   };
@@ -153,11 +147,8 @@ function Kids() {
             className='absolute -top-14 w-24 h-24 my-2 left-[72px] border-2 border-white rounded-full flex opacity-0 hover:opacity-100 hover:bg-gray-600/70 cursor-pointer items-center justify-center duration-150'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
-              fill='none'
               viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='w-6 h-6'>
+              className='w-6 h-6 stroke-[1.5] stroke-current fill-none'>
               <path
                 strokeLinecap='round'
                 strokeLinejoin='round'
@@ -286,11 +277,8 @@ function Kids() {
               }}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
-                fill='none'
                 viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='w-6 h-6'>
+                className='w-6 h-6 stroke-[1.5] stroke-current fill-none'>
                 <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
               </svg>
             </Button>
@@ -312,11 +300,8 @@ function Kids() {
               }}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
-                fill='none'
                 viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='w-5 h-5'>
+                className='w-5 h-5 stroke-[1.5] stroke-current fill-none'>
                 <path strokeLinecap='round' strokeLinejoin='round' d='M4.5 12.75l6 6 9-13.5' />
               </svg>
             </Button>

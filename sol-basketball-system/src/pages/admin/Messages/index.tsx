@@ -1,19 +1,16 @@
 import { ScrollShadow } from '@nextui-org/react';
-import { DocumentData, DocumentReference, arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import dateFormat from 'dateformat';
+import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import LoadingAnimation from '../../../components/LoadingAnimation';
+import MessageInput from '../../../components/MessageInput';
 import { useStore } from '../../../store/store';
 import { collection, db, firestore, onSnapshot } from '../../../utils/firestore';
-import { formatTimestampToYYYYMMDD, formatTimestampToYYYYslashMMslashDD } from '../../../utils/helpers';
+import { KidType, MessageType, UserType } from '../../../utils/types';
 import Bubble from './Bubble';
-import KidInfo from './KidInfo';
+import UserInfo from './UserInfo';
 
-interface MessageType {
-  timestamp: number;
-  content: string;
-  sender: string;
-}
 interface ChatType {
   messages: MessageType[];
   unread: boolean;
@@ -28,26 +25,6 @@ interface ChatType {
   };
 }
 
-interface KidType {
-  docId: string;
-  birthday: string;
-  chineseName: string;
-  firstName: string;
-  id: string;
-  lastName: string;
-  school: string;
-  photoURL?: string;
-}
-interface UserType {
-  photoURL?: string;
-  email?: string;
-  kids?: DocumentReference<DocumentData, DocumentData>[];
-  displayName?: string | undefined;
-  phoneNumber?: string;
-  registrationDate?: string;
-  role?: string;
-}
-
 function Messages() {
   const navigate = useNavigate();
   const { isLogin, isLoading, setLoading, user, setCurrentNav } = useStore();
@@ -60,7 +37,8 @@ function Messages() {
     if (!isLogin || user.role === 'user') {
       navigate('/');
       setCurrentNav('schedules');
-    } else if (isLogin) {
+    }
+    if (user.role === 'admin') {
       setCurrentNav('messages');
     }
   }, [isLogin, user]);
@@ -115,77 +93,80 @@ function Messages() {
   const sortByTimestamp = (a: MessageType, b: MessageType) => a.timestamp - b.timestamp;
 
   const setUnreadFalse = (id: string) => {
-    if (id) {
-      updateDoc(doc(db, 'messages', id), { unread: false });
-    }
+    if (!id) return;
+    firestore.updateDoc('messages', id, { unread: false });
   };
 
   const handleSendMessage = () => {
     const currentTimestamp = new Date().getTime();
-    if (id) {
-      updateDoc(doc(db, 'messages', id), {
-        messages: arrayUnion({
-          sender: 'admin',
-          timestamp: currentTimestamp,
-          content: newMessage.trim(),
-        }),
-      });
-      updateDoc(doc(db, 'messages', id), {
-        lastMessage: {
-          sender: 'admin',
-          timestamp: currentTimestamp,
-          content: newMessage.trim(),
-        },
-      });
-      setNewMessage('');
-    }
+    if (!id) return;
+    firestore.updateDocArrayUnion('messages', id, 'messages', {
+      sender: 'admin',
+      timestamp: currentTimestamp,
+      content: newMessage.trim(),
+    });
+    firestore.updateDoc('messages', id, {
+      lastMessage: {
+        sender: 'admin',
+        timestamp: currentTimestamp,
+        content: newMessage.trim(),
+      },
+    });
+    setNewMessage('');
   };
 
   const [userDetail, setUserDetail] = useState<UserType>();
   const [userKids, setUserKids] = useState<KidType[]>();
 
   useEffect(() => {
-    if (id) {
-      firestore
-        .getDoc('users', id)
-        .then((result) => {
-          if (result) {
-            setUserDetail(result);
-            return result.kids;
-          }
-        })
-        .then((kidsRefs) => {
-          const emptyArray: KidType[] = [];
-          kidsRefs.forEach((kidRef: DocumentReference<DocumentData, DocumentData>) => {
-            firestore.getDocByRef(kidRef).then((result) => emptyArray.push(result as KidType));
-          });
-          setTimeout(() => {
-            setUserKids(emptyArray);
-          }, 200);
+    if (!id) return;
+    firestore
+      .getDoc('users', id)
+      .then((result) => {
+        if (!result) return;
+        setUserDetail(result);
+        return result.kids;
+      })
+      .then((kidsRefs) => {
+        const emptyArray: KidType[] = [];
+        kidsRefs.forEach((kidRef: DocumentReference<DocumentData, DocumentData>) => {
+          firestore.getDocByRef(kidRef).then((result) => emptyArray.push(result as KidType));
         });
-    }
+        setTimeout(() => {
+          setUserKids(emptyArray);
+        }, 200);
+      });
   }, [id]);
 
-  const handleEnterDown = (e: {
-    key: string;
-    nativeEvent: { isComposing: boolean };
-    preventDefault: () => void;
-    stopPropagation: () => void;
-  }) => {
-    const pressedKey = e.key.toUpperCase();
-    if (pressedKey === 'ENTER') {
-      if (e.nativeEvent.isComposing) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      if (!e.nativeEvent.isComposing && newMessage.trim()) {
-        handleSendMessage();
-        e.preventDefault();
-      }
-    }
-  };
+  const renderInfoIcon = () => (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+      className='w-7 h-7 cursor-pointer stroke-[1.5] stroke-current fill-none'
+      onClick={() => setInfoShow(true)}>
+      <path
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        d='M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z'
+      />
+    </svg>
+  );
 
-  const adminMessagesTemplate = [
+  const renderFilledInfoIcon = () => (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+      className='w-7 h-7 cursor-pointer fill-current'
+      onClick={() => setInfoShow(false)}>
+      <path
+        fillRule='evenodd'
+        d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z'
+        clipRule='evenodd'
+      />
+    </svg>
+  );
+
+  const defaultAdminMessages = [
     'Thanks!',
     'Cool!',
     '😆😆',
@@ -247,11 +228,7 @@ function Messages() {
           </div>
           {id === 'inbox' && (
             <div className='w-8/12 h-screen flex flex-col items-center justify-center text-slate-500'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                viewBox='0 0 24 24'
-                fill='currentColor'
-                className='w-20 h-20 block mb-4'>
+              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' className='w-20 h-20 block mb-4 fill-current'>
                 <path d='M4.913 2.658c2.075-.27 4.19-.408 6.337-.408 2.147 0 4.262.139 6.337.408 1.922.25 3.291 1.861 3.405 3.727a4.403 4.403 0 00-1.032-.211 50.89 50.89 0 00-8.42 0c-2.358.196-4.04 2.19-4.04 4.434v4.286a4.47 4.47 0 002.433 3.984L7.28 21.53A.75.75 0 016 21v-4.03a48.527 48.527 0 01-1.087-.128C2.905 16.58 1.5 14.833 1.5 12.862V6.638c0-1.97 1.405-3.718 3.413-3.979z' />
                 <path d='M15.75 7.5c-1.376 0-2.739.057-4.086.169C10.124 7.797 9 9.103 9 10.609v4.285c0 1.507 1.128 2.814 2.67 2.94 1.243.102 2.5.157 3.768.165l2.782 2.781a.75.75 0 001.28-.53v-2.39l.33-.026c1.542-.125 2.67-1.433 2.67-2.94v-4.286c0-1.505-1.125-2.811-2.664-2.94A49.392 49.392 0 0015.75 7.5z' />
               </svg>
@@ -260,7 +237,7 @@ function Messages() {
           )}
           {id !== 'inbox' && (
             <div className='w-[calc(100%-100px)] lg:w-8/12 flex' onClick={() => setUnreadFalse(id as string)}>
-              <div className={`flex-1 w-full ${isInfoShow && 'w-[55%]'}`}>
+              <div className={`flex-1 ${isInfoShow ? 'w-[55%]' : 'w-full'}`}>
                 {chats &&
                   chats
                     .filter((chat) => chat.userID === id)
@@ -274,36 +251,7 @@ function Messages() {
                               className='h-10 w-10 rounded-full object-cover'
                             />
                             <div className='ml-3 mr-auto font-bold'>{currentChat.userName}</div>
-                            {!isInfoShow && (
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='none'
-                                viewBox='0 0 24 24'
-                                strokeWidth={1.5}
-                                stroke='currentColor'
-                                className='w-7 h-7 cursor-pointer'
-                                onClick={() => setInfoShow(true)}>
-                                <path
-                                  strokeLinecap='round'
-                                  strokeLinejoin='round'
-                                  d='M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z'
-                                />
-                              </svg>
-                            )}
-                            {isInfoShow && (
-                              <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                viewBox='0 0 24 24'
-                                fill='currentColor'
-                                className='w-7 h-7 cursor-pointer'
-                                onClick={() => setInfoShow(false)}>
-                                <path
-                                  fillRule='evenodd'
-                                  d='M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z'
-                                  clipRule='evenodd'
-                                />
-                              </svg>
-                            )}
+                            {isInfoShow ? renderFilledInfoIcon() : renderInfoIcon()}
                           </div>
                           <div
                             id='chatBox'
@@ -318,24 +266,23 @@ function Messages() {
                             </div>
                             {currentChat.messages.length > 0 &&
                               currentChat.messages.sort(sortByTimestamp).map((message, index) => {
-                                const date = formatTimestampToYYYYMMDD(message.timestamp);
-                                const showDate = formatTimestampToYYYYslashMMslashDD(message.timestamp);
-
-                                const lastTimestamp = currentChat.messages.sort(sortByTimestamp)[index - 1]?.timestamp;
-                                const lastDate = formatTimestampToYYYYMMDD(lastTimestamp);
-
-                                const now = new Date().getTime();
-                                const today = formatTimestampToYYYYMMDD(now);
-
+                                const date = dateFormat(new Date(message.timestamp), 'yyyymmdd');
+                                const previousTimestamp =
+                                  currentChat.messages.sort(sortByTimestamp)[index - 1]?.timestamp;
+                                const previousDate = previousTimestamp
+                                  ? dateFormat(new Date(previousTimestamp), 'yyyymmdd')
+                                  : undefined;
+                                const today = dateFormat(new Date(), 'yyyymmdd');
+                                const isToday = date === today;
+                                const isSameAsPreviousDate = date === previousDate;
                                 let dateBubble = undefined;
-                                if (lastDate === 'NaNNaNNaN' && date !== today) {
-                                  dateBubble = showDate;
-                                } else if (Number(date) > Number(lastDate)) {
-                                  dateBubble = showDate;
+                                if ((!previousDate && !isToday) || Number(date) > Number(previousDate)) {
+                                  dateBubble = dateFormat(new Date(message.timestamp), 'yyyy/mm/dd');
                                 }
-                                if (Number(today) - Number(date) === 1 && date !== lastDate) {
+                                if (Number(today) - Number(date) === 1 && !isSameAsPreviousDate) {
                                   dateBubble = 'Yesterday';
-                                } else if (date === today && date !== lastDate) {
+                                }
+                                if (isToday && !isSameAsPreviousDate) {
                                   dateBubble = 'Today';
                                 }
 
@@ -353,79 +300,25 @@ function Messages() {
                           </div>
                           <div className='w-full px-4 py-4 relative'>
                             <ScrollShadow orientation='horizontal' className='flex gap-3 overflow-x-auto pb-2'>
-                              {adminMessagesTemplate.map((faq) => (
+                              {defaultAdminMessages.map((message) => (
                                 <div
                                   className='rounded-full cursor-pointer px-2 py-1 text-gray-500 border border-gray-700 whitespace-nowrap hover:bg-gray-700 hover:text-gray-300'
-                                  onClick={() => setNewMessage(faq)}>
-                                  {faq}
+                                  onClick={() => setNewMessage(message)}>
+                                  {message}
                                 </div>
                               ))}
                             </ScrollShadow>
-                            <input
-                              type='text'
-                              value={newMessage}
-                              placeholder='Message...'
-                              className='w-full pl-5 pr-14 py-1 bg-slate-800 border border-gray-700 rounded-full mt-1'
-                              onChange={(e) => setNewMessage(e.target.value)}
-                              onKeyDown={handleEnterDown}
+                            <MessageInput
+                              newMessage={newMessage}
+                              setNewMessage={setNewMessage}
+                              handleSendMessage={handleSendMessage}
                             />
-                            {newMessage.trim() && (
-                              <button
-                                className='absolute bottom-5 right-8 text-blue-500 hover:text-white'
-                                onClick={handleSendMessage}>
-                                Send
-                              </button>
-                            )}
                           </div>
                         </div>
                       );
                     })}
               </div>
-              <div className={`${isInfoShow ? 'flex' : 'hidden'} flex-col w-4/12 border-l border-gray-700`}>
-                <div className='w-full py-5 pl-5 text-lg font-semibold'>User details</div>
-                {userDetail && (
-                  <div className='py-4 w-full'>
-                    <div className='flex items-center px-4 gap-4 w-full'>
-                      <img src={userDetail.photoURL} alt='user photo' className='h-10 w-10 rounded-full' />
-                      <div className='flex flex-col w-[calc(100%-40px)]'>
-                        <div className='font-bold text-md text-gray-200'>{userDetail.displayName}</div>
-                        <div className='text-sm text-gray-400 truncate w-full hover:overflow-visible'>
-                          {userDetail.email}
-                        </div>
-                      </div>
-                    </div>
-                    <div className='w-full text-sm mt-6 px-4 text-gray-200'>
-                      Registration Date
-                      <div className='text-gray-400'>{userDetail.registrationDate?.slice(0, 16)}</div>
-                    </div>
-                  </div>
-                )}
-                {userKids && userKids.length > 0 && (
-                  <div className='w-full border-t border-gray-700'>
-                    <div className='w-full py-5 pl-5 text-lg font-semibold'>Kids</div>
-                    <div className='w-full'>
-                      {userKids.map((kid) => {
-                        return <KidInfo kid={kid} key={kid.docId} />;
-                      })}
-                    </div>
-                  </div>
-                )}
-                <div
-                  className='mt-auto w-full border-t border-gray-700'
-                  onClick={() => {
-                    const userConfirm = confirm('Permanently delete previous messages?');
-                    if (userConfirm && id) {
-                      updateDoc(doc(db, 'messages', id), {
-                        messages: [],
-                      });
-                      updateDoc(doc(db, 'messages', id), {
-                        lastMessage: { timestamp: 0 },
-                      });
-                    }
-                  }}>
-                  <div className='w-full my-4 pl-4 text-red-500 cursor-pointer'>Delete messages</div>
-                </div>
-              </div>
+              {isInfoShow && <UserInfo userDetail={userDetail as UserType} userKids={userKids as KidType[]} />}
             </div>
           )}
         </div>

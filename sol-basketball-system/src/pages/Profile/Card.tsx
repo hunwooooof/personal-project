@@ -21,7 +21,7 @@ interface PropsType {
 }
 
 function Card({ kid }: PropsType) {
-  const { userRef, getUserProfile, setLoading } = useStore();
+  const { userID, userRef, getUserProfile, setLoading } = useStore();
   const [isEdit, setEdit] = useState(false);
   const inputFileRef = useRef(null);
   const { docId, id } = kid;
@@ -42,11 +42,9 @@ function Card({ kid }: PropsType) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const image = e.target.files[0];
-      const unitTime = Date.now();
-      const storageReferenceRoot = `temporary-folder/${unitTime}${image.name}`;
-      firebaseStorage.uploadAndGetDownloadURL(storageReferenceRoot, image).then((url) => {
-        setNewKid({ ...newKid, photoURL: url });
-      });
+      firebaseStorage
+        .uploadAndGetDownloadURL(`temporary-folder/${userID}`, image)
+        .then((url) => setNewKid({ ...newKid, photoURL: url }));
       setNewProfileImg(image);
     } else {
       setNewKid({ ...newKid, photoURL: kid.photoURL });
@@ -59,11 +57,9 @@ function Card({ kid }: PropsType) {
   };
 
   const handleSaveKid = () => {
-    const unitTime = Date.now();
     if (newProfileImg && userRef) {
-      const storageReferenceRoot = `users-photo/${unitTime}${newProfileImg.name}`;
       firebaseStorage
-        .uploadAndGetDownloadURL(storageReferenceRoot, newProfileImg)
+        .uploadAndGetDownloadURL(`users-photo/${userID}`, newProfileImg)
         .then((url) => firestore.updateDoc('students', docId, { ...newKid, photoURL: url }))
         .then(() => getUserProfile(userRef))
         .then(() => {
@@ -119,12 +115,9 @@ function Card({ kid }: PropsType) {
               <Button>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
                   viewBox='0 0 24 24'
-                  strokeWidth={1.5}
-                  stroke='currentColor'
                   onClick={() => setListShow(!isListShow)}
-                  className='w-6 h-6 text-gray-400 cursor-pointer hover:scale-125 duration-150 hover:text-gray-800'>
+                  className='w-6 h-6 stroke-[1.5] stroke-current fill-none text-gray-400 cursor-pointer hover:scale-125 duration-150 hover:text-gray-800'>
                   <path
                     strokeLinecap='round'
                     strokeLinejoin='round'
@@ -174,9 +167,8 @@ function Card({ kid }: PropsType) {
         <Link to={`/session/${id}`} className='absolute top-3 right-3 hover:scale-110 duration-150'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
-            fill='none'
             viewBox='0 0 24 24'
-            className='w-5 h-5 stroke-gray-400 hover:stroke-gray-800 stroke-[1.5]'>
+            className='w-5 h-5 stroke-gray-400 hover:stroke-gray-800 stroke-[1.5] fill-none'>
             <path
               strokeLinecap='round'
               strokeLinejoin='round'
@@ -204,11 +196,8 @@ function Card({ kid }: PropsType) {
             className='absolute -top-14 w-24 h-24 my-2 left-[72px] border-2 border-white rounded-full flex opacity-0 hover:opacity-100 hover:bg-gray-600/70 cursor-pointer items-center justify-center duration-150'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
-              fill='none'
               viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='w-6 h-6'>
+              className='w-6 h-6 stroke-[1.5] stroke-current fill-none'>
               <path
                 strokeLinecap='round'
                 strokeLinejoin='round'
@@ -373,11 +362,8 @@ function Card({ kid }: PropsType) {
               }}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
-                fill='none'
                 viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='w-6 h-6'>
+                className='w-6 h-6 stroke-[1.5] stroke-current fill-none'>
                 <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
               </svg>
             </Button>
@@ -399,11 +385,8 @@ function Card({ kid }: PropsType) {
               }}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
-                fill='none'
                 viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='w-5 h-5'>
+                className='w-5 h-5 stroke-[1.5] stroke-current fill-none'>
                 <path strokeLinecap='round' strokeLinejoin='round' d='M4.5 12.75l6 6 9-13.5' />
               </svg>
             </Button>

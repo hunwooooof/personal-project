@@ -3,15 +3,10 @@ import { useEffect, useState } from 'react';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { collection, db, onSnapshot } from '../../utils/firestore';
+import { VideoType } from '../../utils/types';
 import AddVideo from './AddVideo';
 import Video from './Video';
-interface VideoType {
-  tag: string;
-  date: string;
-  title: string;
-  youtubeId: string;
-  type?: string;
-}
+
 function GameVideos() {
   const { user, setCurrentNav } = useStore();
   const [topLeague, setTopLeague] = useState<VideoType[]>([]);

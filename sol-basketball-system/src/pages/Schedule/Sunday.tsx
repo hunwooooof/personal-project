@@ -1,12 +1,6 @@
 import { useStore } from '../../store/store';
-
-interface DetailType {
-  address: string;
-  date: string;
-  tag?: string;
-  time: string;
-  title: string;
-}
+import { formatShowDate } from '../../utils/helpers';
+import { DetailType } from '../../utils/types';
 
 interface PropsType {
   date: string;
@@ -18,7 +12,10 @@ interface PropsType {
 
 function Sunday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
   const { scheduledDates } = useStore();
-  const showDate = date.slice(5).replace('-', '/');
+  const showDate = formatShowDate(date);
+  const isScheduled = scheduledDates.includes(date);
+  const isFocusInfo = info?.date === date;
+
   const detail: DetailType = {
     address: 'blessed-imeldas-school',
     date: date,
@@ -28,14 +25,12 @@ function Sunday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
 
   return (
     <div>
-      {!scheduledDates.includes(date) && <div className='unScheduledClass'>{showDate}</div>}
-      {scheduledDates.includes(date) && (
+      {!isScheduled && <div className='unScheduledClass'>{showDate}</div>}
+      {isScheduled && (
         <div
-          className={`isScheduledClass ${
-            info?.date === date ? 'bg-white hover:bg-white' : 'bg-slate-400 hover:bg-slate-200'
-          }`}
+          className={`isScheduledClass ${isFocusInfo ? 'bg-white hover:bg-white' : 'bg-slate-400 hover:bg-slate-200'}`}
           onClick={() => {
-            if (info?.date === date && isInfoShow) {
+            if (isFocusInfo && isInfoShow) {
               setInfoShow(false);
             } else {
               setInfoShow(true);

@@ -1,13 +1,4 @@
-interface KidType {
-  docId: string;
-  birthday: string;
-  chineseName: string;
-  firstName: string;
-  id: string;
-  lastName: string;
-  school: string;
-  photoURL?: string;
-}
+import { KidType } from '../../../utils/types';
 
 interface PropsType {
   kid: KidType;

@@ -1,13 +1,6 @@
 import { useStore } from '../../../store/store';
 import { firestore } from '../../../utils/firestore';
-
-interface DetailType {
-  address: string;
-  date: string;
-  tag: string;
-  time: string;
-  title: string;
-}
+import { DetailType } from '../../../utils/types';
 
 interface PropsType {
   schedule: DetailType;
@@ -107,7 +100,7 @@ function SatItem({ schedule, quarter, year }: PropsType) {
                 clipRule='evenodd'
               />
             </svg>
-            {renderTeam(schedule.tag)}
+            {renderTeam(schedule.tag as string)}
           </div>
         </div>
         <div className='flex gap-3'>

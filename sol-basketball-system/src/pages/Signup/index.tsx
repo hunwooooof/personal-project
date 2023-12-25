@@ -6,6 +6,7 @@ import logoUrl from '../../assets/sol-logo.png';
 import { EyeFilledIcon } from '../../components/EyeFilledIcon';
 import { EyeSlashFilledIcon } from '../../components/EyeSlashFilledIcon';
 import { useStore } from '../../store/store';
+
 const emptyAccount = {
   name: '',
   email: '',
@@ -28,8 +29,8 @@ function Signup() {
   useEffect(() => {
     if (isLogin) {
       getUserProfile(userRef);
-      navigate('/');
-      setCurrentNav('/schedules');
+      navigate('/profile');
+      setCurrentNav('/profile');
     }
     setLoading(false);
   }, [isLogin]);

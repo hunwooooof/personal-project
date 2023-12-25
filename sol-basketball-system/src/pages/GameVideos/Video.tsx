@@ -1,6 +1,7 @@
 import toast from 'react-hot-toast';
 import { useStore } from '../../store/store';
 import { firestore } from '../../utils/firestore';
+import { VideoType } from '../../utils/types';
 
 interface PropsType {
   video: {
@@ -10,13 +11,6 @@ interface PropsType {
     youtubeId: string;
   };
   type: string;
-}
-
-interface VideoType {
-  tag: string;
-  date: string;
-  title: string;
-  youtubeId: string;
 }
 
 function Video({ video, type }: PropsType) {

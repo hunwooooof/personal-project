@@ -1,5 +1,5 @@
 import Lottie from 'lottie-react';
-import animationData from '../assets/loading-animation.json'; // 替換為你的 JSON 檔案路徑
+import animationData from '../assets/loading-animation.json';
 
 function LoadingAnimation() {
   return (

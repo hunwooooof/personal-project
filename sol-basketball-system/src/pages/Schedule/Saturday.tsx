@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useStore } from '../../store/store';
+import { formatShowDate } from '../../utils/helpers';
+import { DetailType } from '../../utils/types';
 
 interface PropsType {
   date: string;
@@ -9,18 +11,12 @@ interface PropsType {
   info: DetailType[] | undefined;
 }
 
-interface DetailType {
-  address: string;
-  date: string;
-  tag?: string;
-  time: string;
-  title: string;
-}
-
 function Saturday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
   const { scheduledDates, saturdaySchedules } = useStore();
-  const showDate = date.slice(5).replace('-', '/');
   const [todaySchedule, setTodaySchedule] = useState<object>({ [date]: [] });
+  const isScheduled = scheduledDates.includes(date);
+
+  const showDate = formatShowDate(date);
 
   const getTodaySchedule = (date: string) => {
     const theDay = saturdaySchedules.find((dateEvents) => {
@@ -44,12 +40,11 @@ function Saturday({ date, isInfoShow, setInfoShow, setInfo, info }: PropsType) {
 
   return (
     <div>
-      {!scheduledDates.includes(date) && <div className={unScheduledClass}>{showDate}</div>}
-      {scheduledDates.includes(date) && (
+      {!isScheduled && <div className={unScheduledClass}>{showDate}</div>}
+      {isScheduled && (
         <div
           className={isScheduledClass}
           onClick={() => {
-            console.log(date);
             if (Object.keys(todaySchedule)[0] == date && isInfoShow) {
               setInfoShow(false);
             } else {

@@ -1,17 +1,12 @@
-import { formatTimestampToTime } from '../../utils/helpers';
-
-interface MessageType {
-  timestamp: number;
-  content: string;
-  sender: string;
-}
+import dateFormat from 'dateformat';
+import { MessageType } from '../../utils/types';
 
 interface PropsType {
   message: MessageType;
 }
 
 function Bubble({ message }: PropsType) {
-  const time = formatTimestampToTime(message.timestamp);
+  const time = dateFormat(new Date(message.timestamp), 'HH:MM');
 
   return (
     <div
