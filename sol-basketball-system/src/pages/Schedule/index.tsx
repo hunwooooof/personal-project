@@ -6,6 +6,7 @@ import CalendarButton from '../../components/CalendarButton';
 import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
 import { apiCalendar } from '../../utils/googleCalendar';
+import { getCurrentQuarter, getDateRangeForQuarter } from '../../utils/helpers';
 import { AllDatesType, DetailType } from '../../utils/types';
 import Friday from './Friday';
 import Saturday from './Saturday';
@@ -28,47 +29,14 @@ interface EventType {
 
 function Schedule() {
   const { getScheduledDates, getSaturdaySchedules, setCurrentNav } = useStore();
-  const getCurrentQuarter = (currentDate: Date) => {
-    const currentMonth = currentDate.getMonth() + 1;
-    const currentQuarter = Math.ceil(currentMonth / 3);
-    return currentQuarter;
-  };
+
+  useEffect(() => setCurrentNav('schedules'), []);
+
   const currentDate = new Date();
   const currentQuarter = getCurrentQuarter(currentDate);
   const currentYear = currentDate.getFullYear();
   const [quarter, setQuarter] = useState(currentQuarter);
   const [year, setYear] = useState(currentYear);
-
-  useEffect(() => {
-    setCurrentNav('schedules');
-  }, []);
-
-  const getDateRangeForQuarter = (quarter: number) => {
-    if (quarter === 1) {
-      return {
-        firstDate: '-01-01',
-        lastDate: '-03-31',
-      };
-    }
-    if (quarter === 2) {
-      return {
-        firstDate: '-04-01',
-        lastDate: '-06-30',
-      };
-    }
-    if (quarter === 3) {
-      return {
-        firstDate: '-07-01',
-        lastDate: '-09-30',
-      };
-    }
-    if (quarter === 4) {
-      return {
-        firstDate: '-10-01',
-        lastDate: '-12-31',
-      };
-    }
-  };
 
   const startDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.firstDate}`);
   const endDate = new Date(`${year}${getDateRangeForQuarter(quarter)?.lastDate}`);

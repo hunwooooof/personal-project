@@ -3,7 +3,9 @@ import React, { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import PageTitle from '../../components/PageTitle';
 import { firestore } from '../../utils/firestore';
+import { extractVideoId } from '../../utils/helpers';
 import { NewVideoType } from '../../utils/types';
+import VideoDemoCard from './VideoDemoCard';
 
 function AddVideo() {
   const selectBox = useRef(null);
@@ -30,12 +32,6 @@ function AddVideo() {
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
     setNewVideo({ ...newVideo, [id]: e.target.value });
-  };
-
-  const extractVideoId = (youtubeLink: string) => {
-    const regex = /(?:youtube\.com\/(?:[^/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = youtubeLink.match(regex);
-    return match ? match[1] : null;
   };
 
   const youtubeId = extractVideoId(newVideo.youtubeLink.trim());
@@ -166,32 +162,7 @@ function AddVideo() {
             Add Video
           </button>
         </form>
-        <div
-          className='max-w-[350px] xl:max-w-none lg:w-[400px] flex-shrink-0 bg-gray-100 rounded-xl'
-          id='video-demonstrate'>
-          <iframe
-            src={`https://www.youtube.com/embed/${extractVideoId(newVideo.youtubeLink.trim())}`}
-            title='YouTube video player'
-            className='w-full h-[200px] lg:h-[250px] rounded-t-xl'
-            allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
-          />
-          <div className='flex flex-col px-4 gap-3 mt-3 pb-4 text-black'>
-            <div className='flex justify-between items-center'>
-              <div className='text-sm xl:text-base tracking-wider'>{newVideo.date}</div>
-              <div className='text-sm xl:text-base ml-auto mr-1 px-2 h-[26px] border border-gray-600 rounded-full'>
-                {newVideo.type === 'top-league'
-                  ? 'Top League'
-                  : newVideo.type === 'friendly-game'
-                    ? 'Friendly Game'
-                    : 'Please select game type'}
-              </div>
-              <div className='text-sm xl:text-base px-2 h-[26px] border border-gray-600 rounded-full'>
-                {newVideo.tag === 'u10' ? 'U10' : newVideo.tag === 'u12' ? 'U12' : 'U'}
-              </div>
-            </div>
-            <div className='text-sm xl:text-base font-bold w-72'>{newVideo.title}</div>
-          </div>
-        </div>
+        <VideoDemoCard newVideo={newVideo} />
       </div>
     </div>
   );
