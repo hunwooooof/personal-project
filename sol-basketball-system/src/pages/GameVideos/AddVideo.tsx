@@ -62,6 +62,9 @@ function AddVideo() {
     selectBox.current = null;
   };
 
+  const isVideoTitleTooLong = newVideo.title.length > 40;
+  const hasEmptyValues = Object.values(newVideo).some((item) => item.length === 0);
+
   return (
     <div className='pt-6 lg:pt-14 pb-14 border-b border-gray-600 px-10 md:px-0'>
       <PageTitle title='Add Video' />
@@ -134,7 +137,7 @@ function AddVideo() {
               type='text'
               className='max-w-md'
               id='youtubeLink'
-              label=' YouTube Video Link'
+              label='YouTube Video Link'
               placeholder='https://www.youtube.com/watch?v=Iqs4n-2UWvo'
               value={newVideo.youtubeLink}
               onChange={handleChangeInput}
@@ -148,16 +151,16 @@ function AddVideo() {
               id='title'
               label='Title'
               placeholder='Roadrunners vs TOP'
-              isInvalid={newVideo.title.length > 40}
-              color={newVideo.title.length > 40 ? 'danger' : 'default'}
-              errorMessage={newVideo.title.length > 40 && 'Exceeds the maximum character limit.'}
+              isInvalid={isVideoTitleTooLong}
+              color={isVideoTitleTooLong ? 'danger' : 'default'}
+              errorMessage={isVideoTitleTooLong && 'Exceeds the maximum character limit.'}
               value={newVideo.title}
               onChange={handleChangeInput}
             />
           </div>
           <button
             className='flex items-center justify-center font-semibold rounded-full bg-gray-700 text-white mt-4 py-2 hover:scale-110 duration-150 disabled:scale-100 disabled:cursor-auto disabled:text-gray-600'
-            disabled={Object.values(newVideo).some((item) => item.length === 0) || newVideo.title.length > 40}
+            disabled={hasEmptyValues || isVideoTitleTooLong}
             type='submit'>
             Add Video
           </button>

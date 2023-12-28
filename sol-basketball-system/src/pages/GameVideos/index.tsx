@@ -5,7 +5,7 @@ import { useStore } from '../../store/store';
 import { collection, db, onSnapshot } from '../../utils/firestore';
 import { VideoType } from '../../utils/types';
 import AddVideo from './AddVideo';
-import Video from './Video';
+import VideoList from './VideoList';
 
 function GameVideos() {
   const { user, setCurrentNav } = useStore();
@@ -53,6 +53,8 @@ function GameVideos() {
     { value: 'u10', label: 'U10' },
     { value: 'u12', label: 'U12' },
   ];
+  const isUnder10Tag = (tag: string) => tag === 'u10';
+  const isUnder12Tag = (tag: string) => tag === 'u12';
 
   return (
     <div className='custom-main-container'>
@@ -72,11 +74,11 @@ function GameVideos() {
             id='tag'
             onChange={(e) => {
               if (e.target.value === 'u10') {
-                setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u10'));
-                setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u10'));
+                setFilteredTopLeague(topLeague.filter((video) => isUnder10Tag(video.tag)));
+                setFilteredFriendlyGame(friendlyGame.filter((video) => isUnder10Tag(video.tag)));
               } else if (e.target.value === 'u12') {
-                setFilteredTopLeague(topLeague.filter((video) => video.tag === 'u12'));
-                setFilteredFriendlyGame(friendlyGame.filter((video) => video.tag === 'u12'));
+                setFilteredTopLeague(topLeague.filter((video) => isUnder12Tag(video.tag)));
+                setFilteredFriendlyGame(friendlyGame.filter((video) => isUnder12Tag(video.tag)));
               } else {
                 setFilteredTopLeague(topLeague);
                 setFilteredFriendlyGame(friendlyGame);
@@ -92,24 +94,14 @@ function GameVideos() {
       </div>
       <div className='w-full pt-10 pb-4 border-b border-gray-600 px-10 md:px-0'>
         <div className='mx-0 md:mx-12 lg:mx-20 overflow-x-auto flex gap-6 pb-4 mb-8'>
-          {filteredTopLeague.map((video) => {
-            return <Video key={video.youtubeId} video={video} type='top-league' />;
-          })}
-          {filteredTopLeague.length === 0 && (
-            <div className='w-full text-center text-gray-600 text-2xl'>Currently no videos available</div>
-          )}
+          <VideoList filteredVideos={filteredTopLeague} type='top-league' />
         </div>
       </div>
       <div className='pt-6 lg:pt-14 w-full px-10 md:px-0'>
         <PageTitle title='Friendly Game' />
         <div className='mx-0 md:mx-12 lg:mx-20 pb-4 pt-4'>
           <div className='mb-5 w-full pt-10 overflow-x-auto flex gap-6 pb-8'>
-            {filteredFriendlyGame.map((video) => {
-              return <Video key={video.youtubeId} video={video} type='friendly-game' />;
-            })}
-            {filteredFriendlyGame.length === 0 && (
-              <div className='w-full text-center text-gray-600 text-2xl'>Currently no videos available</div>
-            )}
+            <VideoList filteredVideos={filteredFriendlyGame} type='friendly-game' />
           </div>
         </div>
       </div>

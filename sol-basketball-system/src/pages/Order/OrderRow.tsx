@@ -20,21 +20,21 @@ function OrderRow({ order, tag }: PropsType) {
   };
 
   const sessionType = planMap[order.plan];
+  const isInProcessStatus = order.status === 'IN_PROCESS';
+  const isSuccessStatus = order.status === 'SUCCESS';
 
-  if (tag === 'all' || (tag === 'inProcess' && order.status === 'IN_PROCESS')) {
+  if (tag === 'all' || (tag === 'inProcess' && isInProcessStatus)) {
     return (
       <div
-        className={`flex items-center px-4 py-1 rounded-sm ${
-          order.status === 'IN_PROCESS' ? 'text-black' : 'text-gray-400'
-        }`}
+        className={`flex items-center px-4 py-1 rounded-sm ${isInProcessStatus ? 'text-black' : 'text-gray-400'}`}
         key={seconds}>
         <div className='flex-1 mr-6 rounded-lg truncate hover:overflow-visible'>{dateTime}</div>
         <div className='flex-1'>{sessionType}</div>
         <div className='flex-1'>{order.kid.firstName}</div>
         <div className='flex-1'>{order.method === 'cash' ? 'Cash' : 'Bank transfer'}</div>
         <div className='w-24 relative'>
-          {order.status === 'SUCCESS' ? 'Success' : order.status === 'IN_PROCESS' ? 'In process' : 'Failed'}
-          {order.status === 'IN_PROCESS' && (
+          {isSuccessStatus ? 'Success' : isInProcessStatus ? 'In process' : 'Failed'}
+          {isInProcessStatus && (
             <Tooltip
               placement='bottom-end'
               className='w-60'
@@ -43,9 +43,8 @@ function OrderRow({ order, tag }: PropsType) {
               <Link to='/message'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
                   viewBox='0 0 24 24'
-                  className='absolute -right-1 top-[2px] w-5 h-5 stroke-1 stroke-black cursor-pointer'>
+                  className='absolute -right-1 top-[2px] w-5 h-5 stroke-1 stroke-black cursor-pointer fill-none'>
                   <path
                     strokeLinecap='round'
                     strokeLinejoin='round'

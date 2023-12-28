@@ -34,6 +34,8 @@ function Login() {
 
   const isInvalidEmail = !/^[A-Za-z0-9._%+-]+@[^@\s]+\.[^@\s]+$/.test(account.email) && account.email.length > 0;
   const isInvalidPassword = account.password.length < 6 && account.password.length > 0;
+  const hasEmptyValues = Object.values(account).some((item) => item.length === 0);
+  const errorStyles = { errorMessage: 'text-red-400' };
 
   return (
     <div className='custom-main-container pt-14'>
@@ -51,7 +53,7 @@ function Login() {
             color={isInvalidEmail ? 'danger' : 'default'}
             errorMessage={isInvalidEmail && 'Please enter a valid email.'}
             className='mx-auto max-w-sm'
-            classNames={{ errorMessage: 'text-red-400' }}
+            classNames={errorStyles}
             value={account.email}
             onChange={handleInputChange}
           />
@@ -74,7 +76,7 @@ function Login() {
             }}
             type={isVisible ? 'text' : 'password'}
             className='mx-auto max-w-sm'
-            classNames={{ errorMessage: 'text-red-400' }}
+            classNames={errorStyles}
             endContent={
               <button className='focus:outline-none' type='button' onClick={toggleVisibility}>
                 {isVisible ? (
@@ -88,7 +90,7 @@ function Login() {
           <Button
             color='primary'
             className='disabled:cursor-auto disabled:bg-gray-300 disabled:scale-100 mx-auto'
-            disabled={Object.values(account).some((item) => item.length === 0)}
+            disabled={hasEmptyValues}
             onClick={() => {
               setLoading(true);
               nativeLogin(account);

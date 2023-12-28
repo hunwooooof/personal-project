@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { calculate_age } from '../../../utils/helpers';
+import { calculateAge } from '../../../utils/helpers';
 import { KidType } from '../../../utils/types';
 import InfoItem from './InfoItem';
 
@@ -30,7 +30,7 @@ function StudentCard({ student }: PropsType) {
         <InfoItem label='ID' value={student.id} />
         <InfoItem label='School' value={student.school} />
         <InfoItem label='Birthday' value={student.birthday} />
-        <InfoItem label='Age' value={calculate_age(student.birthday)} />
+        <InfoItem label='Age' value={calculateAge(student.birthday)} />
         <Link to={`/session/${student.id}`} className='self-end -mr-4 hover:scale-110 duration-150'>
           {renderLinkArrowIcon()}
         </Link>

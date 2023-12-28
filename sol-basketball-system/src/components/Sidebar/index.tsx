@@ -206,8 +206,8 @@ function Sidebar() {
         {navBarInfos.map((info) => (
           <NavButton info={info} currentNav={currentNav} />
         ))}
-        {isUser && userNavBarInfos.map((info) => <NavButton info={info} currentNav={currentNav} />)}
-        {isAdmin && adminNavBarInfos.map((info) => <NavButton info={info} currentNav={currentNav} />)}
+        {isUser && userNavBarInfos.map((info) => <NavButton key={info.id} info={info} currentNav={currentNav} />)}
+        {isAdmin && adminNavBarInfos.map((info) => <NavButton key={info.id} info={info} currentNav={currentNav} />)}
         {!isLogin && (
           <Link
             to='/login'
