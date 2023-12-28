@@ -1,116 +1,78 @@
+import { Tab, Tabs } from '@nextui-org/react';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { Key, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import LoadingAnimation from '../../components/LoadingAnimation';
+import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
-import { getDoc } from '../../utils/firebase';
-
-interface OrderType {
-  id?: string;
-  userRef?: DocumentReference<DocumentData, DocumentData>;
-  kid: {
-    docId?: string;
-    firstName?: string;
-    lastName?: string;
-  };
-  plan?: string;
-  method?: string;
-  status?: string;
-  timestamp: {
-    seconds: number;
-  };
-  price?: number;
-}
+import { firestore } from '../../utils/firestore';
+import { CompleteOrderType } from '../../utils/types';
+import OrderRow from './OrderRow';
 
 function Order() {
   const navigate = useNavigate();
-  const { user, isLogin } = useStore();
+  const { setCurrentNav, user, isLogin, isLoading, setLoading } = useStore();
   const [tag, setTag] = useState('all');
-  const [orders, setOrders] = useState<OrderType[]>([]);
+  const [orders, setOrders] = useState<CompleteOrderType[]>([]);
 
   const getOrders = async (ordersRef: DocumentReference<DocumentData, DocumentData>[]) => {
     const orders = [];
     for (const orderRef of ordersRef) {
-      const orderSnap = await getDoc(orderRef);
-      if (orderSnap.exists()) {
-        const order = orderSnap.data();
-        orders.push(order);
-      }
+      const order = await firestore.getDocByRef(orderRef);
+      if (order) orders.push(order as CompleteOrderType);
     }
-    setOrders(orders);
+    const sortByTimestamp = (a: CompleteOrderType, b: CompleteOrderType) => b.timestamp.seconds - a.timestamp.seconds;
+    orders.sort(sortByTimestamp);
+    setOrders(orders as CompleteOrderType[]);
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (isLogin && user.ordersRef) {
+    if (isLogin) {
+      setCurrentNav('order');
+    }
+    if (!isLogin) {
+      navigate('/');
+      setCurrentNav('schedules');
+    }
+    if (user.ordersRef) {
       getOrders(user.ordersRef);
-    } else if (!isLogin) {
-      navigate('/login');
+      setLoading(false);
+    } else {
+      setLoading(false);
     }
   }, [isLogin, user]);
 
+  const areOrdersEmpty = orders.length === 0;
+  const isTagInProcess = tag === 'inProcess';
+  const hasOrdersInProcess = orders.some((order) => order.status === 'IN_PROCESS');
+
   return (
-    <div className='custom-main-container mt-28'>
-      <div className='w-10/12 mx-auto'>
-        <div className='flex gap-4 text-xl border-b border-gray-200'>
-          <div
-            className={` w-32 text-center rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-              tag === 'all' ? 'shadow-inner bg-gray-200' : ''
-            }`}
-            onClick={() => {
-              setTag('all');
-            }}>
-            All
-          </div>
-          <div
-            className={` w-32 text-center rounded-t-md px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-              tag === 'inProcess' ? 'shadow-inner bg-gray-200' : ''
-            }`}
-            onClick={() => {
-              setTag('inProcess');
-            }}>
-            In Process
-          </div>
+    <div className='custom-main-container'>
+      {isLoading && <LoadingAnimation />}
+      <div className='flex flex-col md:flex-row justify-between items-center pt-6 lg:pt-14 pb-14'>
+        <PageTitle title='Orders' />
+        <div className='flex flex-col mr-0 md:mr-12 lg:mr-20'>
+          <Tabs aria-label='status' selectedKey={tag} onSelectionChange={setTag as (key: Key) => string}>
+            <Tab key='all' title='All' />
+            <Tab key='inProcess' title='In Process' />
+          </Tabs>
         </div>
-        <div className='flex ml-8 mt-8 mb-4 px-2'>
-          <div className='w-56'>Time</div>
-          <div className='w-44'>Plan</div>
-          <div className='w-44'>Name</div>
-          <div className='w-44'>Method</div>
-          <div className='w-44'>Status</div>
+      </div>
+      <div className='mx-0 md:mx-12 lg:mx-20 min-h-[70vh] p-6 bg-white rounded-2xl'>
+        <div className='flex mb-8 px-4 py-2 font-bold text-gray-500 bg-gray-100 rounded-lg'>
+          <div className='flex-1 mr-6'>TIME</div>
+          <div className='flex-1'>PLAN</div>
+          <div className='flex-1'>NAME</div>
+          <div className='flex-1'>METHOD</div>
+          <div className='w-24'>STATUS</div>
         </div>
-        <div className='flex flex-col gap-4 ml-8'>
-          {orders.length === 0 && <div>No Orders</div>}
-          {orders.length > 0 &&
-            orders.map((order) => {
-              const { seconds } = order.timestamp;
-              const timestamp = new Date(seconds * 1000);
-              const yyyy = timestamp.getFullYear();
-              const mm = timestamp.getMonth() + 1;
-              const dd = timestamp.getDate();
-              const hour = timestamp.getHours();
-              const min = timestamp.getMinutes();
-              const sec = timestamp.getSeconds();
-              const dateTime = `${yyyy}/${mm}/${dd} ${hour}:${min}:${sec}`;
-              if (tag === 'all' || (tag === 'inProcess' && order.status === 'IN_PROCESS'))
-                return (
-                  <div className='bg-gray-100 flex px-2 py-1 rounded-md  font-mono text-sm' key={seconds}>
-                    <div className='w-56'>{dateTime}</div>
-                    <div className='w-44'>
-                      {order.plan === '01'
-                        ? 'Single Session'
-                        : order.plan === '08'
-                          ? '8 Sessions'
-                          : order.plan === '10'
-                            ? '10 Sessions'
-                            : '12 Sessions'}
-                    </div>
-                    <div className='w-44 '>{order.kid.firstName}</div>
-                    <div className='w-44 '>{order.method === 'cash' ? 'Cash' : 'Bank transfer'}</div>
-                    <div className='w-44 '>
-                      {order.status === 'SUCCESS' ? 'Success' : order.status === 'IN_PROCESS' ? 'In process' : 'Failed'}
-                    </div>
-                  </div>
-                );
-            })}
+        <div className='flex flex-col gap-4 h-[60vh] overflow-y-auto'>
+          {areOrdersEmpty && <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>}
+          {!areOrdersEmpty && orders.map((order) => <OrderRow order={order} tag={tag} key={order.id} />)}
+          {!areOrdersEmpty && !hasOrdersInProcess && isTagInProcess && (
+            <div className='text-center mt-[20vh] text-gray-400'>No orders to display.</div>
+          )}
         </div>
       </div>
     </div>

@@ -1,42 +1,9 @@
 import { DocumentData, DocumentReference } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 import { create } from 'zustand';
-import {
-  GoogleAuthProvider,
-  auth,
-  createUserWithEmailAndPassword,
-  db,
-  doc,
-  getDoc,
-  onAuthStateChanged,
-  provider,
-  setDoc,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  updateProfile,
-} from '../utils/firebase';
-
-interface UserType {
-  photoURL?: string;
-  email?: string;
-  kids?: DocumentReference<DocumentData, DocumentData>[];
-  ordersRef?: DocumentReference<DocumentData, DocumentData>[];
-  displayName?: string;
-  phoneNumber?: string;
-  registrationDate?: string;
-  role?: string;
-}
-
-interface KidType {
-  docId: string;
-  birthday: string;
-  chineseName: string;
-  firstName: string;
-  id: string;
-  lastName: string;
-  school: string;
-  photoURL?: string;
-}
+import { UserCredential, firebaseAuth } from '../utils/firebaseAuth';
+import { db, doc, firestore } from '../utils/firestore';
+import { KidType, UserType } from '../utils/types';
 
 interface AccountType {
   name?: string;
@@ -45,194 +12,164 @@ interface AccountType {
 }
 
 interface StoreState {
+  isLoading: boolean;
+  setLoading: (boolean: boolean) => void;
+  currentNav: string;
+  setCurrentNav: (nav: string) => void;
   user: UserType;
-  setUser: (data: object) => void;
   userRef: undefined | DocumentReference<DocumentData, DocumentData>;
+  userID: undefined | string;
   kids: KidType[] | [];
-  kidsRef: undefined | DocumentReference<DocumentData, DocumentData>[];
-  isLogin: boolean;
+  isLogin: boolean | 'undefined';
   nativeSignup: (account: AccountType) => void;
   nativeLogin: (account: AccountType) => void;
-  googleSignup: () => void;
   googleLogin: () => void;
   checkLogIn: () => void;
   setLogOut: () => void;
   getUserProfile: (userRef: undefined | DocumentReference<DocumentData, DocumentData>) => object;
-  getKidsProfile: (kidsRef: DocumentReference<DocumentData, DocumentData>[]) => void;
+  scheduledDates: string[];
+  getScheduledDates: (year: number, quarter: number) => void;
+  saturdaySchedules: object[];
+  getSaturdaySchedules: (year: number, quarter: number) => void;
+  hasNotification: boolean;
+  setNotification: (boolean: boolean) => void;
 }
 
+const defaultPhotoURL =
+  'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/default-avatar-profile.png?alt=media&token=2ca8bd76-a025-4b94-a2f6-d5d39210289c';
+
+const initialProfile = (user: UserCredential['user'], name?: string | undefined) => {
+  return {
+    photoURL: user.photoURL || defaultPhotoURL,
+    email: user.email,
+    kids: [],
+    displayName: name || user.displayName || undefined,
+    phoneNumber: user.phoneNumber,
+    registrationDate: user.metadata.creationTime,
+    role: 'user',
+  };
+};
+
 export const useStore = create<StoreState>((set) => ({
+  isLoading: true,
+  setLoading: (boolean: boolean) => set(() => ({ isLoading: boolean })),
+  currentNav: '',
+  setCurrentNav: (nav: string) => set(() => ({ currentNav: nav })),
   user: {},
-  setUser: (data: object) => set(() => ({ user: data })),
   userRef: undefined,
+  userID: undefined,
   kids: [],
-  kidsRef: undefined,
   nativeSignup: (account: AccountType) => {
-    const photo =
-      'https://firebasestorage.googleapis.com/v0/b/sol-basketball.appspot.com/o/sol-logo.jpg?alt=media&token=5f42ab2f-0c16-48f4-86dd-33c7db8d7496';
-    const { name, email, password } = account;
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential: { user: any }) => {
-        const { user } = userCredential;
-        console.log(user);
-        set(() => ({ isLogin: true }));
-        updateProfile(auth.currentUser, {
-          displayName: name,
-          photoURL: photo,
-        })
-          .then(() => {
-            console.log('Profile updated!');
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-        localStorage.setItem('jwtToken', user.accessToken);
-        return user;
-      })
+    const { email, password } = account;
+    const name = account.name?.trim();
+    firebaseAuth
+      .createUserWithEmailAndPassword(email.trim(), password.trim())
       .then((user) => {
-        const initialProfile = {
-          photoURL: photo,
-          email: user.email,
-          kids: [],
-          displayName: name,
-          phoneNumber: user.phoneNumber,
-          registrationDate: user.metadata.creationTime,
-          role: 'user',
-        };
-        setDoc(doc(db, 'users', user.uid), initialProfile);
+        firebaseAuth.updateProfile(name as string, defaultPhotoURL);
+        firestore.setDoc('users', user.uid, initialProfile(user, name));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ userID: user.uid }));
+        set(() => ({ isLogin: true }));
+        set(() => ({ currentNav: 'schedules' }));
       })
-      .catch((error: { code: number; message: string }) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(errorCode, errorMessage);
-      });
+      .catch((error) => {
+        if (error.message === 'Firebase: Error (auth/email-already-in-use).') {
+          toast.error('The email address is already registered. Please use a different email.');
+        } else {
+          toast.error('Account registration failed. Please check your information and try again.');
+        }
+      })
+      .finally(() => set(() => ({ isLoading: false })));
   },
   nativeLogin: (account: AccountType) => {
     const { email, password } = account;
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential: { user: any }) => {
-        const { user } = userCredential;
-        set(() => ({ user: user }));
-        set(() => ({ isLogin: true }));
-        set(() => ({ userRef: doc(db, 'users', user.uid) }));
-        return user;
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error(errorCode, errorMessage);
-      });
-  },
-  googleSignup: () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential?.accessToken;
-        set(() => ({ isLogin: true }));
-        const { user } = result;
-        return user;
-      })
+    firebaseAuth
+      .signInWithEmailAndPassword(email.trim(), password.trim())
       .then((user) => {
-        console.log(user);
-        set(() => ({ user: user }));
-        const initialProfile = {
-          photoURL: user.photoURL,
-          email: user.email,
-          kids: [],
-          displayName: user.displayName,
-          phoneNumber: user.phoneNumber,
-          registrationDate: user.metadata.creationTime,
-          role: 'user',
-        };
-        setDoc(doc(db, 'users', user.uid), initialProfile);
-        // set(() => ({ token: user.accessToken }));
+        set(() => ({ user: user as UserType }));
+        set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ userID: user.uid }));
+        set(() => ({ currentNav: 'schedules' }));
+        toast.success(`Hi ${user.displayName}, welcome back!`, { icon: '😸' });
       })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-      });
+      .catch(() => {
+        toast.error('Wrong email or password');
+      })
+      .finally(() => set(() => ({ isLoading: false })));
   },
   googleLogin: () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        set(() => ({ isLogin: true }));
-        const { user } = result;
-        return user;
-      })
+    firebaseAuth
+      .signInWithPopup()
       .then((user) => {
-        // set(() => ({ user: user }));
-        // set(() => ({ token: user.accessToken }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ userID: user.uid }));
+        firestore
+          .getDoc('users', user.uid)
+          .then((userDoc) => {
+            if (userDoc) {
+              set(() => ({ user: userDoc }));
+            } else {
+              firestore.setDoc('users', user.uid, initialProfile(user));
+              set(() => ({ user: initialProfile(user) as UserType }));
+              set(() => ({ currentNav: 'schedules' }));
+            }
+          })
+          .then(() => {
+            set(() => ({ isLogin: true }));
+            toast.success('Account registered successfully!');
+          });
       })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-      });
+      .catch((error) => console.error(error));
   },
-  isLogin: false,
+  isLogin: 'undefined',
   checkLogIn: () => {
-    onAuthStateChanged(auth, (user) => {
+    firebaseAuth.onAuthStateChanged((user) => {
       if (user) {
+        set(() => ({ user: user as UserType }));
         set(() => ({ isLogin: true }));
         set(() => ({ userRef: doc(db, 'users', user.uid) }));
+        set(() => ({ userID: user.uid }));
+        set(() => ({ isLoading: false }));
       } else {
-        // User is signed out
+        set(() => ({ isLogin: false }));
+        set(() => ({ isLoading: false }));
       }
     });
   },
-  setLogOut: () => {
-    signOut(auth)
-      .then(() => {
-        console.log('Sign-out successful');
+  setLogOut: async () => {
+    firebaseAuth
+      .signOut(() => {
         set(() => ({ isLogin: false }));
-        localStorage.removeItem('jwtToken');
+        set(() => ({ user: {} }));
+        set(() => ({ userRef: undefined }));
+        set(() => ({ userID: undefined }));
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .then(() => toast.success('See you. Have a great day!', { icon: '👋🏻' }));
   },
   getUserProfile: async (userRef) => {
-    if (userRef) {
-      const profileSnap = await getDoc(userRef);
-      if (profileSnap) {
-        const profile = profileSnap.data();
-        set(() => ({ user: profile }));
-        const kids = [];
-        for (const kidRef of profile.kids) {
-          const kidSnap = await getDoc(kidRef);
-          if (kidSnap.exists()) {
-            const kid = kidSnap.data();
-            kids.push(kid);
-          }
-        }
-        set(() => ({ kids: kids }));
-        // set(() => ({ kidsRef: profile.kids }));
-        return profile;
+    const profile = await firestore.getDocByRef(userRef as DocumentReference<DocumentData, DocumentData>);
+    if (profile) {
+      set(() => ({ user: profile }));
+      const kids: KidType[] = [];
+      for (const kidRef of profile.kids) {
+        const kid = await firestore.getDocByRef(kidRef);
+        if (kid) kids.push(kid as KidType);
       }
+      set(() => ({ kids: kids }));
+      return profile;
     }
   },
-  getKidsProfile: async (kidsRef) => {
-    const kids = [];
-    for (const kidRef of kidsRef) {
-      const kidSnap = await getDoc(kidRef);
-      if (kidSnap.exists()) {
-        const kid = kidSnap.data();
-        kids.push(kid);
-      }
-    }
-    set(() => ({ kids: kids }));
+  scheduledDates: [],
+  getScheduledDates: async (year, quarter) => {
+    const schedule = await firestore.getDoc('schedule', `${year}Q${quarter}`);
+    if (schedule) set(() => ({ scheduledDates: schedule.all }));
   },
+  saturdaySchedules: [],
+  getSaturdaySchedules: async (year, quarter) => {
+    const saturdaySchedules = await firestore.getDocs('schedule', `${year}Q${quarter}`, 'saturday');
+    set(() => ({ saturdaySchedules: saturdaySchedules as object[] }));
+  },
+  hasNotification: false,
+  setNotification: (boolean: boolean) => set(() => ({ hasNotification: boolean })),
 }));

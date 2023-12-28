@@ -1,33 +1,55 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Edit } from '../../components/Icon';
+import LoadingAnimation from '../../components/LoadingAnimation';
+import PageTitle from '../../components/PageTitle';
 import { useStore } from '../../store/store';
-import { getDownloadURL, ref, storage, updateDoc, uploadBytes } from '../../utils/firebase';
+import { firebaseStorage } from '../../utils/firebaseStorage';
+import { firestore } from '../../utils/firestore';
 import Kids from './Kids';
+
+interface NewProfileType {
+  photoURL: string;
+  displayName: string;
+  phoneNumber: string;
+}
 
 function Profile() {
   const navigate = useNavigate();
-  // const [isLoading, setLoading] = useState(false);
-  const { user, userRef, setUser, isLogin, getUserProfile } = useStore();
+  const { setCurrentNav, user, userID, userRef, isLogin, getUserProfile, isLoading, setLoading } = useStore();
   const [isEditProfile, setEditProfile] = useState(false);
-  const inputFileRef = useRef(null);
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const [newProfile, setNewProfile] = useState({});
+  const [newProfile, setNewProfile] = useState<NewProfileType>({
+    photoURL: user?.photoURL || '',
+    displayName: user?.displayName || '',
+    phoneNumber: user?.phoneNumber || '',
+  });
 
   useEffect(() => {
-    if (!isLogin) navigate('/');
+    if (!isLogin) {
+      navigate('/login');
+      setCurrentNav('');
+      setLoading(false);
+    } else if (isLogin) {
+      setCurrentNav('profile');
+      setLoading(false);
+    }
   }, [isLogin]);
 
-  const [newProfileImg, setNewProfileImg] = useState(null);
+  const [newProfileImg, setNewProfileImg] = useState<File>();
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const image = e.target.files[0];
-    const unitTime = Date.now();
-    const storageRef = ref(storage, `temporary-folder/${unitTime}${image.name}`);
-    uploadBytes(storageRef, image).then(() => {
-      getDownloadURL(ref(storage, `temporary-folder/${unitTime}${image.name}`)).then((url) => {
-        setNewProfile({ ...newProfile, photoURL: url });
-      });
-    });
-    setNewProfileImg(image);
+    if (e.target.files && e.target.files[0]) {
+      const image = e.target.files[0];
+      const storageReferenceRoot = `temporary-folder/${userID}`;
+      firebaseStorage
+        .uploadAndGetDownloadURL(storageReferenceRoot, image)
+        .then((url) => setNewProfile({ ...newProfile, photoURL: url }));
+      setNewProfileImg(image);
+    } else {
+      setNewProfile({ ...newProfile, photoURL: user.photoURL || '' });
+      setNewProfileImg(undefined);
+    }
   };
 
   const handleChangeProfile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,109 +58,157 @@ function Profile() {
   };
 
   const handleSaveProfile = () => {
-    const unitTime = Date.now();
     if (newProfileImg && userRef) {
-      // deleteObject(ref(storage, `temporary-folder/`)).catch((error) => {
-      //   console.error(error);
-      // });
-      const storageRef = ref(storage, `users-photo/${unitTime}${newProfileImg.name}`);
-      uploadBytes(storageRef, newProfileImg).then(() => {
-        getDownloadURL(ref(storage, `users-photo/${unitTime}${newProfileImg.name}`)).then((url) => {
-          updateDoc(userRef, newProfile);
-          updateDoc(userRef, { photoURL: url });
+      const storageReferenceRoot = `users-photo/${userID}`;
+      firebaseStorage
+        .uploadAndGetDownloadURL(storageReferenceRoot, newProfileImg)
+        .then((url) => {
+          firestore.updateDocByRef(userRef, { ...newProfile });
+          firestore.updateDocByRef(userRef, { photoURL: url });
+        })
+        .then(() => getUserProfile(userRef))
+        .then(() => {
+          setEditProfile(false);
+          setLoading(false);
         });
+      setNewProfileImg(undefined);
+    } else if (userRef) {
+      firestore.updateDocByRef(userRef, { ...newProfile }).then(() => {
+        setEditProfile(false);
+        setLoading(false);
       });
-      setNewProfileImg(null);
-    } else if (userRef) updateDoc(userRef, newProfile);
+    }
     getUserProfile(userRef);
   };
 
-  const renderEditIcon = () => {
-    return (
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        fill='none'
-        viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
-        className='w-6 h-6 inline-block text-gray-400 cursor-pointer'>
-        <path
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10'
-        />
-      </svg>
-    );
-  };
+  const isInvalidName = newProfile.displayName.length > 26;
 
   return (
-    <div className='custom-main-container mt-28'>
-      {/* {isLoading && <div className=''>Loading!</div>} */}
-      {!isEditProfile && (
-        <div className='w-8/12 mx-auto flex flex-col items-center gap-3'>
-          <img src={user.photoURL} className='w-24 h-24 object-cover rounded-full border border-slate-200' />
-          <div>{user.displayName}</div>
-          <div className='flex gap-2 items-center'>
-            <div>{user.email}</div>
-            <span
-              onClick={() => {
-                setEditProfile(true);
-                setNewProfile({
-                  displayName: user.displayName,
-                  phoneNumber: user.phoneNumber,
-                  photoURL: user.photoURL,
-                });
-              }}>
-              {renderEditIcon()}
-            </span>
-          </div>
-        </div>
-      )}
-      {isEditProfile && (
-        <div className='w-8/12 mx-auto '>
-          <div className='w-full text-center text-2xl mb-7'>Edit profile</div>
-          <div className='flex items-center justify-between bg-gray-100 rounded-md px-8 py-5'>
-            <div className='flex flex-col gap-4 items-center'>
-              <img
-                src={newProfile.photoURL}
-                className='w-24 h-24 object-cover rounded-full border border-slate-200 bg-white'
-              />
-              <input type='file' accept='image/*' ref={inputFileRef} onChange={handleImageChange} className=' w-60' />
-            </div>
-            <div className='flex flex-col justify-center gap-4 w-80 h-32'>
-              <div className='flex justify-between'>
-                <label>Name</label>
-                <input
-                  type='text'
-                  value={newProfile.displayName}
-                  id='displayName'
-                  onChange={handleChangeProfile}
-                  className='w-64 px-2 rounded-md'
+    <div className='custom-main-container pt-6 lg:pt-14'>
+      {isLoading && <LoadingAnimation />}
+      {!isLoading && (
+        <>
+          <PageTitle title='Profile' />
+          <div className='mx-8 md:mx-12 lg:mx-20 flex items-center py-6'>
+            <div className='w-full relative pt-10 pb-6 flex items-center justify-center gap-8 my-4 bg-white rounded-3xl'>
+              <div className='absolute top-0 left-0 rounded-t-3xl bg-slate-400 w-full h-6' />
+              <div className='relative'>
+                <img
+                  src={isEditProfile ? newProfile.photoURL : user.photoURL}
+                  className='w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-full border bg-white'
                 />
+                {isEditProfile && (
+                  <div>
+                    <input
+                      type='file'
+                      id='userPhoto'
+                      accept='image/*'
+                      ref={inputFileRef}
+                      onChange={handleImageChange}
+                      className='hidden'
+                    />
+                    <label
+                      htmlFor='userPhoto'
+                      className='absolute left-0 top-0 w-20 h-20 sm:w-24 sm:h-24 rounded-full flex opacity-0 hover:opacity-100 hover:bg-gray-600/70 cursor-pointer items-center justify-center duration-150'>
+                      <svg
+                        xmlns='http://www.w3.org/2000/svg'
+                        viewBox='0 0 24 24'
+                        className='w-6 h-6 stroke-[1.5] stroke-current fill-none'>
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          d='M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5'
+                        />
+                      </svg>
+                    </label>
+                  </div>
+                )}
               </div>
-              <div className='flex justify-between'>
-                <label>Phone</label>
-                <input
-                  type='text'
-                  value={newProfile.phoneNumber}
-                  id='phoneNumber'
-                  onChange={handleChangeProfile}
-                  className='w-64 px-2 rounded-md'
-                />
+              <div className='w-72 sm:w-60 md:w-auto flex flex-col md:flex-row gap-1 md:gap-0 text-black'>
+                <div className='flex flex-row md:flex-col mr-10 gap-2'>
+                  <div className='px-2 text-gray-500 pt-1 md:pt-0'>Name</div>
+                  {isEditProfile ? (
+                    <div className='relative'>
+                      <input
+                        type='text'
+                        value={newProfile.displayName}
+                        id='displayName'
+                        onChange={handleChangeProfile}
+                        className={`px-2 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 ${
+                          isInvalidName && 'text-red-500 ring-2 ring-red-500'
+                        }`}
+                      />
+                      {isInvalidName && (
+                        <div className='absolute -bottom-5 -right-5 text-red-500 text-sm scale-80 whitespace-nowrap'>
+                          Exceeds the maximum character limit.
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className='px-2 py-1'>{user.displayName}</div>
+                  )}
+                </div>
+                <div className='flex flex-row md:flex-col w-32 gap-2'>
+                  <div className='px-2 text-gray-500 pt-1 md:pt-0'>Phone</div>
+                  {!isEditProfile &&
+                    (user.phoneNumber?.length === 0 ? (
+                      <div className='px-2'>N/A</div>
+                    ) : (
+                      <div className='px-2 py-1'>{user.phoneNumber}</div>
+                    ))}
+                  {isEditProfile && (
+                    <input
+                      type='text'
+                      value={newProfile.phoneNumber}
+                      id='phoneNumber'
+                      onChange={handleChangeProfile}
+                      className='px-2 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200'
+                    />
+                  )}
+                </div>
+                <div className='flex flex-row md:flex-col w-40 gap-2'>
+                  <div className='text-gray-500 pt-1 md:pt-0 pl-2 md:pl-6'>Email</div>
+                  <div className='pl-6 py-1'>{user.email}</div>
+                </div>
+              </div>
+              {isEditProfile ? (
+                <button
+                  onClick={() => {
+                    setLoading(true);
+                    handleSaveProfile();
+                  }}
+                  disabled={isInvalidName}
+                  className='absolute right-4 bottom-4 text-center w-14 py-1 border rounded-xl text-zinc-500 hover:scale-110 duration-150 disabled:text-zinc-300'>
+                  Save
+                </button>
+              ) : (
+                <div
+                  className='absolute right-0 bottom-2 cursor-pointer w-14 py-1 rounded-xl hover:text-zinc-300 hover:scale-110 duration-150 text-zinc-200'
+                  onClick={() => {
+                    setEditProfile(true);
+                    setNewProfile({
+                      displayName: user?.displayName || '',
+                      phoneNumber: user?.phoneNumber || '',
+                      photoURL: user?.photoURL || '',
+                    });
+                  }}>
+                  {Edit('w-6 h-6 mx-auto')}
+                </div>
+              )}
+            </div>
+          </div>
+          {user.role === 'user' && (
+            <div>
+              <div className='border-t border-gray-600 pt-4 lg:pt-8'>
+                <PageTitle title='Kids' />
+              </div>
+              <div className='mx-0 md:mx-12 lg:mx-20 flex items-center pt-4 pb-4'>
+                <Kids />
               </div>
             </div>
-            <button
-              onClick={() => {
-                setEditProfile(false);
-                handleSaveProfile();
-              }}
-              className=' text-lg px-3 bg-gray-200 rounded-sm'>
-              Save
-            </button>
-          </div>
-        </div>
+          )}
+        </>
       )}
-      <Kids />
     </div>
   );
 }

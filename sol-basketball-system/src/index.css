@@ -4,20 +4,29 @@
 
 html {
   box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .custom-main-container {
-  @apply ml-60 w-[cal(100%-240px)];
+  @apply ml-[73px] lg:ml-60 w-[calc(100%-73px)] lg:w-[calc(100%-240px)] bg-slate-800 text-white min-h-screen;
 }
 
 .custom-signin-input {
-  @apply w-full p-4 border border-[#00000060] rounded-sm;
+  @apply w-full p-4 rounded-md bg-slate-700 font-bold text-gray-300 tracking-wide;
 }
 
-.material-icons {
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 24;
+.custom-page-title {
+  @apply font-bold px-3 py-2 text-2xl sm:text-3xl;
+}
+
+.unScheduledClass {
+  @apply text-sm sm:text-base sm:px-12 py-2 sm:py-5 rounded-md border border-gray-600 mt-4 font-bold text-gray-600 tracking-wider;
+}
+
+.isScheduledClass {
+  @apply text-sm sm:text-base sm:px-12 py-2 sm:py-5 rounded-md border border-slate-400 mt-4 font-bold tracking-wider cursor-pointer text-black;
+}
+
+.kidCard {
+  @apply mt-8 flex flex-col shrink-0 rounded-3xl relative items-center w-60 h-[340px];
 }

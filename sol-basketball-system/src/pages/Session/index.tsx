@@ -1,17 +1,71 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Tab, Tabs } from '@nextui-org/react';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useEffect } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import LoadingAnimation from '../../components/LoadingAnimation';
 import { useStore } from '../../store/store';
+import { db } from '../../utils/firestore';
 import Attendance from './Attendance';
 import Credits from './Credits';
 
 function Session() {
   const navigate = useNavigate();
-  const { kids, isLogin } = useStore();
-  const [currentKidIndex, setCurrentKidIndex] = useState(0);
+  const { id } = useParams();
+  const { user, kids, isLogin, isLoading, setLoading, setCurrentNav } = useStore();
+  const { role } = user;
+  useEffect(() => {
+    window.scrollTo({
+      behavior: 'smooth',
+      top: 0,
+    });
+  }, [id]);
 
   useEffect(() => {
-    if (!isLogin || kids.length === 0) navigate('/');
-  }, [isLogin]);
+    if (!isLogin) {
+      navigate('/');
+      setCurrentNav('schedules');
+      setLoading(false);
+    }
+    if (isLogin) {
+      if (role === 'user' && kids) {
+        if (!kids.some((kid) => kid.id === id)) {
+          navigate('/profile');
+        }
+        setCurrentNav('profile');
+        setLoading(false);
+      }
+      if (role === 'admin') {
+        kids.pop();
+        setCurrentNav('admin-students');
+        if (kids.length === 0) {
+          getDocs(query(collection(db, 'students'), where('id', '==', id)))
+            .then((querySnapshot) => {
+              if (querySnapshot.size === 0) {
+                navigate('/admin/students');
+              } else {
+                querySnapshot.forEach((docSnapshot) => {
+                  const doc = docSnapshot.data();
+                  console.log(doc);
+                  kids.push(doc as never);
+                });
+              }
+            })
+            .then(() => setLoading(false));
+        } else {
+          setLoading(false);
+        }
+      }
+    }
+  }, [isLogin, kids]);
+
+  const ArrowRight = () => (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      viewBox='0 0 24 24'
+      className={`fill-none stroke-current w-8 h-8 stroke-[1]`}>
+      <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
+    </svg>
+  );
 
   const calculate_age = (birthday: string) => {
     const dateOfBirth = new Date(birthday);
@@ -21,50 +75,82 @@ function Session() {
   };
 
   return (
-    <div className='custom-main-container mt-28'>
-      <div className='w-10/12 mx-auto'>
-        <div className='flex gap-10 text-xl border-b border-gray-200'>
-          {kids.map((kid, index) => {
-            return (
-              <div
-                key={kid.docId}
-                onClick={() => setCurrentKidIndex(index)}
-                className={`rounded-md px-3 py-2 cursor-pointer hover:bg-[#CCFBF1] ${
-                  index === currentKidIndex ? 'border-b-4 border-[#14B8A6] rounded-b-none' : ''
-                }`}>
-                {kid.firstName}
-              </div>
-            );
+    <div className='custom-main-container pt-6 lg:pt-14'>
+      {isLoading && <LoadingAnimation />}
+      <div className='flex flex-col md:flex-row justify-between items-center'>
+        <div className='flex items-center gap-3'>
+          {role === 'user' && (
+            <Link
+              to='/profile'
+              className='mb-1 font-bold text-2xl sm:text-3xl ml-0 md:ml-12 lg:ml-20 whitespace-nowrap text-gray-400 hover:text-white'>
+              Profile
+            </Link>
+          )}
+          {role === 'admin' && (
+            <Link
+              to='/admin/students'
+              className='font-bold text-2xl sm:text-3xl ml-0 md:ml-12 lg:ml-20 whitespace-nowrap text-gray-400 hover:text-white'>
+              Students
+            </Link>
+          )}
+          {ArrowRight()}
+          {kids.map((kid) => {
+            if (kid.id === id) {
+              return (
+                <div key={kid.id} className='font-bold text-2xl sm:text-3xl whitespace-nowrap'>
+                  {kid.firstName}
+                </div>
+              );
+            }
           })}
         </div>
-        {kids[currentKidIndex] && (
-          <>
-            <div className='mt-6 flex gap-16 items-center pl-16 py-3'>
-              <img src={kids[currentKidIndex]?.photoURL} className='w-20 h-20 object-cover bg-white rounded-full' />
-              <div className='w-36'>
-                <div className='text-gray-400 font-bold mb-2'>Name</div>
-                <div className='text-lg'>
-                  {kids[currentKidIndex].firstName} {kids[currentKidIndex].lastName}
-                </div>
-              </div>
-              <div className='w-16'>
-                <div className='text-gray-400 font-bold mb-2'>Age</div>
-                <div className='text-lg'>{calculate_age(kids[currentKidIndex].birthday)}</div>
-              </div>
-              <div className='w-28'>
-                <div className='text-gray-400 font-bold mb-2'>School</div>
-                <div className='text-lg'>{kids[currentKidIndex].school}</div>
-              </div>
-              <div className='w-28'>
-                <div className='text-gray-400 font-bold mb-2'>ID</div>
-                <div className='text-lg'>{kids[currentKidIndex].id}</div>
-              </div>
-            </div>
-            <Credits currentKid={kids[currentKidIndex].docId} />
-            <Attendance currentKid={kids[currentKidIndex].docId} />
-          </>
+        {role === 'user' && kids.length > 1 && (
+          <div className='min-w-36 flex flex-col mr-0 md:mr-12 lg:mr-20'>
+            <Tabs aria-label='kid' selectedKey={id}>
+              {kids.map((kid) => (
+                <Tab key={kid.id} title={kid.firstName} href={`/session/${kid.id}`} onClick={() => setLoading(true)} />
+              ))}
+            </Tabs>
+          </div>
         )}
       </div>
+      {kids.length > 0 &&
+        kids.map((kid) => {
+          if (kid.id === id) {
+            return (
+              <div key={kid.id}>
+                <div className='border-b border-gray-600 pb-4'>
+                  <div className='mx-0 md:mx-12 lg:mx-20 flex items-center py-6 text-black'>
+                    <div className='w-full relative pt-10 pb-6 pl-40 flex items-center my-[12px] bg-white rounded-3xl'>
+                      <div className='absolute top-0 left-0 rounded-t-3xl bg-gray-300 w-full h-6' />
+                      <img src={kid.photoURL} className='w-24 h-24 object-cover rounded-full border bg-white mr-20' />
+                      <div className='flex flex-col w-32 gap-2'>
+                        <div className='text-gray-500'>Name</div>
+                        <div>
+                          {kid.firstName} {kid.lastName}
+                        </div>
+                      </div>
+                      <div className='flex flex-col w-32 gap-2'>
+                        <div className='text-gray-500'>Age</div>
+                        <div>{calculate_age(kid.birthday)}</div>
+                      </div>
+                      <div className='flex flex-col w-32 gap-2'>
+                        <div className='text-gray-500'>School</div>
+                        <div>{kid.school}</div>
+                      </div>
+                      <div className='flex flex-col w-32 gap-2'>
+                        <div className='text-gray-500'>ID</div>
+                        <div>{kid.id}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <Credits currentKidId={kid.docId} />
+                <Attendance currentKidId={kid.docId} />
+              </div>
+            );
+          }
+        })}
     </div>
   );
 }

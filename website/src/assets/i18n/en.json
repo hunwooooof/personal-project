@@ -1,0 +1,89 @@
+{
+	"nav": {
+		"coaches": "Coaches Bios",
+		"teams": "Teams",
+		"private-training": "Private Training",
+		"training": "Training Classes",
+		"contact": "Contact Us"
+	},
+	"home": {
+		"training": {
+			"skills-training": {
+				"title": "SKILLS TRAINING",
+				"description": "In the journey of mastery, skills training is the compass guiding you towards your highest potential."
+			},
+			"friday-night-training": {
+				"title": "FRIDAY NIGHT SKILLS TRAINING",
+				"description": "In the journey of mastery, skills training is the compass guiding you towards your highest potential."
+			}
+		},
+		"teams": {
+			"roadrunners": "Our RoadRunners club team is a gathering of young players who bring a passion for basketball to the court. With skilled techniques and outstanding teamwork, this team demonstrates remarkable performance on the court.",
+			"tigers": "Tigers is a group of young players who have a deep love for the sport. They bring a wealth of enthusiasm and boundless passion to every game, creating an atmosphere full of energy."
+		}
+	},
+	"about-us": {
+		"quote": "Sol Basketball distinguishes itself by incorporating an international training style, enriching the basketball experience for our students. Our coaching staff, hailing from diverse basketball backgrounds, brings a global perspective to our training programs. We integrate a fusion of training methodologies inspired by renowned international basketball programs, ensuring our students receive a well-rounded and globally competitive skill set."
+	},
+	"skills-training-class": {
+		"title": "SKILLS TRAINING",
+		"sub-title": "In the journey of mastery, skills training is the compass guiding you towards your highest potential.",
+		"description": "Skills Training is a specialized class meticulously designed to hone individual fundamentals, aiming to equip players with the essential tools for success in actual gameplay. With a dedicated focus on each participant, this session ensures personalized attention and constructive feedback during every drill, fostering a dynamic learning environment tailored to elevate each player's performance.",
+		"friday-training": "Friday Night Skills Training",
+		"dates": "Class Dates:",
+		"location": "Blessed Imelda's School",
+		"address": "No. 59, Ningxia Rd, Datong District, Taipei City, 103",
+		"drop-in": "Drop in classes",
+		"action": "View the class schedule"
+	},
+	"teams": {
+		"roadrunners": {
+			"u10rookies": "The U10 Roadrunners Rookies, part of the Roadrunners Club Teams, is a dynamic group of young players. They showcase impressive skills and excellent teamwork on the basketball court, with each player actively participating in the games. This young team brings passion and effort to every match, injecting boundless energy into the court!",
+			"u10": "The U10 Roadrunners, part of the Roadrunners Club Teams, is a vibrant team composed of young players with a passion for basketball. They demonstrate outstanding skills and teamwork, with each player giving their all in every game. This team stands out on the court with a proactive attitude, delivering exciting matches for the audience!",
+			"u12": "The U12 Roadrunners, part of the Roadrunners Club Teams, is a team that combines skill and passion, consisting of young and energetic players. They showcase exceptional basketball skills and outstanding teamwork on the court, with each player demonstrating leadership during games. This age group team approaches every match with determination and enthusiasm, becoming a standout presence on the basketball court!"
+		},
+		"tigers": {
+			"u10": "The U10 Tigers, part of the Tigers Club Teams, is a dynamic group of young players. They showcase impressive skills and excellent teamwork on the basketball court, with each player actively participating in the games. This young team brings passion and effort to every match, injecting boundless energy into the court!",
+			"u12": "The U12 Tigers, part of the Tigers Club Teams, is a vibrant team composed of young players with a passion for basketball. They demonstrate outstanding skills and teamwork, with each player giving their all in every game. This team stands out on the court with a proactive attitude, delivering exciting matches for the audience!",
+			"u13": "The U13 Tigers, part of the Tigers Club Teams, is a team that combines skill and passion, consisting of young and energetic players. They showcase exceptional basketball skills and outstanding teamwork on the court, with each player demonstrating leadership during games. This age group team approaches every match with determination and enthusiasm, becoming a standout presence on the basketball court!"
+		}
+	},
+	"coaches-bio": {
+		"matt": {
+			"name": "Matthew Hibbs",
+			"title": "Executive Director",
+			"biography": "Matt's basketball journey began at age 4 in his parents' non-profit league, EYDG, in Estancia. He continued as an active referee and coach throughout middle and high school. Matt played three years of varsity basketball, serving as team captain during his Junior and Senior years. During college at the University of Eastern New Mexico, he played on the freshman team. In 2020, after relocating to Taiwan, Matt swiftly ascended from head coach to program director and partner in a basketball academy. With over a decade of basketball experience and three years in the Taiwanese community, he founded Sol Basketball—a youth academy and league.",
+			"motivation": "Basketball is my lifelong passion, shaping me in profound ways. It has taught me invaluable life lessons and fostered meaningful relationships. Sol Basketball is my avenue to share this profound love for the game with our community. The name 'Sol,' meaning sun in Spanish, pays homage to my New Mexico roots. It embraces the Zia symbol, found on our state flag, signifying the four compass points, seasons, daily periods, life stages, and sacred obligations according to Zia belief. Sol Basketball embraces this symbolism to signify that basketball is universal, timeless, and meant to be shared with compassion, sincerity, and love with everyone under the sun."
+		},
+		"ronnie": {
+			"name": "Ronnie Hsieh",
+			"title": "Coach",
+			"biography": "Basketball has been an integral part of Ronnie's life, bringing her immense joy throughout her journey of personal growth. She embarked on this passionate journey early in elementary school, earning her place on the varsity basketball team, a journey she continued through university. Beyond her love for the game, Ronnie nurtured a strong desire to broaden her horizons in the basketball industry. This led her to seek opportunities for a seamless transition. She took on roles as a staff member at basketball summer camps and currently serves as a coach and operations manager at a Sol Basketball, expanding her expertise and influence in the sport.",
+			"motivation": "In my role as a coach and operations manager, I've had the privilege of collaborating with Sol Basketball in a leadership role. This invaluable experience has exposed me to the dynamic American coaching style and the nuances of their sports education system. My relentless pursuit of knowledge led me to invest in pursuing a Master's in Sports Management, equipping me with a deeper understanding of the business behind the game. My unwavering mission is to empower young athletes to develop the prowess to think independently on the court, enabling them to consistently make informed decisions. Beyond basketball skills, my primary goal is to establish a nurturing and inclusive environment in partnership with my colleagues. This environment not only fosters happiness but also cultivates a genuine love for the game among our young athletes."
+		},
+		"brenton": {
+			"name": "Brenton McBride",
+			"title": "Coach",
+			"biography": "Born and raised in South Florida, I played four years of High School Varsity Basketball, played in various AAU tournaments across the country and played on the practice team at PBSC (Palm Beach State College). I have volunteered at local Summer Camps and Summer Trainings at my old High School. Since then I have traveled abroad and came to Taiwan where I am currently coaching for 3 plus years. I have been head coach and assistant coach at International schools such as TES and various academies.",
+			"motivation": "I started playing sports at a young age. My love for basketball had not yet emerged after finishing playing for my little league Soccer team and started to watch NBA games. Since then, basketball been a teacher to me on and off the court. Basketball has taught me life long lessons that I still use today and will continue for the rest of my life. My passion is taking my knowledge and sharing it with those who will accept it. Helping someone succeed on the court is helping them succeed off the court."
+		},
+		"mavis": {
+			"name": "Mavis Lee",
+			"title": "Coach",
+			"biography": "Mavis discovered her passion for basketball in junior high through interclass competitions, igniting a lifelong love for the sport. In high school, she honed her skills as part of Taipei First Girls' High School's junior varsity basketball team. Following high school, Mavis spent five years as both a player and team captain for Taipei University of Technology's women's basketball team. In the summer of 2023, Mavis began as a part-time staff member in a basketball academy's summer camp. Recognizing her innate talent as a player, she swiftly ascended to the role of coach. Her journey led her to Sol Basketball, where she has become an integral part of the team, contributing her expertise and passion for the game.",
+			"motivation": "While I began my basketball journey relatively late, my passion for the sport remains undiminished. On the court, basketball has imparted valuable lessons in unity, diligence, dedication, and patience. Beyond the court, it has influenced my outlook on life and introduced me to wonderful mentors and friends. Among these individuals, Matt shines as an outstanding leader – principled, polite, and considerate. Being a part of Matt's team and teaching alongside my fellow teammates is an absolutely fantastic experience!"
+		},
+		"kam": {
+			"name": "Kam",
+			"title": "Coach",
+			"biography": "Born and raised in South Florida, I played four years of High School Varsity Basketball, played in various AAU tournaments across the country and played on the practice team at PBSC (Palm Beach State College). I have volunteered at local Summer Camps and Summer Trainings at my old High School. Since then I have traveled abroad and came to Taiwan where I am currently coaching for 3 plus years. I have been head coach and assistant coach at International schools such as TES and various academies.",
+			"motivation": "I started playing sports at a young age. My love for basketball had not yet emerged after finishing playing for my little league Soccer team and started to watch NBA games. Since then, basketball been a teacher to me on and off the court. Basketball has taught me life long lessons that I still use today and will continue for the rest of my life. My passion is taking my knowledge and sharing it with those who will accept it. Helping someone succeed on the court is helping them succeed off the court."
+		}
+	},
+	"footer": {
+		"about": "About Us",
+		"follow": "Follow Us",
+		"terms": "Terms of Service",
+		"privacy": "Privacy policy"
+	}
+}

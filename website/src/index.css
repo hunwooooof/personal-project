@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nav-class {
+  @apply font-semibold text-lg lg:text-base hover:text-teal-900 lg:hover:text-teal-700 hover:underline lg:hover:no-underline duration-150;
+}
