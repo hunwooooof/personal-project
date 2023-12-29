@@ -41,7 +41,7 @@ function Footer() {
       <div className='relative' data-aos='fade-up' data-aos-duration='700'>
         <img src={coverURL} alt='sol basketball family' className='w-full h-[30vh] sm:h-[500px] object-cover' />
         <div className='absolute w-full h-full top-0 bg-black opacity-60' />
-        <div className='absolute top-0 pl-[calc(50vw-220px)] sm:pl-36 pt-8 sm:pt-[10%] text-center sm:text-left'>
+        <div className='absolute top-0 pl-[calc(50vw-220px)] sm:px-36 pt-8 sm:pt-[10%] text-center sm:text-left'>
           <img src={solLogoURL} alt='sol logo' className='sm:hidden w-16 mx-auto' />
           <h2 className='text-3xl sm:text-6xl text-white font-bold'>Sol Basketball</h2>
           <div className='text-sm px-8 sm:px-0 sm:text-2xl text-white font-semibold mt-2 mb-4 sm:mb-12'>

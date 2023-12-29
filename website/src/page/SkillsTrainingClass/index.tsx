@@ -14,7 +14,7 @@ function SkillsTrainingClass() {
 
   const fridayClass = [
     { title: 'Time', description: '19:00-21:00' },
-    { title: 'Class Dates', description: '12/15 12/22 12/29' },
+    { title: 'Class Dates', description: '1/5 1/12 1/19 1/26' },
   ];
 
   return (
@@ -24,12 +24,14 @@ function SkillsTrainingClass() {
         style={{ backgroundImage: `url(${trainingURL})` }}
       />
       <div className='max-w-7xl w-10/12 mx-auto py-20'>
-        <h2 className='text-5xl text-center mb-8 font-bold bg-white p-3'>Training Classes</h2>
-        <div className='indent-8 px-2 leading-9 tracking-wide mb-20 text-xl text-gray-500'>
+        <h2 className='text-3xl sm:text-5xl text-center mb-8 font-bold bg-white p-3'>Training Classes</h2>
+        <div className='indent-8 px-2 leading-6 sm:leading-9 tracking-wide mb-10 sm:mb-20 text-base sm:text-xl text-gray-500'>
           {t('skills-training-class.description')}
         </div>
-        <div className='flex gap-8 items-center mb-4'>
-          <h3 className='text-3xl font-semibold tracking-wide'>{t('skills-training-class.friday-training')}</h3>
+        <div className='flex flex-col sm:flex-row gap-4 sm:gap-8 items-start sm:items-center mb-4'>
+          <h3 className='text-2xl sm:text-3xl font-semibold tracking-wide'>
+            {t('skills-training-class.friday-training')}
+          </h3>
           <Link
             to='https://system-1.web.app/'
             target='_blank'
@@ -40,18 +42,18 @@ function SkillsTrainingClass() {
         <div className='flex flex-col'>
           {fridayClass.map((item, i) => {
             return (
-              <div className='flex gap-2 mb-2 items-center' key={i}>
+              <div className='flex flex-col sm:flex-row sm:gap-2 mb-4 sm:mb-2 items-start sm:items-center' key={i}>
                 <div className='w-28 text-gray-400 flex items-center justify-between'>
                   {item.title}
-                  <span>|</span>
+                  <span className='hidden sm:inline'>|</span>
                 </div>
                 <div className='font-semibold text-gray-700'>{item.description}</div>
               </div>
             );
           })}
-          <div className='flex gap-2 mb-2 items-center'>
+          <div className='flex flex-col sm:flex-row sm:gap-2 mb-4 sm:mb-2 items-start sm:items-center'>
             <div className='w-28 text-gray-400 flex items-center justify-between'>
-              Location<span>|</span>
+              Location<span className='hidden sm:inline'>|</span>
             </div>
             <div className='font-semibold text-gray-700'>
               {t('skills-training-class.location')}
