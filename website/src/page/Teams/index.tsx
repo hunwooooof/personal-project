@@ -70,14 +70,14 @@ function Teams() {
         <div className='max-w-7xl w-10/12 mx-auto pb-20'>
           <div className='mb-24'>
             <h2 className='text-4xl mb-12 font-semibold'>Roadrunners Club Teams</h2>
-            <div className='flex flex-col justify-center items-start md:flex-row gap-10 border-b pb-20'>
+            <div className='flex flex-col lg:flex-row justify-center items-start gap-10 border-b pb-20'>
               {roadrunners.map((team, i) => {
                 return (
                   <div
                     key={i}
                     data-aos='fade-up'
                     data-aos-delay={team.aosDelay}
-                    className='w-96 bg-white p-2 shadow-md shadow-white/25'>
+                    className='lg:w-96 bg-white p-2 shadow-md shadow-white/25'>
                     <img src={team.img} alt={team.title} className='object-cover' />
                     <div className='p-4'>
                       <h3 className='leading-10 text-xl font-semibold'>{team.title}</h3>
@@ -90,14 +90,14 @@ function Teams() {
           </div>
           <div>
             <h2 className='text-4xl mb-12 font-semibold'>Tigers Club Teams</h2>
-            <div className='flex flex-col justify-center items-start md:flex-row gap-10'>
+            <div className='flex flex-col lg:flex-row justify-center items-start gap-10'>
               {tigers.map((team, i) => {
                 return (
                   <div
                     key={i}
                     data-aos='fade-up'
                     data-aos-delay={team.aosDelay}
-                    className='w-96 bg-white p-2 shadow-md shadow-white/25'>
+                    className='lg:w-96 bg-white p-2 shadow-md shadow-white/25'>
                     <img src={team.img} alt={team.title} className='object-cover' />
                     <div className='p-4'>
                       <h3 className='leading-10 text-xl font-semibold'>{team.title}</h3>

@@ -76,7 +76,7 @@ function AddVideo() {
             e.stopPropagation();
             handleSubmit();
           }}>
-          <div className={`${inputClass} max-w-[360px] sm:max-w-none w-[360px] xl:w-[420px]`}>
+          <div className={`${inputClass} max-w-[360px] sm:max-w-none sm:w-[360px] xl:w-[420px]`}>
             <Select
               ref={selectBox}
               isRequired
@@ -131,7 +131,7 @@ function AddVideo() {
               </Select>
             </div>
           </div>
-          <div className={`${inputClass} max-w-[360px] sm:max-w-none w-[360px] xl:w-[420px]`}>
+          <div className={`${inputClass} max-w-[360px] sm:max-w-none sm:w-[360px] xl:w-[420px]`}>
             <Input
               isRequired
               type='text'
@@ -143,7 +143,7 @@ function AddVideo() {
               onChange={handleChangeInput}
             />
           </div>
-          <div className={`${inputClass} max-w-[360px] sm:max-w-none w-[360px] xl:w-[420px]`}>
+          <div className={`${inputClass} max-w-[360px] sm:max-w-none sm:w-[360px] xl:w-[420px]`}>
             <Input
               isRequired
               type='text'
@@ -159,7 +159,7 @@ function AddVideo() {
             />
           </div>
           <button
-            className='flex items-center justify-center font-semibold rounded-full bg-gray-700 text-white mt-4 py-2 hover:scale-110 duration-150 disabled:scale-100 disabled:cursor-auto disabled:text-gray-600'
+            className='flex items-center max-w-[360px] sm:w-[360px] justify-center font-semibold rounded-full bg-gray-700 text-white mt-4 py-2 hover:scale-110 duration-150 disabled:scale-100 disabled:cursor-auto disabled:text-gray-600'
             disabled={hasEmptyValues || isVideoTitleTooLong}
             type='submit'>
             Add Video
