@@ -34,7 +34,7 @@ function Teams() {
         <div className='flex flex-col md:flex-row items-center justify-center gap-20'>
           {teams.map((team, i) => {
             return (
-              <div className='hover:scale-105 duration-200 flex flex-col lg:w-5/12'>
+              <div className='hover:scale-105 duration-200 flex flex-col w-full lg:w-5/12'>
                 <Link
                   to='/teams'
                   key={i}
@@ -50,10 +50,10 @@ function Teams() {
                   data-aos-duration='500'>
                   <img src={team.img} alt={team.title} className='w-full h-60 md:h-80 object-cover rounded-t-md' />
                   <div className='px-8 py-6'>
-                    <h3 className='text-2xl font-semibold mb-4 tracking-wide text-teal-800 md:min-h-[50px]'>
+                    <h3 className='text-2xl font-semibold mb-4 tracking-wide text-teal-800 md:min-h-[64px]'>
                       {team.title}
                     </h3>
-                    <div className='text-md text-gray-800 md:min-h-[130px]'>{team.description}</div>
+                    <div className='text-md text-gray-800 md:min-h-[170px]'>{team.description}</div>
                   </div>
                 </Link>
               </div>

@@ -18,7 +18,7 @@
 			}
 		},
 		"teams": {
-			"roadrunners": "Our RoadRunners club team is a gathering of young players who bring a passion for basketball to the court. With skilled techniques and outstanding teamwork, this team demonstrates remarkable performance on the court.",
+			"roadrunners": "Our RoadRunners club team is a gathering of young players who bring a passion for basketball to the court. With skilled techniques and outstanding teamwork, they demonstrates remarkable performance on the court.",
 			"tigers": "Tigers is a group of young players who have a deep love for the sport. They bring a wealth of enthusiasm and boundless passion to every game, creating an atmosphere full of energy."
 		}
 	},
@@ -40,12 +40,12 @@
 		"roadrunners": {
 			"u10rookies": "The U10 Roadrunners Rookies, part of the Roadrunners Club Teams, is a dynamic group of young players. They showcase impressive skills and excellent teamwork on the basketball court, with each player actively participating in the games. This young team brings passion and effort to every match, injecting boundless energy into the court!",
 			"u10": "The U10 Roadrunners, part of the Roadrunners Club Teams, is a vibrant team composed of young players with a passion for basketball. They demonstrate outstanding skills and teamwork, with each player giving their all in every game. This team stands out on the court with a proactive attitude, delivering exciting matches for the audience!",
-			"u12": "The U12 Roadrunners, part of the Roadrunners Club Teams, is a team that combines skill and passion, consisting of young and energetic players. They showcase exceptional basketball skills and outstanding teamwork on the court, with each player demonstrating leadership during games. This age group team approaches every match with determination and enthusiasm, becoming a standout presence on the basketball court!"
+			"u12": "The U12 Roadrunners, part of the Roadrunners Club Teams, is a team that combines skill and passion, consisting of young and energetic players. They showcase exceptional basketball skills and outstanding teamwork on the court. This age group team approaches every match with determination and enthusiasm, becoming a standout presence on the basketball court!"
 		},
 		"tigers": {
 			"u10": "The U10 Tigers, part of the Tigers Club Teams, is a dynamic group of young players. They showcase impressive skills and excellent teamwork on the basketball court, with each player actively participating in the games. This young team brings passion and effort to every match, injecting boundless energy into the court!",
 			"u12": "The U12 Tigers, part of the Tigers Club Teams, is a vibrant team composed of young players with a passion for basketball. They demonstrate outstanding skills and teamwork, with each player giving their all in every game. This team stands out on the court with a proactive attitude, delivering exciting matches for the audience!",
-			"u13": "The U13 Tigers, part of the Tigers Club Teams, is a team that combines skill and passion, consisting of young and energetic players. They showcase exceptional basketball skills and outstanding teamwork on the court, with each player demonstrating leadership during games. This age group team approaches every match with determination and enthusiasm, becoming a standout presence on the basketball court!"
+			"u13": "The U13 Tigers, part of the Tigers Club Teams, is a team that combines skill and passion, consisting of young and energetic players. Each player demonstrates leadership during games. They approach every match with determination and enthusiasm, becoming a standout presence on the basketball court!"
 		}
 	},
 	"coaches-bio": {

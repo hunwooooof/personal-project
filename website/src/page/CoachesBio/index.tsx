@@ -60,8 +60,10 @@ function CoachesBio() {
   return (
     <div className='pt-16 lg:pt-20'>
       <div
-        className='w-full h-[40vw] bg-fixed bg-contain bg-[center_top_2rem] flex items-end pb-10 px-20 justify-center'
-        style={{ backgroundImage: `url(${coachesURL})` }}></div>
+        className='w-full h-[40vw] bg-fixed bg-contain bg-[center_top_2rem] flex items-end pb-10 px-20 justify-center mb-20'
+        style={{ backgroundImage: `url(${coachesURL})` }}
+      />
+      <h2 className='text-5xl text-center mb-8 font-bold bg-white p-3'>Coaches</h2>
       <div className='flex flex-col gap-28 bg-fixed bg-cover' style={{ backgroundImage: `url(${backgroundURL})` }}>
         {coaches.map((coach) => {
           return <CoachCard key={coach.name} coach={coach} />;
