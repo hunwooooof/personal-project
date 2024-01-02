@@ -1,41 +1,26 @@
-# [Sol Basketball Manage System](https://system-1.web.app)
+# [Sol Basketball](https://sol-basketball.web.app/)
 
+The official website, class schedule and attendance system designed for the training academy Sol Basketball. Users can check class schedules, purchase courses, and administrators can manage class schedules, student attendance status, and orders, etc.
 
-## 作品說明
-為了 Sol Basketball 週末籃球訓練班所設計的課表與出席系統，使用者能在上面查看每一季課表與賽程、比賽影片，登入後能購買課程點數、查看點數使用狀況以及出席情況。管理員登入管理帳號後，則能新增刪除課表、影片，編輯學生出席狀況與管理已購買的課程訂單。
+<!-- ## About Sol Basketball -->
 
+## Built with
 
-## 資料夾說明
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6.svg?style=for-the-badge&logo=TypeScript&logoColor=white)](https://www.typescriptlang.org/) [![React](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=black)](https://react.dev/) [![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-06B6D4.svg?style=for-the-badge&logo=Tailwind-CSS&logoColor=white)](https://tailwindcss.com/)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28.svg?style=for-the-badge&logo=Firebase&logoColor=black)](https://firebase.google.com/) [![Git](https://img.shields.io/badge/Git-F05032.svg?style=for-the-badge&logo=Git&logoColor=white)](https://git-scm.com/) [![NPM](https://img.shields.io/badge/npm-CB3837.svg?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/) [![Vite](https://img.shields.io/badge/Vite-646CFF.svg?style=for-the-badge&logo=Vite&logoColor=white)](https://vitejs.dev/)[![ESLint](https://img.shields.io/badge/ESLint-4B32C3.svg?style=for-the-badge&logo=ESLint&logoColor=white)](https://eslint.org/)
 
-```
-├── src               # 專案的主要原始碼資料夾，包含了應用程式的原始程式碼。
-│   ├── assets/       # 包含應用程式的靜態資源，如圖像。
-│   ├── components/   # 包含應用程式中的可重複使用元件。
-│   ├── pages/        # 包含應用程式的頁面元件，用於建立不同的頁面。
-│   ├── store/        # 包含以 zustand 作為狀態管理工具的狀態檔案。
-│   ├── utils/        # 包含各種輔助工具或功能的實用工具函數。
-│   ├── App.tsx       # 應用程式的主應用程式元件。
-│   ├── Index.css     # 應用程式的樣式設定，包含 tailwind 以及自定義的 class。
-│   ├── main.tsx      # 應用程式的主入口檔案。
-│   └── vite-env.d.ts # Vite的類型定義檔。
-├── index.html        # 應用程式的主HTML文件，用於載入JavaScript檔案和渲染應用程式。
-├── tsconfig.json     # TypeScript的設定文件，用於指定專案的編譯選項。
-├── vite.config.ts    # Vite的設定文件，用於配置建置工具Vite的行為。
-└── package.json      # 專案的npm套件設定文件，包含了專案依賴和腳本。
-```
+- React
+- Zustand
+- Firebase
+- Tailwind
+- ESLint
+- react-hot-toast
+- react-router-dom
 
-## 使用技術
-#### 前端框架與函式庫
-React.js：前端開發框架，用於建立使用者介面和應用程式的元件。
-tailwind：用於建立和管理應用程式樣式的 CSS 框架。
+<!-- ## Flow chart
+## Demo
+ -->
 
-#### 建置工具
-Vite：用於加速前端開發和建置最佳化的建置工具。
+## Contact
 
-#### 類型系統
-Typescript：提供靜態型別檢查，提高程式碼品質和開發效率。
-
-#### 動畫效果
-
-
-#### 部署和託管
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2.svg?style=for-the-badge&logo=LinkedIn&logoColor=white)](https://www.linkedin.com/in/mavislee1998/)
