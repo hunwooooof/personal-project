@@ -1,8 +1,20 @@
-# [Sol Basketball](https://sol-basketball.web.app/)
+<h1 align="center">
+  <a href="https://sol-basketball.web.app/" style="margin-bottom:20px; display:block;">
+     <img src="./website/src/component/Header/sol-logo.png" alt="Logo" width="80px">
+    <div>
+		Sol Basketball
+		</div>
+  </a>
+</h1>
 
 The official website, class schedule and attendance system designed for the training academy Sol Basketball. Users can check class schedules, purchase courses, and administrators can manage class schedules, student attendance status, and orders, etc.
 
-<!-- ## About Sol Basketball -->
+## About Sol Basketball
+
+- Can view and manage class schedules in the self-created timetable.
+- Can instantly preview the upload screen when adding a new YouTube video
+- Send and receive messages instantly in the chat room.
+- Use Firebase Firestore as the database and deploy React applications using Firebase Hosting
 
 ## Built with
 
