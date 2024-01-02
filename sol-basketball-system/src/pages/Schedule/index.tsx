@@ -28,7 +28,7 @@ interface EventType {
 }
 
 function Schedule() {
-  const { getScheduledDates, getSaturdaySchedules, setCurrentNav } = useStore();
+  const { getScheduledDates, getSaturdaySchedules, setCurrentNav, isLogin } = useStore();
 
   useEffect(() => setCurrentNav('schedules'), []);
 
@@ -323,7 +323,7 @@ function Schedule() {
                       {info.time}
                     </div>
                     {new Date(info.date) > new Date() && (
-                      <div className=''>
+                      <div>
                         <div
                           className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
                           onClick={() => {
@@ -332,12 +332,14 @@ function Schedule() {
                           <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
                           Add to calendar
                         </div>
-                        <Link
-                          to='/login'
-                          className='rounded-full bg-slate-700 py-1 mt-4 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
-                          onClick={() => setCurrentNav('')}>
-                          Log in to purchase sessions
-                        </Link>
+                        {!isLogin && (
+                          <Link
+                            to='/login'
+                            className='rounded-full bg-slate-700 py-1 mt-4 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                            onClick={() => setCurrentNav('')}>
+                            Log in to purchase sessions
+                          </Link>
+                        )}
                       </div>
                     )}
                   </div>
@@ -411,13 +413,23 @@ function Schedule() {
                           {item.time}
                         </div>
                         {new Date(item.date) > new Date() && (
-                          <div
-                            className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
-                            onClick={() => {
-                              handleClickGoogleCalendar(item);
-                            }}>
-                            <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
-                            Add to calendar
+                          <div>
+                            <div
+                              className='rounded-full bg-slate-700 py-1 mt-8 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                              onClick={() => {
+                                handleClickGoogleCalendar(item);
+                              }}>
+                              <img src={googleCalendarIco} alt='google-calendar-icon' className='w-5 h-5' />
+                              Add to calendar
+                            </div>
+                            {!isLogin && (
+                              <Link
+                                to='/login'
+                                className='rounded-full bg-slate-700 py-1 mt-4 flex justify-center gap-4 items-center cursor-pointer text-gray-300 hover:text-white hover:bg-slate-600 duration-150'
+                                onClick={() => setCurrentNav('')}>
+                                Log in to purchase sessions
+                              </Link>
+                            )}
                           </div>
                         )}
                         <iframe

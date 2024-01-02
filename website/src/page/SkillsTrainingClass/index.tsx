@@ -33,7 +33,7 @@ function SkillsTrainingClass() {
             {t('skills-training-class.friday-training')}
           </h3>
           <Link
-            to='https://system-1.web.app/'
+            to='https://sol-basketball-setting.web.app/'
             target='_blank'
             className='text-white px-4 py-2 rounded-full bg-teal-900 hover:bg-teal-700'>
             {t('skills-training-class.action')}
