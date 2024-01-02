@@ -48,7 +48,7 @@ function Footer() {
             Share the love of the game with everyone under the sun!
           </div>
           <Link
-            to='https://system-1.web.app/login'
+            to='https://sol-basketball-setting.web.app/login'
             target='_blank'
             className='rounded-full bg-white px-3 sm:px-8 py-2 sm:py-4 text-sm sm:text-xl font-semibold hover:shadow-lg hover:shadow-gray-200/50 duration-150'>
             JOIN US

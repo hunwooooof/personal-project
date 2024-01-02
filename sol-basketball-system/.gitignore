@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .env.local
+.eslintrc.cjs
+.firebaserc
+firebase.json
+package-lock.json
